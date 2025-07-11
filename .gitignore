@@ -1,0 +1,7 @@
+ 
+# ignore vscode and Debug folder
+.vscode/*
+
+Debug/*
+!Debug/EXP_V120.hex
+!Debug/EXP_V120.elf
