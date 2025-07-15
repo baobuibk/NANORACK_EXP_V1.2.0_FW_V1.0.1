@@ -22,6 +22,8 @@ static temperature_control_task_t *ptemperature_control_task = &temperature_cont
 extern experiment_task_t experiment_task_inst;
 static experiment_task_t *pexperiment_task = &experiment_task_inst;
 
+static bool is_measured = false;
+
 /*************************************************
  *                Private variable                 *
  *************************************************/
@@ -82,6 +84,7 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context);
 static void cmd_exp_get_profile(EmbeddedCli *cli, char *args, void *context);
 static void cmd_exp_start_measuring(EmbeddedCli *cli, char *args, void *context);
 static void cmd_exp_ram_read(EmbeddedCli *cli, char *args, void *context);
+static void cmd_exp_data_transfer(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_TEC_Set_Auto(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_TEC_Get_Auto(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_HTR_Set_Auto(EmbeddedCli *cli, char *args, void *context);
@@ -177,7 +180,10 @@ static const CliCommandBinding cliStaticBindings_internal[] = {
 	{ "Experiment", "exp_get_profile",    "format: exp_get_profile",  true, NULL, cmd_exp_get_profile },
 	{ "Experiment", "exp_start_measuring",    "format: exp_start_measuring",  true, NULL, cmd_exp_start_measuring },
 	{ "Experiment", "exp_ram_read",    "format: exp_ram_read [address] [num_sample] [mode]",  true, NULL, cmd_exp_ram_read },
-//	{ NULL, "get_current",  "format: get_current [int/ext]",                                   true, NULL, CMD_Get_Current },
+	{ "Experiment", "exp_data_transfer",    "format: exp_data_transfer",  true, NULL, cmd_exp_data_transfer },
+
+
+	//	{ NULL, "get_current",  "format: get_current [int/ext]",                                   true, NULL, CMD_Get_Current },
 //	    { NULL, "pd_get",       "format: pd_get [pd_index]",                                       true, NULL, CMD_PD_Get },
 //	    { NULL, "sp_set_pd",    "format: sp_set_pd [photo_index]",                                 true, NULL, CMD_Sample_Set_PD },
 //	    { NULL, "sp_set_rate",  "format: sp_set_rate [sampling_rate] [num_samples]",               true, NULL, CMD_Sample_Set_Rate },
@@ -924,6 +930,10 @@ static void cmd_exp_start_measuring(EmbeddedCli *cli, char *args, void *context)
 {
 	if (experiment_start_measuring(pexperiment_task))
 		cli_printf(cli, "Wrong profile, please check \r\n");
+	else
+	{
+		is_measured = true;
+	}
 }
 
 static void cmd_exp_ram_read(EmbeddedCli *cli, char *args, void *context)
@@ -956,7 +966,7 @@ static void cmd_exp_ram_read(EmbeddedCli *cli, char *args, void *context)
 	uint32_t num_data = atoi(embeddedCliGetToken(args, 2));		// calculated by halfword
 	if ((num_data > 2097152 - start_address)||(num_data < 512))
 	{
-		cli_printf(cli, "num sample out of range (512-%d samples)\r\n", 2097152 - start_address);
+		cli_printf(cli, "num samples out of range (512-%d samples)\r\n", 2097152 - start_address);
 		return;
 	}
 
@@ -971,7 +981,13 @@ static void cmd_exp_ram_read(EmbeddedCli *cli, char *args, void *context)
 
 }
 
+static void cmd_exp_data_transfer(EmbeddedCli *cli, char *args, void *context)
+{
+	if(is_measured) experiment_task_data_transfer(pexperiment_task);
+	else cli_printf(cli, "please use 'start measure' first!\r\n");
+	return;
 
+}
 //static void CMD_TEC_Set_Auto(EmbeddedCli *cli, char *args, void *context) {
 //    // TODO: Implement TEC auto mode set logic
 //	const char *arg1 = embeddedCliGetToken(args, 1);

@@ -24,7 +24,6 @@ struct shell_task_t {
     EmbeddedCli * shell_uart_cli ;
     SST_TimeEvt shell_task_timeout_timer;
     uint16_t * buffer_to_send;
-    uint32_t total_word;
     uint32_t remain_word;
     uint8_t  htoa_buffer[5];
     uint8_t  htoa_buffer_index;

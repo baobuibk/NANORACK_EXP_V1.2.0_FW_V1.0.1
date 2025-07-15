@@ -20,7 +20,7 @@ DBC_MODULE_NAME("experiment_task")
 
 #define EXPERIMENT_TASK_NUM_EVENTS  	2
 #define EXPERIMENT_TASK_AQUI_TIMEOUT	20000
-
+#define EXPERIMENT_CHUNK_SIZE			(4*1024)
 experiment_task_t experiment_task_inst;
 extern shell_task_t shell_task_inst ;
 static shell_task_t *pshell_task_instt = &shell_task_inst;
@@ -30,8 +30,12 @@ static experiment_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 static experiment_evt_t const start_measuring_evt = {.super = {.sig = EVT_EXPERIMENT_START_MEASURE} };
 static experiment_evt_t const start_sending_evt = {.super = {.sig = EVT_EXPERIMENT_START_SENDING} };
 
+static shell_evt_t const uart_send_buffer_bin_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER_BINARY},};
+static shell_evt_t const uart_send_crc_evt = {.super = {.sig = EVT_SHELL_SEND_CRC},};
+
+
 static data_profile_t remain_data_profile;
-static uint16_t ram_buffer[4*1024];
+static uint16_t ram_buffer[EXPERIMENT_CHUNK_SIZE];
 static uint16_t batch_size;
 
 experiment_evt_t experiment_task_current_event = {0}; // Current event being processed
@@ -205,7 +209,13 @@ static state_t experiment_task_state_data_send_handler(experiment_task_t * const
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
 		    remain_data_profile.num_data = me->data_profile.num_data;
 		    remain_data_profile.start_address = me->data_profile.start_address;
-		    batch_size = (remain_data_profile.num_data > 2000) ? 2000 : remain_data_profile.num_data;
+		    SST_Task_post((SST_Task *)&shell_task_inst.super, (SST_Evt *)&uart_send_buffer_bin_evt);
+			return HANDLED_STATUS;
+		}
+
+		case EVT_EXPERIMENT_DONE_SEND_HEADER:
+		{
+		    batch_size = (remain_data_profile.num_data > EXPERIMENT_CHUNK_SIZE) ? EXPERIMENT_CHUNK_SIZE : remain_data_profile.num_data;
 			bsp_spi_ram_read_dma(remain_data_profile.start_address * 2, batch_size * 2, (uint8_t *)ram_buffer);
 			return HANDLED_STATUS;
 		}
@@ -222,15 +232,16 @@ static state_t experiment_task_state_data_send_handler(experiment_task_t * const
 			remain_data_profile.start_address += batch_size;
 			if(remain_data_profile.num_data > 0)
 			{
-				batch_size = (remain_data_profile.num_data > 2000) ? 2000 : remain_data_profile.num_data;
+				batch_size = (remain_data_profile.num_data > EXPERIMENT_CHUNK_SIZE) ? EXPERIMENT_CHUNK_SIZE : remain_data_profile.num_data;
 				bsp_spi_ram_read_dma(remain_data_profile.start_address * 2, batch_size * 2, (uint8_t *)ram_buffer);
+				return HANDLED_STATUS;
 			}
 			else
 			{
+				SST_Task_post((SST_Task *)&shell_task_inst.super, (SST_Evt *)&uart_send_crc_evt);
 				me->state = experiment_task_state_manual_handler;
 				return TRAN_STATUS;
 			}
-			return HANDLED_STATUS;
 		}
 
 		default:
@@ -241,12 +252,23 @@ static state_t experiment_task_state_data_send_handler(experiment_task_t * const
 
 uint32_t experiment_task_get_ram_data(experiment_task_t * const me, uint32_t start_addr, uint32_t num_data, uint8_t mode)	// mode0: send ASCII, mode1: send binary
 {
-
+	me->data_profile.total_data = num_data;
 	me->data_profile.start_address = start_addr;
 	me->data_profile.num_data = num_data;
 	me->data_profile.mode = mode;
 	pshell_task_instt->crc = 0xffff;
-	pshell_task_instt->total_word = num_data;
+	SST_Task_post(&me->super, (SST_Evt *)&start_sending_evt);
+	return ERROR_OK;
+}
+
+uint32_t experiment_task_data_transfer(experiment_task_t * const me)
+{
+
+	me->data_profile.total_data = me->num_data_real;
+	me->data_profile.start_address = 0;
+	me->data_profile.num_data = me->num_data_real;
+	me->data_profile.mode = 1;
+	pshell_task_instt->crc = 0xffff;
 	SST_Task_post(&me->super, (SST_Evt *)&start_sending_evt);
 	return ERROR_OK;
 }
@@ -378,4 +400,5 @@ uint32_t experiment_start_measuring(experiment_task_t * const me)
 	SST_Task_post(&me->super, (SST_Evt *)&start_measuring_evt);
 	return ERROR_OK;
 }
+
 

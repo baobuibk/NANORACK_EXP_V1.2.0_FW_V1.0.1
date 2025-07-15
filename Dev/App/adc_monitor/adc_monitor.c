@@ -17,7 +17,7 @@
 
 DBC_MODULE_NAME("adc_monitor")
 
-monitor_task_t monitor_task_inst ;
+monitor_task_t monitor_task_inst;
 #define MONITOR_TASK_NUM_EVENTS 4
 monitor_evt_t current_monitor_e = {0}; // Current event being processed
 monitor_evt_t monitor_e_buffer[MONITOR_TASK_NUM_EVENTS] = {0}; // Array to hold shell events

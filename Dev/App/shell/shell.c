@@ -22,7 +22,7 @@ DBC_MODULE_NAME("shell")
 
 
 shell_task_t shell_task_inst ;
-#define SHELL_TASK_NUM_EVENTS 10
+#define SHELL_TASK_NUM_EVENTS 30
 shell_evt_t shell_current_event = {0}; // Current event being processed
 shell_evt_t shell_task_event_buffer[SHELL_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
 circular_buffer_t shell_task_event_queue = {0}; // Circular buffer to hold shell events
@@ -35,6 +35,8 @@ circular_char_buffer_t rx_buffer;
 circular_char_buffer_t tx_buffer;
 uint8_t rx_static_buffer[SHELL_UART_RX_BUFFER_SIZE];
 uint8_t tx_static_buffer[SHELL_UART_TX_BUFFER_SIZE];
+
+static bool enable_shell_empty = false;
 
 #define SHELL_UART_CLI_BUFFER_SIZE	4096
 #define SHELL_UART_CLI_RX_BUFFER_SIZE	128
@@ -62,11 +64,13 @@ static void crc16_CCITT_update(uint16_t *crc, uint16_t data);
 
 static shell_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
 static shell_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
-static shell_evt_t uart_empty_evt = {.super = {.sig = EVT_SHELL_UART_EMPTY},
+static shell_evt_t const uart_empty_evt = {.super = {.sig = EVT_SHELL_UART_EMPTY},
 											};
-static shell_evt_t uart_send_buffer_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER},};
-static shell_evt_t uart_send_buffer_bin_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER_BINARY},};
+static shell_evt_t const uart_send_buffer_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER},};
+static shell_evt_t const uart_send_chunk_evt = {.super = {.sig = EVT_SHELL_SEND_CHUNK},};
 
+
+static experiment_evt_t const done_send_header_evt = {.super = {.sig = EVT_EXPERIMENT_DONE_SEND_HEADER},};
 static experiment_evt_t const done_send_chunk = {.super = {.sig = EVT_EXPERIMENT_DONE_SEND_CHUNK}};
 extern experiment_task_t experiment_task_inst;
 // Khởi tạo bộ đệm vòng (item_size = 1 byte)
@@ -210,7 +214,7 @@ void CLI_UART_stdio_tx_callback(shell_task_t * const me) {
 	ret = uart_stdio_tx_callback(me->shell_uart_stdio);
 //	ret = uart_stdio_tx_callback(&uart_stdio);
 
-	if (ret) SST_Task_post(&me->super, (SST_Evt *)&uart_empty_evt);
+	if (ret && enable_shell_empty) SST_Task_post(&me->super, (SST_Evt *)&uart_empty_evt);
 }
 
 
@@ -241,9 +245,14 @@ static state_t shell_state_send_long_buffer_handler(shell_task_t * const me, she
         		}
         	}
 
-        	me->state = shell_state_process_handler;
-        	SST_TimeEvt_arm(&me->shell_task_timeout_timer, SHELL_POLL_INTERVAL, SHELL_POLL_INTERVAL);
-            return TRAN_STATUS;
+//        	if(!me->total_remain)
+//			{
+//        		me->state = shell_state_process_handler;
+//				SST_TimeEvt_arm(&me->shell_task_timeout_timer, SHELL_POLL_INTERVAL, SHELL_POLL_INTERVAL);
+//				return TRAN_STATUS;
+//			}
+//			else return HANDLED_STATUS;
+
         }
         case EVT_SHELL_UART_EMPTY:
     		while (me->htoa_buffer_index < 5)	//print the rest of previous htoa buffer
@@ -268,8 +277,14 @@ static state_t shell_state_send_long_buffer_handler(shell_task_t * const me, she
         			me->htoa_buffer_index++;
         		}
         	}
-        	me->state = shell_state_process_handler;
-            return TRAN_STATUS;
+
+
+//			if(!me->total_remain)
+//			{
+//	        	me->state = shell_state_process_handler;
+//	            return TRAN_STATUS;
+//			}
+//			else return HANDLED_STATUS;
 
         default:
             // Handle other events if necessary
@@ -278,14 +293,15 @@ static state_t shell_state_send_long_buffer_handler(shell_task_t * const me, she
 }
 
 
-static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const me, shell_evt_t const * const e) {
-
-	uint32_t ret = 0;
-    switch (e->super.sig) {
+static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const me, shell_evt_t const * const e)
+{
+	uint8_t bytes_temp[3];
+    switch (e->super.sig)
+    {
         case SIG_ENTRY:
-        	// Send first 3 byte header
-        	uint32_t header = (0x000FFFFF & me->total_word) | 0xFFF00000;
-        	uint8_t bytes_temp[3];
+        {
+        	// Send 3 byte header
+        	uint32_t header = (0x003FFFFF & (experiment_task_inst.data_profile.total_data * 2)) | 0xFFC00000;
 			bytes_temp[0] = (uint8_t)(header >> 16);
 			bytes_temp[1] = (uint8_t)(header >> 8);
 			bytes_temp[2] = (uint8_t)header;
@@ -294,72 +310,92 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 				uart_stdio_write_char(me->shell_uart_stdio, bytes_temp[i]);
 			}
 
-			// Sencode, send first chunk of data
-        	while (me->remain_word > 0)
-        	{
-        		shell_binary(me);
-        		while (me->bin_buffer_index < 2)
-        		{
-        			ret = uart_stdio_write_char(me->shell_uart_stdio, me->bin_buffer[me->bin_buffer_index]);
-        			if (ret)  //buffer full, need to wait
-        			{
-        				return HANDLED_STATUS;
-        			}
-        			me->bin_buffer_index++;
-        		}
-        	}
-
-			//Finally, send 2 byte crc
-			bytes_temp[0] = (uint8_t)(me->crc >> 8);
-			bytes_temp[1] = (uint8_t)me->crc;
-			for(uint8_t i = 0; i < 2; i++)
-			{
-				uart_stdio_write_char(me->shell_uart_stdio, bytes_temp[i]);
-			}
-
-        	me->state = shell_state_process_handler;
-        	SST_TimeEvt_arm(&me->shell_task_timeout_timer, SHELL_POLL_INTERVAL, SHELL_POLL_INTERVAL);
-            return TRAN_STATUS;
-
-        case EVT_SHELL_UART_EMPTY:
-        	while (me->bin_buffer_index < 2)
-			{
-				ret = uart_stdio_write_char(me->shell_uart_stdio, me->bin_buffer[me->bin_buffer_index]);
-				if (ret)  //buffer full, need to wait
-				{
-					return HANDLED_STATUS;
-				}
-				me->bin_buffer_index++;
-			}
+			// Create event if done send evt
+			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_header_evt);
+			return HANDLED_STATUS;
+        }
 
 
+        case EVT_SHELL_SEND_CHUNK:
+        {
         	while (me->remain_word > 0)
 			{
 				shell_binary(me);
 				while (me->bin_buffer_index < 2)
 				{
-					ret = uart_stdio_write_char(me->shell_uart_stdio, me->bin_buffer[me->bin_buffer_index]);
-					if (ret)  //buffer full, need to wait
+					if(uart_stdio_write_char(me->shell_uart_stdio, me->bin_buffer[me->bin_buffer_index]))	//buffer full, need to wait
+					{
+						enable_shell_empty = true;
+						return HANDLED_STATUS;
+					}
+
+					me->bin_buffer_index++;
+				}
+			}
+			// Create event if done send chunk and have other chunk
+			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+			return HANDLED_STATUS;
+        }
+
+
+        case EVT_SHELL_UART_EMPTY:
+        {
+        	// print pre buffer due to full
+        	while (me->bin_buffer_index < 2)
+			{
+				if(uart_stdio_write_char(me->shell_uart_stdio, me->bin_buffer[me->bin_buffer_index]))		// if buffer full
+				{
+					return HANDLED_STATUS;
+				}
+				me->bin_buffer_index++;
+
+				// Create event if done send chunk
+				if(!me->remain_word)
+				{
+					enable_shell_empty = false;
+					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+				}
+			}
+
+        	// print continue word of chunk
+        	while (me->remain_word > 0)
+			{
+				shell_binary(me);
+				while (me->bin_buffer_index < 2)
+				{
+					if(uart_stdio_write_char(me->shell_uart_stdio, me->bin_buffer[me->bin_buffer_index]))	//buffer full, need to wait
 					{
 						return HANDLED_STATUS;
 					}
 					me->bin_buffer_index++;
 				}
+
+	        	// Create event if done send chunk
+				if(!me->remain_word)
+				{
+					enable_shell_empty = false;
+					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+				}
 			}
 
-        	//Finally, send 2 byte crc
-			bytes_temp[0] = (uint8_t)(me->crc >> 8);
-			bytes_temp[1] = (uint8_t)me->crc;
-			for(uint8_t i = 0; i < 2; i++)
+
+			return HANDLED_STATUS;
+        }
+
+        case EVT_SHELL_SEND_CRC:
+        {
+        	bytes_temp[0] = (uint8_t)(me->crc >> 8);
+        	bytes_temp[1] = (uint8_t)me->crc;
+        	for(uint8_t i = 0 ; i < 2; i++)
 			{
 				uart_stdio_write_char(me->shell_uart_stdio, bytes_temp[i]);
 			}
+			me->state = shell_state_process_handler;
+			return TRAN_STATUS;
+        }
 
-        	me->state = shell_state_process_handler;
-            return TRAN_STATUS;
 
         default:
-            // Handle other events if necessary
             return IGNORED_STATUS;
     }
 }
@@ -383,7 +419,6 @@ static void shell_binary(shell_task_t * const me)
 	me->bin_buffer[0] = data >> 8;
 	me->bin_buffer[1] = data & 0xFF;
 	me->bin_buffer_index = 0;
-	if (!me->remain_word)	SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
 }
 
 static void shell_htoa(shell_task_t * const me)
@@ -405,7 +440,10 @@ void shell_send_buffer(shell_task_t * const me, uint16_t *buffer, uint32_t size,
 	me->buffer_to_send = buffer;
 	me->remain_word = size;
 
-	if(mode) SST_Task_post(&me->super, (SST_Evt *)&uart_send_buffer_bin_evt);
+	if(mode)
+	{
+		SST_Task_post(&me->super, (SST_Evt *)&uart_send_chunk_evt);
+	}
 	else SST_Task_post(&me->super, (SST_Evt *)&uart_send_buffer_evt);
 }
 

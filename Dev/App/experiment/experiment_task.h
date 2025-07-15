@@ -38,6 +38,7 @@ struct experiment_profile_t{
 	uint32_t period;
 };
 struct data_profile_t{
+	uint32_t total_data;
 	uint32_t start_address;
 	uint32_t num_data;
 	uint8_t	destination; //0: send to UART console, 1: to SPI
@@ -57,6 +58,8 @@ struct experiment_task_t{
 	uint8_t  photo_pos;		//0-36, 0xFF for switched OFF all
 	uint16_t photo_value;	//photo adc 16bit value
 	enum {ADC_MODE, SW_MODE} photodiode_mode;
+	uint32_t num_data_real; // num of data real
+	uint32_t num_chunk;
 };
 
 struct experiment_task_init_t {
@@ -80,6 +83,7 @@ uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t
 uint32_t experiment_task_get_ram_data(experiment_task_t * const me, uint32_t start_addr, uint32_t num_data, uint8_t mode);
 void experiment_task_get_profile(experiment_task_t * me, experiment_profile_t * profile);
 uint32_t experiment_start_measuring(experiment_task_t * const me);
+uint32_t experiment_task_data_transfer(experiment_task_t * const me);
 uint32_t experiment_task_photo_ADC_prepare_SPI(experiment_task_t * const me);
 
 #endif /* APP_EXPERIMENT_EXPERIMENT_TASK_H_ */

@@ -49,7 +49,7 @@ void bsp_spi_ram_write_dma(uint32_t address, uint32_t size, uint8_t *buffer)
 	IS66WV.buffer = buffer;
 	IS66WV.sram_mode = SRAM_MODE_WRITE;
 	IS66WV.transfer_done = 0;
-	SRAM_DMA_Transfer(&IS66WV, MAX_BURST_SIZE);
+	SRAM_DMA_Transfer(&IS66WV, (IS66WV.remain_size > MAX_BURST_SIZE) ? MAX_BURST_SIZE : IS66WV.remain_size);
 }
 
 void bsp_spi_ram_read_dma(uint32_t address, uint32_t size, uint8_t *buffer)
@@ -59,7 +59,7 @@ void bsp_spi_ram_read_dma(uint32_t address, uint32_t size, uint8_t *buffer)
 	IS66WV.buffer = buffer;
 	IS66WV.sram_mode = SRAM_MODE_READ;
 	IS66WV.transfer_done = 0;
-	SRAM_DMA_Transfer(&IS66WV, MAX_BURST_SIZE);
+	SRAM_DMA_Transfer(&IS66WV, (IS66WV.remain_size > MAX_BURST_SIZE) ? MAX_BURST_SIZE : IS66WV.remain_size);
 }
 
 void bsp_spi_ram_read_id(uint8_t * buffer)

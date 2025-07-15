@@ -259,6 +259,9 @@ void bsp_photodiode_sample_start()
 	else photo_diode_adc.block_count = (num_sample / BUFFER_FULL_SIZE);
 	photo_diode_adc.ram_current_address = 0;
 
+	experiment_task_inst.num_chunk = photo_diode_adc.block_count;
+	experiment_task_inst.num_data_real = experiment_task_inst.num_chunk * BUFFER_FULL_SIZE;
+
 	bsp_photodiode_start_dma(&photo_diode_adc,(uint32_t *)&photo_data_buffer,BUFFER_FULL_SIZE);
 	bsp_photo_start_timer_sampling();
 }
