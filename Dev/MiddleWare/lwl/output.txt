@@ -1,0 +1,120 @@
+Time:Time Counter in sec = 1000
+Temperature NTC0: 2113 NTC1: 32768 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 2000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 3000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 4000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 5000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 6000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 7000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 8000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 9000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 10000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 11000
+Temperature NTC0: 8192 NTC1: 16385 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 265
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+NTC channel 7 : 32768
+Time:Time Counter in sec = 12000
+Temperature NTC0: 2113 NTC1: 32768 NTC3:65456 NTC4: 8199 NTC5:35372 NTC6:8192 NTC7:4788 NTC8: 8193
+NTC channel 0 : 266
+NTC channel 1 : 32768
+NTC channel 2 : 32768
+NTC channel 3 : 32768
+NTC channel 4 : 32768
+NTC channel 5 : 32768
+NTC channel 6 : 32768
+Unused/invalid data (hex): 03 07 00 80 a5
