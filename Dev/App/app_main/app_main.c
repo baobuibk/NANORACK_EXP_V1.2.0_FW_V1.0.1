@@ -14,6 +14,7 @@
 #include "app_signals.h"
 #include "dbc_assert.h"
 #include "adc_monitor.h"
+#include "system_log.h"
 
 //DBC_MODULE_NAME("app_main")
 

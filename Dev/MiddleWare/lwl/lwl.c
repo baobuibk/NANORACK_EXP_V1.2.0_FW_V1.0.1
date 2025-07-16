@@ -187,6 +187,10 @@ int32_t cmd_lwl_test() {
     return 0;
 }
 
-void lwl_stdio_tx_callback() {
-    uart_stdio_tx_callback(&lwl_uart_stdio);
+//void lwl_stdio_tx_callback() {
+//    uart_stdio_tx_callback(&lwl_uart_stdio);
+//}
+
+void USART3_IRQHandler(void) {
+	uart_stdio_tx_callback(&lwl_uart_stdio);
 }
