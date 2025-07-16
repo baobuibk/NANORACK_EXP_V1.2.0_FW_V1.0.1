@@ -19,8 +19,10 @@
 
 #if defined(EXP_BOARD)
 #define CLI_UART						USART6
+#define LWL_UART						USART3
 #elif defined(STM32F7_DISCO)
 #define CLI_UART						USART1
+#define LWL_UART						USART1
 #endif
 
 #define BUFFER_HALF_SIZE	(8*1024)

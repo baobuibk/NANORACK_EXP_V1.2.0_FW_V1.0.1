@@ -1,0 +1,1056 @@
+Time:Time Counter in sec = 1193046
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 1193046
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 2000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 3000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 4000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 5000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 6000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 7000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 8000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 9000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 10000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 11000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 12000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 13000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 14000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 15000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 16000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 17000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 18000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 19000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 20000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 21000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 22000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 23000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 24000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 25000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 26000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 27000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 28000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 29000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 30000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 31000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 32000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 33000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 34000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 35000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 36000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 37000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 38000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 39000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 40000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 41000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 42000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 43000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 44000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 45000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 46000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 47000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 48000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 49000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 50000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 51000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 52000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 53000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 54000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 55000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 56000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 57000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 58000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 59000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 60000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 61000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 62000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 63000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 64000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 65000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 66000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 67000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 68000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 69000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 70000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 71000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 72000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 73000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 74000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 75000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 76000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 77000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 78000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 79000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 80000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 81000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 82000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 83000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 84000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 85000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 86000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 87000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 88000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 89000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 90000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 91000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 92000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 93000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 94000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 95000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 96000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 97000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 98000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 99000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 100000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 101000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 102000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 103000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 104000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 105000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 106000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 107000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 108000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 109000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 110000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 111000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 112000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 113000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 114000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 115000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 116000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 117000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 118000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 119000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 120000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 121000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 122000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 123000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 124000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 125000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 126000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 127000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 128000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 129000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 130000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 131000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 132000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 133000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 134000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 135000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 136000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 137000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 138000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 139000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 140000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 141000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 142000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 143000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 144000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 145000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 146000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 147000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 148000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 149000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 150000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 151000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 152000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 153000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 154000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 155000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 156000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 157000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 158000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 159000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 160000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 161000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 162000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 163000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 164000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 165000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 166000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 167000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 168000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 169000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 170000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 171000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 172000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 173000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 174000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 175000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 176000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 177000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 178000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 179000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 180000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 181000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 182000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 183000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 184000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 185000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 186000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 187000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 188000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 189000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 190000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 191000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 192000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 193000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 194000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 195000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 196000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 197000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 198000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 199000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 200000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 201000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 202000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 203000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 204000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 205000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 206000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 207000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 208000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 209000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 210000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 211000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 212000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 213000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 214000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 215000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 216000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 217000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 218000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 219000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 220000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 221000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 222000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 223000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 224000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 225000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 226000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 227000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 228000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 229000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 230000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 231000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 232000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 233000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 234000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 235000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 236000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 237000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 238000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 239000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 240000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 241000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 242000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 243000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 244000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 245000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 246000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 247000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 248000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 249000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 250000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 251000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 252000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 253000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 254000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 255000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 256000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 257000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 258000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 259000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 260000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 261000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 262000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 263000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 264000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 265000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 266000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 267000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 268000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 269000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 270000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 271000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 272000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 273000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 274000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 275000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 276000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 277000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 278000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 279000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 280000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 281000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 282000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 283000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 284000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 285000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 286000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 287000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 288000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 289000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 290000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 291000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 292000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 293000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 294000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 295000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 296000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 297000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 298000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 299000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 300000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 301000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 302000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 303000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 304000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 305000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 306000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 307000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 308000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 309000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 310000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 311000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 312000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 313000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 314000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 315000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 316000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 317000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 318000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 319000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 320000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 321000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 322000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 323000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 324000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 325000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 326000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 327000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 328000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 329000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 330000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 331000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 332000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 333000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 334000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 335000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 336000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 337000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 338000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 339000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 340000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 341000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 342000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 343000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 344000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 345000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 346000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 347000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 348000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 349000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 350000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 351000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 352000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 353000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 354000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 355000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 356000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 357000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 358000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 359000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 360000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 361000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 362000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 363000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 364000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 365000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 366000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 367000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 368000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 369000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 370000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 371000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 372000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 373000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 374000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 375000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 376000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 377000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 378000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 379000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 380000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 381000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 382000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 383000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 384000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 385000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 386000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 387000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 388000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 389000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 390000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 391000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 392000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 393000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 394000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 395000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 396000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 397000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 398000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 399000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 400000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 401000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 402000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 403000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 404000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 405000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 406000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 407000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 408000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 409000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 410000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 411000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 412000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+Time:Time Counter in sec = 1000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 2000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 3000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 4000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 5000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 6000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 7000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 8000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 9000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 10000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 11000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 12000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 13000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 14000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 15000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 16000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 17000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 18000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 19000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 20000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 21000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 22000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+NTC channel 7 :  7
+Time:Time Counter in sec = 23000
+Temperature NTC0:  0 NTC1:  1 NTC3: 2 NTC4:  3 NTC5: 4 NTC6: 5 NTC7: 6 NTC8:  7
+NTC channel 0 :  0
+NTC channel 1 :  1
+NTC channel 2 :  2
+NTC channel 3 :  3
+NTC channel 4 :  4
+NTC channel 5 :  5
+NTC channel 6 :  6
+Unused/invalid data (hex): 03 07 07 00 47
