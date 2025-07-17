@@ -837,7 +837,7 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 
 	if (tokenCount != 6)
 	{
-		cli_printf(cli, "format: exp_set_profile sampling_rate pos laser_percent pre_time experiment_time post_time\r\n");
+		cli_printf(cli, "format: exp_set_profile [sampling_rate pos] [laser_percent] [pre_time] [experiment_time] [post_time]\r\n");
 		return;
 	}
 	uint32_t sampling_rate = atoi(embeddedCliGetToken(args, 1));

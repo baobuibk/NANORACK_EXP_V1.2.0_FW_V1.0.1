@@ -130,7 +130,7 @@ struct min_shell_task_init_t {
 #ifdef MIN_SHELL_DEBUG_PRINTING
     #define min_shell_debug_print(...) DBG(0,__VA_ARGS__)
 #else
-	#define min__shell_debug_print(...)
+	#define min_shell_debug_print(...)
 #endif
 
 typedef void (*MIN_ResponseHandler)(uint8_t min_id, const uint8_t *payload, uint8_t len);

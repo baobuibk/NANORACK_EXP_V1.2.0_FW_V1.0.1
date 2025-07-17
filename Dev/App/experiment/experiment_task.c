@@ -263,7 +263,6 @@ uint32_t experiment_task_get_ram_data(experiment_task_t * const me, uint32_t sta
 
 uint32_t experiment_task_data_transfer(experiment_task_t * const me)
 {
-
 	me->data_profile.total_data = me->num_data_real;
 	me->data_profile.start_address = 0;
 	me->data_profile.num_data = me->num_data_real;

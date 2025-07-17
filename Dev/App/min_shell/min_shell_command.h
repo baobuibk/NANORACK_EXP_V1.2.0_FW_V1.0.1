@@ -57,6 +57,9 @@
 #define GET_CHUNK_CMD                               0x1B
 #define GET_CHUNK_ACK                               0x1C
 
+#define GET_CHUNK_CRC_CMD							1
+#define GET_CHUNK_CRC_ACK							1
+
 #define SET_EXT_LASER_PROFILE_CMD                   0x1D
 #define SET_EXT_LASER_PROFILE_ACK                   0x1E
 
@@ -84,6 +87,9 @@
 //----
 #define MIN_ERROR_OK								0xFF
 
+
+//-------------------------------------------------------
+#define MIN_RESP_LEN_2								2
 
 /**
  * @brief Command handler function type.
