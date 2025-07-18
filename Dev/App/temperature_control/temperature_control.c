@@ -335,8 +335,7 @@ uint16_t temperature_control_profile_tec_voltage_get( temperature_control_task_t
 uint32_t temperature_control_auto_mode_set(temperature_control_task_t *const me)
 {
 	temperature_control_evt_t auto_mode_evt = {.super = {.sig = EVT_TEMPERATURE_CONTROL_HAS_CMD},
-												.cmd = TEMPERATURE_AUTOMODE_START,
-												};
+												.cmd = TEMPERATURE_AUTOMODE_START, };
 	SST_Task_post(&me->super, (SST_Evt *)&auto_mode_evt);
 	return ERROR_OK;
 }
