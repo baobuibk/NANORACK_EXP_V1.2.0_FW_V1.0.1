@@ -1,4 +1,44 @@
  
+# Eclipse/STM32CubeIDE specific files
+.project
+.cproject
+.settings/
+*.launch
+*.metadata/
+*.ewp
+*.ewd
+*.eww
+
+# Build output directories
+Debug/
+Release/
+*.map
+*.bin
+*.lst
+
+# STM32CubeMX generated files (optional, depending on your workflow)
+# /Drivers/
+# /Middlewares/
+# /Inc/
+# /Src/
+# *.ioc  # Uncomment if you want to exclude .ioc file (not recommended)
+
+# Temporary files
+*.bak
+*.tmp
+*.swp
+*~
+
+# macOS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+desktop.ini
+
+# Other IDE-related files
+*.sublime-*
+*.code-workspace
 # ignore vscode and Debug folder
 .vscode/*
 
