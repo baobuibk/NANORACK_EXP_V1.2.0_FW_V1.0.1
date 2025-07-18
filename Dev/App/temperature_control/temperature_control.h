@@ -8,6 +8,12 @@
 #ifndef APP_TEMPERATURE_CONTROL_TEMPERATURE_CONTROL_TASK_H_
 #define APP_TEMPERATURE_CONTROL_TEMPERATURE_CONTROL_TASK_H_
 
+#include "uart_stdio.h"
+
+
+#define TEMPERATURE_CONTROL_DEBUG_PRINTING
+
+
 #define TEMPERATURE_CONTROl_COMMAND_PAYLOAD_LENGTH	15
 #include "sst.h"
 #include "fsm.h"
@@ -39,10 +45,14 @@ struct temperature_control_evt_t{
 
 
 struct temperature_control_profile_t{
-	uint8_t	NTC_idx;	//NTC for reference temperature
-	uint8_t profile_tec_set;	//bit=1 is enabled, lower 4 bit for tec
-	uint8_t profile_heater_set;	//bit=1 is enabled, lower 4 bit for heater
-	uint8_t heater_duty_cycle; //duty cycle for each heater, 0-100%
+	uint8_t	pri_NTC_idx;		// primary NTC for reference temperature
+	uint8_t sec_NTC_idx;		// secondly NTC for check error
+	uint32_t auto_recover;
+	int16_t profile_max_temp;
+	int16_t profile_min_temp;
+	uint8_t profile_tec_set;	// bit=1 is enabled, lower 4 bit for tec
+	uint8_t profile_heater_set;	// bit=1 is enabled, lower 4 bit for heater
+	uint8_t heater_duty_cycle; 	// duty cycle for each heater, 0-100%
 	int16_t setpoint;
     uint16_t tec_voltage; // output voltage for each tec
     };
@@ -72,6 +82,14 @@ struct temperature_control_task_init_t {
 	circular_buffer_t * temperature_control_task_event_buffer;
 	struct lt8722_dev * tec_table[4];
 };
+
+
+#ifdef TEMPERATURE_CONTROL_DEBUG_PRINTING
+    #define temp_control_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define temp_control_debug_print(...)
+#endif
+
 
 void temperature_control_task_singleton_ctor(void);
 void temperature_control_task_start(uint8_t priority);
@@ -105,6 +123,8 @@ uint32_t temperature_control_profile_tec_voltage_set(temperature_control_task_t 
 uint16_t temperature_control_profile_tec_voltage_get( temperature_control_task_t *const me);
 void temperature_control_profile_setpoint_set(temperature_control_task_t *const me, int16_t	setpoint);
 int16_t temperature_control_profile_setpoint_get(temperature_control_task_t *const me);
+void temperature_control_profile_temp_lim_set(temperature_control_task_t *const me, int16_t	max_temp, int16_t min_temp);
+void temperature_control_profile_temp_lim_get(temperature_control_task_t *const me, int16_t * limt_temp_ptr);
 
 uint32_t temperature_profile_tec_ovr_register(temperature_control_task_t *const me, uint8_t tec_idx);
 uint32_t temperature_profile_tec_ovr_voltage_set(temperature_control_task_t *const me, uint16_t	volt_mv);
@@ -117,17 +137,16 @@ uint32_t temperature_control_tec_manual_set_output( temperature_control_task_t *
 uint32_t temperature_control_auto_mode_set(temperature_control_task_t *const me);
 uint16_t temperature_control_profile_tec_voltage_get( temperature_control_task_t *const me);
 
-
-
-
 uint32_t temperature_control_profile_heater_duty_set( temperature_control_task_t *const me,uint8_t	duty);
 uint8_t temperature_control_profile_heater_duty_get( temperature_control_task_t *const me);
 uint32_t temperature_control_profile_heater_register( temperature_control_task_t *const me,uint8_t heater_idx);
 uint32_t temperature_control_profile_heater_unregister(temperature_control_task_t *const me,uint8_t heater_idx);
 uint8_t temperature_control_profile_heater_profile_get( temperature_control_task_t *const me);
 
-uint32_t temperature_control_profile_ntc_register( temperature_control_task_t *const me,uint8_t ntc_idx);
-uint8_t temperature_control_profile_ntc_get( temperature_control_task_t *const me);
+uint32_t temperature_control_profile_ntc_register( temperature_control_task_t *const me, uint8_t pri_ntc_idx, uint8_t sec_ntc_idx);
+void temperature_control_profile_ntc_get( temperature_control_task_t *const me, uint8_t * ntc_ref_ptr);
 
+uint32_t temperature_control_profile_set_auto_recover(temperature_control_task_t *const me, uint32_t status);
+uint32_t temperature_control_profile_get_auto_recover(temperature_control_task_t *const me);
 
 #endif /* APP_TEMPERATURE_CONTROL_TEMPERATURE_CONTROL_TASK_H_ */

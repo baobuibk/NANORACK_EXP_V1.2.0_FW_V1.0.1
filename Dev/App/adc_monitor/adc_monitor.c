@@ -13,6 +13,7 @@
 #include "error_codes.h"
 #include "uart_dbg.h"
 #include "stddef.h"
+#include "stdlib.h"
 #include "ntc.h"
 
 DBC_MODULE_NAME("adc_monitor")
@@ -42,7 +43,7 @@ void monitor_task_ctor(monitor_task_t * const me, monitor_init_t const * const i
     SST_TimeEvt_ctor(&me->monitor_task_timer, EVT_MONITOR_NTC_TRIGGER_TIME, &(me->super));
 
     me->state = init->init_state;
-
+    me->adc_data.laser_current[0] = 0;		//set current laser int = 0
 }
 
 void monitor_task_ctor_singleton()
@@ -67,7 +68,7 @@ static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_
 		case EVT_MONITOR_NTC_TRIGGER_TIME:
 		{
 			bsp_ntc_trigger_adc();
-			bsp_laser_trigger_adc();
+			bsp_laser_ext_trigger_adc();
 			return HANDLED_STATUS;
 		}
 
@@ -82,10 +83,7 @@ static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_
 
 		case EVT_MONITOR_LD_ADC_COMPLETED:
 		{
-			for (uint8_t i = 0; i < 2; i++ )
-			{
-				me->adc_data.laser_current[i] = bsp_laser_get_current(i);
-			}
+			me->adc_data.laser_current[1] = bsp_laser_get_ext_current();
 		}
 		default:
 			return IGNORED_STATUS;
@@ -95,6 +93,16 @@ static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_
 int16_t laser_monitor_get_laser_current(uint32_t channel)
 {
 	return monitor_task_inst.adc_data.laser_current[channel];
+}
+
+uint16_t temperature_monitor_get_ntc_error(uint32_t channel1, uint32_t channel2, int16_t max_temp, int16_t min_temp)
+{
+	int16_t ntc[2] = {monitor_task_inst.adc_data.ntc_temperature[channel1], monitor_task_inst.adc_data.ntc_temperature[channel2]};
+	if((ntc[0] < min_temp) || (ntc[0] > max_temp) || (abs(ntc[0] - ntc[1]) > TEMPERATURE_MAX_ERROR))
+	{
+		return ERROR_FAIL;
+	}
+	return ERROR_OK;
 }
 
 int16_t temperature_monitor_get_ntc_temperature(uint32_t channel)
