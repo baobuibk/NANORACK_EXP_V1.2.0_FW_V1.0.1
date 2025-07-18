@@ -74,7 +74,7 @@ static state_t system_log_normal_state_handler(system_log_task_t * const me, sys
 
 void system_log_house_keeping()
 {
-	int16_t ntc_temp[8];
+	int16_t ntc_temp[8] = {0};
 //	temperature_monitor_get_all_ntc_temperature(&ntc_temp[0]);
 	LWL(TIMESTAMP, LWL_4(SST_getTick()));
 	LWL(TEMPERATURE_NTC,LWL_2(ntc_temp[0]), LWL_2(ntc_temp[1]),LWL_2(ntc_temp[2]),LWL_2(ntc_temp[3]),\

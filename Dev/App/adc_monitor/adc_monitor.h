@@ -11,6 +11,8 @@
 #include "sst.h"
 #include "fsm.h"
 
+#define TEMPERATURE_MAX_ERROR 50		//5.0C
+
 typedef struct monitor_task_t monitor_task_t;
 typedef struct monitor_evt_t  monitor_evt_t;
 typedef struct monitor_init_t  monitor_init_t;
@@ -40,7 +42,7 @@ struct monitor_init_t {
 void monitor_task_ctor_singleton(void);
 void monitor_task_start(uint8_t priority);
 
-
+uint16_t temperature_monitor_get_ntc_error(uint32_t channel1, uint32_t channel2, int16_t max_temp, int16_t min_temp);
 int16_t laser_monitor_get_laser_current(uint32_t channel);
 int16_t temperature_monitor_get_ntc_temperature(uint32_t channel);
 #endif /* APP_TEMPERATURE_MONITOR_TEMPERATURE_MONITOR_H_ */
