@@ -10,8 +10,9 @@
 
 #define LASER_SPI SPI4
 
-static uint16_t ld_adc_value[8] = {0,0};
-static uint16_t ld_adc_value_average[8] = {0,0};
+static uint16_t ld_int_adc_value = 0;
+static uint16_t ld_ext_adc_value = 0;
+static uint16_t ld_ext_adc_value_average = 0;
 static uint32_t sample_count = 0;
 
 
@@ -113,52 +114,79 @@ void bsp_laser_ext_set_current(uint32_t percent)
 }
 void bsp_laser_set_current(uint32_t id, uint32_t percent)
 {
-	if (id ==0)  bsp_laser_int_set_current(percent);
+	if (id == 0)  bsp_laser_int_set_current(percent);
 	else bsp_laser_ext_set_current(percent);
 
 }
 
-uint16_t bsp_laser_get_current(laser_channel_t channel)
+uint16_t bsp_laser_get_ext_current(void)
 {
-	return current_calculate(ld_adc_value_average[channel]);
+	return current_calculate(ld_ext_adc_value_average);
+}
+
+uint16_t bsp_laser_get_int_current(void)
+{
+	return current_calculate(ld_int_adc_value);
 }
 
 void bsp_laser_adc_init(void)
 {
+	//Setting for laser ext adc
+    LL_DMA_SetPeriphIncMode(DMA2, LL_DMA_STREAM_1, LL_DMA_PERIPH_NOINCREMENT);
+    LL_DMA_SetMemoryIncMode(DMA2, LL_DMA_STREAM_1, LL_DMA_MEMORY_INCREMENT);
+    LL_DMA_SetPeriphSize(DMA2, LL_DMA_STREAM_1, LL_DMA_PDATAALIGN_HALFWORD);
+    LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_1, LL_DMA_MDATAALIGN_HALFWORD);
+    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_1, 1); // 1 channel for ext_laser
+    LL_DMA_SetPeriphAddress(DMA2, LL_DMA_STREAM_1, (uint32_t)&ADC3->DR);
+    LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, (uint32_t)&ld_ext_adc_value);
+    LL_DMA_SetMode(DMA2, LL_DMA_STREAM_1, LL_DMA_MODE_CIRCULAR);
+
+    //Setting for laser int adc
     LL_DMA_SetPeriphIncMode(DMA2, LL_DMA_STREAM_2, LL_DMA_PERIPH_NOINCREMENT);
     LL_DMA_SetMemoryIncMode(DMA2, LL_DMA_STREAM_2, LL_DMA_MEMORY_INCREMENT);
     LL_DMA_SetPeriphSize(DMA2, LL_DMA_STREAM_2, LL_DMA_PDATAALIGN_HALFWORD);
     LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_2, LL_DMA_MDATAALIGN_HALFWORD);
-    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_2, 2); // 2 channel
+    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_2, 1); // 1 channel for int_laser
     LL_DMA_SetPeriphAddress(DMA2, LL_DMA_STREAM_2, (uint32_t)&ADC2->DR);
-    LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_2, (uint32_t)ld_adc_value);
+    LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_2, (uint32_t)&ld_int_adc_value);
     LL_DMA_SetMode(DMA2, LL_DMA_STREAM_2, LL_DMA_MODE_CIRCULAR);
+
+
+    LL_ADC_Enable(ADC3);
+    LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
+    LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_1);
+
     LL_ADC_Enable(ADC2);
-    LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_2);
-    LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_2);
+	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_2);
+	//LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_2);
 
 }
 
-void bsp_laser_trigger_adc(void)
+void bsp_laser_ext_trigger_adc(void)
+{
+	LL_ADC_REG_StartConversionSWStart(ADC3);
+}
+
+void bsp_laser_int_trigger_adc(void)
 {
 	LL_ADC_REG_StartConversionSWStart(ADC2);
 }
 
-void DMA2_Stream2_IRQHandler(void)
+void DMA2_Stream1_IRQHandler(void)
 {
-	if (LL_DMA_IsActiveFlag_TC2(DMA2))
+	if (LL_DMA_IsActiveFlag_TC1(DMA2))
 	{
-		LL_DMA_ClearFlag_TC2(DMA2);
+		LL_DMA_ClearFlag_TC1(DMA2);
 	}
 
 	if (sample_count == 0)
 	{
-		for (uint32_t i = 0; i < 8; i++ ) ld_adc_value_average[i] = ld_adc_value[i];
+		ld_ext_adc_value_average = ld_ext_adc_value;
 		sample_count++;
 	}
 	else if(sample_count < 10)
 	{
-		for (uint32_t i = 0; i< 8; i++ ) ld_adc_value_average[i] = (ld_adc_value[i] + ld_adc_value_average[i])/2;
+		ld_ext_adc_value_average = (ld_ext_adc_value + ld_ext_adc_value_average)/2;
 		sample_count++;
 	}
 	else
@@ -168,6 +196,20 @@ void DMA2_Stream2_IRQHandler(void)
 	}
 }
 
+
+void DMA2_Stream2_IRQHandler(void)
+{
+	if (LL_DMA_IsActiveFlag_TC2(DMA2))
+	{
+		LL_DMA_ClearFlag_TC2(DMA2);
+	}
+
+//	else
+//	{
+//		sample_count = 0;
+//		SST_Task_post(&monitor_task_inst.super, (SST_Evt *)&ld_adc_evt); //post to temperature monitor task
+//	}
+}
 
 
 

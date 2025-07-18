@@ -21,6 +21,9 @@ DBC_MODULE_NAME("experiment_task")
 #define EXPERIMENT_TASK_NUM_EVENTS  	2
 #define EXPERIMENT_TASK_AQUI_TIMEOUT	20000
 #define EXPERIMENT_CHUNK_SIZE			(4*1024)
+#define EXPERIMENT_LASER_CURRENT_SIZE	(16*1024)
+#define EXPERIMENT_LASER_CURRENT_TIMOUT	1
+
 experiment_task_t experiment_task_inst;
 extern shell_task_t shell_task_inst ;
 static shell_task_t *pshell_task_instt = &shell_task_inst;
@@ -37,6 +40,9 @@ static shell_evt_t const uart_send_crc_evt = {.super = {.sig = EVT_SHELL_SEND_CR
 static data_profile_t remain_data_profile;
 static uint16_t ram_buffer[EXPERIMENT_CHUNK_SIZE];
 static uint16_t batch_size;
+
+static uint16_t laser_int_current[EXPERIMENT_LASER_CURRENT_SIZE];
+static uint16_t laser_int_current_idx;
 
 experiment_evt_t experiment_task_current_event = {0}; // Current event being processed
 experiment_evt_t experiment_task_event_buffer[EXPERIMENT_TASK_NUM_EVENTS];
@@ -72,6 +78,8 @@ void experiment_task_ctor(experiment_task_t * const me, experiment_task_init_t c
                                 (SST_Evt *)init->current_evt, init->event_buffer);
     me->state = init->init_state;
     SST_TimeEvt_ctor(&me->timeout_timer, EVT_EXPERIMENT_DATA_AQUISITION_TIMEOUT, &(me->super));
+    SST_TimeEvt_ctor(&me->laser_current_trigger, EVT_EXPERIMENT_LASER_ADC_POLL_TIME, &(me->super));
+    SST_TimeEvt_disarm(&me->laser_current_trigger); // Disarm the timeout timer
     SST_TimeEvt_disarm(&me->timeout_timer); // Disarm the timeout timer
     me->sub_state = init->sub_state;
 }
@@ -147,6 +155,10 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			init_photo_time.pos = me->profile.pos;
 			bsp_laser_int_set_current(me->profile.laser_percent);
 			bsp_photo_set_time(& init_photo_time);
+
+			SST_TimeEvt_arm(&me->laser_current_trigger, EXPERIMENT_LASER_CURRENT_TIMOUT, EXPERIMENT_LASER_CURRENT_TIMOUT);
+			laser_int_current_idx = 0;
+
 			bsp_photodiode_sample_start();
 			me->sub_state = S_PRE_SAMPLING;
 			return HANDLED_STATUS;
@@ -155,6 +167,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		{
 			//DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
+			SST_TimeEvt_disarm(&me->laser_current_trigger);
 			return HANDLED_STATUS;
 		}
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
@@ -195,10 +208,23 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			me->state = experiment_task_state_manual_handler;
 			return TRAN_STATUS;
 		}
+		case EVT_EXPERIMENT_LASER_ADC_POLL_TIME:
+		{
+			if(laser_int_current_idx < EXPERIMENT_LASER_CURRENT_SIZE)
+			{
+				laser_int_current[laser_int_current_idx++]= bsp_laser_get_int_current();
+				bsp_laser_int_trigger_adc();
+			}
+
+
+			else	SST_TimeEvt_disarm(&me->laser_current_trigger);
+			return HANDLED_STATUS;
+		}
 		default:
 			return IGNORED_STATUS;
 	}
- }
+}
+
 static state_t experiment_task_state_data_send_handler(experiment_task_t * const me, experiment_evt_t const * const e)
 {
 	switch (e->super.sig)

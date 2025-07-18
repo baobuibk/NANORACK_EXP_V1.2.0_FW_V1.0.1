@@ -204,19 +204,6 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32f7xx.s).                    */
 /******************************************************************************/
 
-/**
-  * @brief This function handles DMA1 stream1 global interrupt.
-  */
-
-
-/**
-  * @brief This function handles USART6 global interrupt.
-  */
-
-/**
-  * @brief This function handles UART7 global interrupt.
-  */
-
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

@@ -31,9 +31,10 @@ void bsp_laser_int_switch_off_all(void);
 void bsp_laser_ext_switch_on(uint32_t channel_idx);
 void bsp_laser_ext_switch_off_all(void);
 
-uint16_t bsp_laser_get_current(laser_channel_t channel);
+uint16_t bsp_laser_get_ext_current(void);
+uint16_t bsp_laser_get_int_current(void);
 void bsp_laser_adc_init(void);
-void bsp_laser_trigger_adc(void);
-
+void bsp_laser_ext_trigger_adc(void);
+void bsp_laser_int_trigger_adc(void);
 
 #endif /* BSUPPORT_BSP_BSP_LASER_BSP_LASER_H_ */

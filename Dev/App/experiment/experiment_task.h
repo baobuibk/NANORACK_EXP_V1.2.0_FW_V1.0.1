@@ -48,6 +48,7 @@ struct experiment_task_t{
 	SST_Task super;
 	experiment_task_handler_t state;
 	SST_TimeEvt timeout_timer;
+	SST_TimeEvt laser_current_trigger;
 	experiment_profile_t profile;
 	data_profile_t data_profile;
 	uint8_t	sub_state;

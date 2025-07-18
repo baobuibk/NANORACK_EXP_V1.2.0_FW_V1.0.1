@@ -98,7 +98,7 @@ static void MIN_Handler_SET_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *
 	if(!ret)
 	{
 		// set index ntc
-		temperature_control_profile_ntc_register(ptemperature_control_task, ntc_index);
+		//temperature_control_profile_ntc_register(ptemperature_control_task, ntc_index);
 		// set register tec
 		uint8_t tec_ovr = temperature_profile_tec_ovr_get(ptemperature_control_task);
 		for (uint8_t i = 0; i < 4; i++)
