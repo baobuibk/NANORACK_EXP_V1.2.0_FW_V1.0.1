@@ -516,8 +516,10 @@ bool temperature_control_is_in_man_state(temperature_control_task_t * const me)
 
 uint32_t temperature_profile_tec_ovr_register(temperature_control_task_t *const me, uint8_t tec_idx)
 {
-	if (tec_idx > 3) return ERROR_NOT_SUPPORTED;
-	me->temperature_tec_ovr_profile.profile_tec_ovr_set = tec_idx;
+	if (tec_idx > 3)
+		me->temperature_tec_ovr_profile.profile_tec_ovr_set = 0xFF;
+	else
+		me->temperature_tec_ovr_profile.profile_tec_ovr_set = tec_idx;
 	return ERROR_OK;
 }
 
@@ -704,4 +706,20 @@ void temperature_control_power_control(temperature_control_task_t * const me, ui
 bool temperature_control_is_powered_on(temperature_control_task_t * const me)
 {
 	return me->tec_heater_power_status;
+}
+
+uint32_t temperature_control_set_profile(temperature_control_task_t *const me, uint16_t target_temp, uint16_t min_temp, uint16_t max_temp, \
+		uint8_t pri_ntc_id, uint8_t sec_ntc_id, uint8_t auto_recover, uint8_t tec_pos_mask, uint8_t htr_pos_mask, uint16_t tec_mV, uint8_t htr_duty)
+{
+	me->temperature_control_profile.setpoint = target_temp;
+	me->temperature_control_profile.profile_min_temp = min_temp;
+	me->temperature_control_profile.profile_max_temp = max_temp;
+	me->temperature_control_profile.pri_NTC_idx = pri_ntc_id;
+	me->temperature_control_profile.sec_NTC_idx = sec_ntc_id;
+	me->temperature_control_profile.auto_recover = auto_recover;
+	me->temperature_control_profile.profile_tec_set = tec_pos_mask;
+	me->temperature_control_profile.profile_tec_set = htr_pos_mask;
+	me->temperature_control_profile.tec_voltage = tec_mV;
+	me->temperature_control_profile.heater_duty_cycle = htr_duty;
+	return ERROR_OK;
 }

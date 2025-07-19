@@ -15,6 +15,7 @@
 #include "stddef.h"
 #include "string.h"
 #include "shell.h"
+#include "min_shell_command.h"
 
 DBC_MODULE_NAME("experiment_task")
 
@@ -199,6 +200,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			}
 			else me->sub_state = S_AQUI_ERROR;
 			DBG(DBG_LEVEL_INFO,"Sampling Done!\r\n");
+			min_handshake_ready();
 			me->state = experiment_task_state_manual_handler;
 			return TRAN_STATUS;
 		}
@@ -398,9 +400,36 @@ uint32_t experiment_task_photo_ADC_prepare_SPI(experiment_task_t * const me)
 	return ERROR_OK;
 }
 
+uint32_t experiment_task_set_pda(experiment_task_t * me,experiment_profile_t * profile)
+{
+	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
+	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
+	me->profile.sampling_rate = profile->sampling_rate;
+	me->profile.pre_time = profile->pre_time;
+	me->profile.experiment_time = profile->experiment_time;
+	me->profile.post_time = profile->post_time;
+	me->profile.num_sample = profile->num_sample;
+	me->profile.period = profile->period;
+	return ERROR_OK;
+}
+
+uint32_t experiment_task_set_intensity(experiment_task_t * me,experiment_profile_t * profile)
+{
+	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
+	me->profile.laser_percent = profile->laser_percent;
+	return ERROR_OK;
+}
+
+uint32_t experiment_task_set_position(experiment_task_t * me,experiment_profile_t * profile)
+{
+	if ((profile->pos == 0 ) || (profile->pos > 36)) return ERROR_NOT_SUPPORTED;
+	me->profile.pos = profile->pos;
+	return ERROR_OK;
+}
+
 uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t * profile)
 {
-	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 1000)) return ERROR_NOT_SUPPORTED;
+	if ((profile->sampling_rate == 0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if ((profile->pos == 0 ) || (profile->pos > 36)) return ERROR_NOT_SUPPORTED;
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
 	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
@@ -409,6 +438,7 @@ uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t
 	return ERROR_OK;
 
 }
+
 void experiment_task_get_profile(experiment_task_t * me, experiment_profile_t * profile)
 {
 	*profile = me->profile;
@@ -417,11 +447,10 @@ void experiment_task_get_profile(experiment_task_t * me, experiment_profile_t * 
 uint32_t experiment_start_measuring(experiment_task_t * const me)
 {
 	experiment_profile_t * profile = &me->profile;
-	if ((profile->sampling_rate ==0 ) || (profile->sampling_rate > 1000)) return ERROR_NOT_SUPPORTED;
+	if ((profile->sampling_rate ==0 ) || (profile->sampling_rate > 800000)) return ERROR_NOT_SUPPORTED;
 	if ((profile->pos ==0 ) || (profile->pos > 36)) return ERROR_NOT_SUPPORTED;
 	if ((profile->laser_percent > 100 ) ) return ERROR_NOT_SUPPORTED;
 	if (profile->num_sample > 2048) return ERROR_NOT_SUPPORTED;
-	//if (((profile->pre_time + profile->experiment_time + profile->post_time ) * profile->sampling_rate) > 2048*1000000) return ERROR_NOT_SUPPORTED;
 	SST_Task_post(&me->super, (SST_Evt *)&start_measuring_evt);
 	return ERROR_OK;
 }

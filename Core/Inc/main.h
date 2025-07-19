@@ -100,10 +100,10 @@ void Error_Handler(void);
 #define ADC_TEMP4_GPIO_Port GPIOC
 #define ADC_TEC_OUT_Pin LL_GPIO_PIN_1
 #define ADC_TEC_OUT_GPIO_Port GPIOA
-#define ADC_EXT_LASER_Pin LL_GPIO_PIN_2
-#define ADC_EXT_LASER_GPIO_Port GPIOA
-#define ADC_INT_LASER_Pin LL_GPIO_PIN_3
-#define ADC_INT_LASER_GPIO_Port GPIOA
+#define ADC_LASER2_Pin LL_GPIO_PIN_2
+#define ADC_LASER2_GPIO_Port GPIOA
+#define ADC_LASER1_Pin LL_GPIO_PIN_3
+#define ADC_LASER1_GPIO_Port GPIOA
 #define EXP_SPI_NSS_Pin LL_GPIO_PIN_4
 #define EXP_SPI_NSS_GPIO_Port GPIOA
 #define EXP_SPI_SCK_Pin LL_GPIO_PIN_5
@@ -138,6 +138,8 @@ void Error_Handler(void);
 #define LASER_MOSI_GPIO_Port GPIOE
 #define LASER_EXT_SW_CS_Pin LL_GPIO_PIN_15
 #define LASER_EXT_SW_CS_GPIO_Port GPIOE
+#define MIN_HandShake_Pin LL_GPIO_PIN_11
+#define MIN_HandShake_GPIO_Port GPIOB
 #define LASER_DAC_LATCH_Pin LL_GPIO_PIN_12
 #define LASER_DAC_LATCH_GPIO_Port GPIOB
 #define PHOTO_SCK_Pin LL_GPIO_PIN_13

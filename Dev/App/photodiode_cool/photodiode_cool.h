@@ -60,7 +60,7 @@ void tec_ovr_control_task_start(uint8_t priority);
 uint32_t tec_ovr_start(void);
 uint32_t tec_ovr_stop(void);
 
-
+void tec_over_set_interval(uint16_t time_mS);
 
 
 #endif /* APP_tec_ovr_CONTROL_tec_ovr_CONTROL_TASK_H_ */

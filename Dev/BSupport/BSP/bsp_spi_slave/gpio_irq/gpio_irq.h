@@ -10,8 +10,8 @@
 
 #include "board.h"
 
-#define DReady_GPIO_Port		GPIOB
-#define DReady_Pin				LL_GPIO_PIN_11
+#define DReady_GPIO_Port		GPIOC
+#define DReady_Pin				LL_GPIO_PIN_9
 
 #define GetDone_GPIO_Port		GPIOC
 #define GetDone_Pin				LL_GPIO_PIN_8
