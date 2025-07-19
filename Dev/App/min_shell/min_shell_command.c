@@ -13,7 +13,7 @@
 #include "board.h"
 #include "adc_monitor.h"
 #include "bsp_spi_slave.h"
-
+#include "system_reset.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +27,9 @@ static temperature_control_task_t *ptemperature_control_task = &temperature_cont
 
 extern experiment_task_t experiment_task_inst;
 static experiment_task_t *pexperiment_task = &experiment_task_inst;
+
+extern system_reset_task_t system_reset_task_inst;
+static system_reset_task_t *system_reset_task = &system_reset_task_inst;
 
 static uint8_t ntc_report_mask = 0xFF;
 
@@ -68,7 +71,7 @@ static void MIN_Handler_PLEASE_RESET_CMD(MIN_Context_t *ctx, const uint8_t *payl
     MIN_Send(ctx, PLEASE_RESET_ACK, NULL, 0);
     min_shell_debug_print("RESET REQUEST:\r\n", len);
 
-//    NVIC_SystemReset();
+    system_reset(system_reset_task);
 }
 
 static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)

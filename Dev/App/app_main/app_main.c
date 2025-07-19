@@ -16,6 +16,7 @@
 #include "adc_monitor.h"
 #include "photodiode_cool.h"
 #include "system_log.h"
+#include "system_reset.h"
 
 //DBC_MODULE_NAME("app_main")
 
@@ -31,6 +32,7 @@ void app_init(void)
 	tec_ovr_control_task_singleton_ctor();
 	min_shell_task_ctor_singleton();
 	system_log_task_ctor_singleton();
+	system_reset_task_ctor_singleton();
 }
 
 void app_start(void)
@@ -42,6 +44,7 @@ void app_start(void)
 	tec_ovr_control_task_start(5);
 	system_log_task_start(6);
 	min_shell_task_start(7);
+	system_reset_task_start(10);
 	return;
 }
 void app_run(void)

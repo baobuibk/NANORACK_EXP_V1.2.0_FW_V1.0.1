@@ -1,0 +1,107 @@
+/*
+ * system_reset.c
+ *
+ *  Created on: Jul 19, 2025
+ *      Author: HTSANG
+ */
+
+#include "system_reset.h"
+#include "adc_monitor.h"
+#include "app_signals.h"
+#include "system_reset.h"
+#include "error_codes.h"
+#include "dbc_assert.h"
+
+//DBC_MODULE_NAME("system_reset")
+
+system_reset_task_t system_reset_task_inst;
+#define SYSTEM_RESET_NUM_EVENT					2
+#define DEFAULT_RESET_POLL_TIME					5000
+
+static system_reset_evt_t const system_reset_request_event = {.super = {.sig = EVT_SYSTEM_RESET_REQUEST} };
+
+system_reset_evt_t system_reset_current_event = {0};
+system_reset_evt_t system_reset_event_buffer[SYSTEM_RESET_NUM_EVENT];
+circular_buffer_t system_reset_event_queue = {0};
+
+static void system_reset_task_init(system_reset_task_t * const me, system_reset_evt_t * const e);
+//static void system_reset_task_dispatch(system_reset_task_t * const me, system_reset_evt_t * const e);
+static state_t system_reset_normal_state_handler(system_reset_task_t * const me, system_reset_evt_t * const e);
+
+void system_reset_house_keeping(void);
+void system_reset_request(void);
+
+static void system_reset_task_dispatch(system_reset_task_t * const me, system_reset_evt_t * const e)
+{
+//    DBC_ASSERT(4u, me != NULL);
+//    DBC_ASSERT(5u, e != NULL);
+
+    system_reset_task_handler_t prev_state = me->state; /* save for later */
+    state_t status = (me->state)(me, e);
+
+//    if (status == TRAN_STATUS) { /* transition taken? */
+//        (prev_state)(me, &exit_evt);
+//        (me->state)(me, &entry_evt);
+//    }
+}
+
+void system_reset_task_ctor(system_reset_task_t * const me, system_reset_task_init_t * const init)
+{
+	SST_Task_ctor(&me->super, (SST_Handler)system_reset_task_init, (SST_Handler)system_reset_task_dispatch, (SST_Evt*)init->current_evt, init->event_buffer);
+	SST_TimeEvt_ctor(&me->system_reset_timer, EVT_SYSTEM_RESET_POLL, &me->super);
+	me->state = init->init_state;
+	me->interval = DEFAULT_RESET_POLL_TIME;
+	SST_TimeEvt_disarm(&me->system_reset_timer);
+}
+
+void system_reset_task_ctor_singleton()
+{
+	system_reset_task_init_t init = {
+			.current_evt  = &system_reset_current_event,
+			.event_buffer = &system_reset_event_queue,
+			.init_state   = system_reset_normal_state_handler
+	};
+	circular_buffer_init(&system_reset_event_queue, (uint8_t *)&system_reset_event_buffer, sizeof(system_reset_event_buffer), SYSTEM_RESET_NUM_EVENT, sizeof(system_reset_evt_t));
+	system_reset_task_ctor(&system_reset_task_inst, &init);
+}
+
+static void system_reset_task_init(system_reset_task_t * const me, system_reset_evt_t * const e)
+{
+	SST_TimeEvt_arm(&me->system_reset_timer, me->interval, me->interval);
+}
+
+void system_reset_task_start(uint8_t priority)
+{
+	SST_Task_start(&system_reset_task_inst.super, priority);
+}
+static state_t system_reset_normal_state_handler(system_reset_task_t * const me, system_reset_evt_t * const e)
+{
+	switch (e->super.sig)
+	{
+	case EVT_SYSTEM_RESET_POLL:
+		system_reset_house_keeping();
+		return HANDLED_STATUS;
+	case EVT_SYSTEM_RESET_REQUEST:
+		system_reset_request();
+		return HANDLED_STATUS;
+	}
+	return HANDLED_STATUS;
+}
+
+#include "main.h"
+void system_reset_house_keeping(void)
+{
+	LL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
+}
+
+void system_reset_request(void)
+{
+//	LL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
+	LL_mDelay(100);
+	NVIC_SystemReset();
+}
+
+void system_reset(system_reset_task_t * const me)
+{
+	SST_Task_post(&me->super, (SST_Evt *)&system_reset_request_event);
+}

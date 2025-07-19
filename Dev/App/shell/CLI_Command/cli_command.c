@@ -16,12 +16,16 @@
 #include <string.h>
 #include "board.h"
 #include "adc_monitor.h"
+#include "system_reset.h"
 
 extern temperature_control_task_t temperature_control_task_inst ;
 static temperature_control_task_t *ptemperature_control_task = &temperature_control_task_inst;
 
 extern experiment_task_t experiment_task_inst;
 static experiment_task_t *pexperiment_task = &experiment_task_inst;
+
+extern system_reset_task_t system_reset_task_inst;
+static system_reset_task_t *system_reset_task = &system_reset_task_inst;
 
 static bool is_measured = false;
 
@@ -116,7 +120,10 @@ static void cmd_exp_data_transfer(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_Sample_Get_Buf(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_Sample_Get_Buf_Char(EmbeddedCli *cli, char *args, void *context);
 
-
+static void CMD_test(EmbeddedCli *cli, char *args, void *context)
+{
+	system_reset(system_reset_task);
+}
 
 #include "bsp_spi_ram.h"
 
@@ -221,7 +228,7 @@ static const CliCommandBinding cliStaticBindings_internal[] = {
 
 	{ "TEST", "clear_fram",    "",  true, NULL, cmd_clear_fram },
 	{ "TEST", "read_fram",    "",  true, NULL, cmd_read_fram },
-
+	{ "TEST", "test",    "",  true, NULL, CMD_test },
 
 	//	{ NULL, "get_current",  "format: get_current [int/ext]",                                   true, NULL, CMD_Get_Current },
 //	    { NULL, "pd_get",       "format: pd_get [pd_index]",                                       true, NULL, CMD_PD_Get },
