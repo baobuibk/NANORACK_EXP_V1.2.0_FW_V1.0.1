@@ -16,12 +16,16 @@
 #include <string.h>
 #include "board.h"
 #include "adc_monitor.h"
+#include "system_reset.h"
 
 extern temperature_control_task_t temperature_control_task_inst ;
 static temperature_control_task_t *ptemperature_control_task = &temperature_control_task_inst;
 
 extern experiment_task_t experiment_task_inst;
 static experiment_task_t *pexperiment_task = &experiment_task_inst;
+
+extern system_reset_task_t system_reset_task_inst;
+static system_reset_task_t *system_reset_task = &system_reset_task_inst;
 
 static bool is_measured = false;
 
@@ -116,6 +120,74 @@ static void cmd_exp_data_transfer(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_Sample_Get_Buf(EmbeddedCli *cli, char *args, void *context);
 //static void CMD_Sample_Get_Buf_Char(EmbeddedCli *cli, char *args, void *context);
 
+static void CMD_test(EmbeddedCli *cli, char *args, void *context)
+{
+	system_reset(system_reset_task);
+}
+
+#include "bsp_spi_ram.h"
+
+static void cmd_clear_fram(EmbeddedCli *cli, char *args, void *context)
+{
+	uint8_t buffer[100] = {0};
+	bsp_spi_ram_write_polling(0, 100, buffer);
+
+	cli_printf(cli, "FRAM is empty\r\n");
+	cli_printf(cli, "");
+}
+
+void dump_buffer(EmbeddedCli *cli, const char *buffer, size_t size) {
+    char line[80];
+    const uint32_t bytes_per_line = 16;
+
+    for (size_t i = 0; i < size; i += bytes_per_line) {
+        snprintf(line, sizeof(line), "%04X: ", (unsigned int)i);
+        char *ptr = line + strlen(line);
+
+        for (size_t j = 0; j < bytes_per_line && (i + j) < size; j++) {
+            snprintf(ptr, sizeof(line) - (ptr - line), "%02X ", (unsigned char)buffer[i + j]);
+            ptr += 3;
+        }
+
+        while (ptr < line + 3 * bytes_per_line + 6) {
+            *ptr++ = ' ';
+        }
+
+        *ptr++ = '|';
+        for (size_t j = 0; j < bytes_per_line && (i + j) < size; j++) {
+            char c = buffer[i + j];
+            *ptr++ = (c >= 32 && c <= 126) ? c : '.';
+        }
+        *ptr = '\0';
+
+        embeddedCliPrint(cli, line);
+        embeddedCliPrint(cli, "");
+        LL_mDelay(1);// Nhường CPU
+    }
+}
+
+static void cmd_read_fram(EmbeddedCli *cli, char *args, void *context)
+{
+    uint8_t buffer[100];
+    bsp_spi_ram_read_polling(0, 100, buffer);
+
+    cli_printf(cli, "Buffer data in hex:\r\n");
+    for (int i = 0; i < 100; i++) {
+        cli_printf(cli, "%02X ", buffer[i]);
+        if ((i + 1) % 16 == 0) {
+            cli_printf(cli, "\r\n");
+        }
+    }
+
+//    dump_buffer(cli, (const char *)buffer, 100);
+
+    cli_printf(cli, "\r\n");
+}
+
+
+
+
+
 /*************************************************
  *                 Command  Array                *
  *************************************************/
@@ -149,7 +221,7 @@ static const CliCommandBinding cliStaticBindings_internal[] = {
 	{ "TEC",   "tec_man_volt_set",  "Set TEC output : tec_idx C/H voltage",        true,  NULL, CMD_TEC_Man_Set_Volt },
 	{ "TEC",   "tec_man_output_set",  "Set TEC output : tec_idx EN/DIS",        true,  NULL, CMD_TEC_Man_Set_Output },
 	// TEC override
-	{ "TEC",   "tec_ovr_set",  "Set TEC_override output : [tec_idx] [voltage]",        true,  NULL, CMD_TEC_OVR_Set_Output },
+	{ "TEC",   "tec_ovr_set",  "Set TEC_override output with format: tec_ovr_set [interval_mS] [id] [volt_mV]",        true,  NULL, CMD_TEC_OVR_Set_Output },
 	{ "TEC",   "tec_ovr_start",  "Set TEC_override enable",        true,  NULL, CMD_TEC_OVR_Start },
 	{ "TEC",   "tec_ovr_stop",  "Set TEC_override disable",        true,  NULL, CMD_TEC_OVR_Stop },
 	{ "TEC",   "tec_ovr_get",  "Get TEC_override status",        true,  NULL, CMD_TEC_OVR_Get },
@@ -190,6 +262,10 @@ static const CliCommandBinding cliStaticBindings_internal[] = {
 	{ "Experiment", "exp_ram_read",    "format: exp_ram_read [address] [num_sample] [mode]",  true, NULL, cmd_exp_ram_read },
 	{ "Experiment", "exp_data_transfer",    "format: exp_data_transfer",  true, NULL, cmd_exp_data_transfer },
 
+
+	{ "TEST", "clear_fram",    "",  true, NULL, cmd_clear_fram },
+	{ "TEST", "read_fram",    "",  true, NULL, cmd_read_fram },
+	{ "TEST", "test",    "",  true, NULL, CMD_test },
 
 	//	{ NULL, "get_current",  "format: get_current [int/ext]",                                   true, NULL, CMD_Get_Current },
 //	    { NULL, "pd_get",       "format: pd_get [pd_index]",                                       true, NULL, CMD_PD_Get },
@@ -512,22 +588,31 @@ static void CMD_TEC_Man_Set_Output(EmbeddedCli *cli, char *args, void *context)
 static void CMD_TEC_OVR_Set_Output(EmbeddedCli *cli, char *args, void *context)
 {
 	uint32_t tokenCount = embeddedCliGetTokenCount(args);
-	if (tokenCount != 2)
+	if (tokenCount != 3)
 	{
-		cli_printf(cli, "format: tec_ovr_set [id] [volt_mV]\r\n");
+		cli_printf(cli, "format: tec_ovr_set [interval_mS] [id] [volt_mV]\r\n");
 		return;
 	}
+
 	const char *arg1 = embeddedCliGetToken(args, 1);
+	uint16_t interval = atoi(arg1);
+	if (interval > 60000)
+	{
+		cli_printf(cli, "The time interval is greater than 1 minute\r\n");
+		return;
+	}
+
+	const char *arg2 = embeddedCliGetToken(args, 2);
 	uint8_t tec_profile = temperature_control_profile_tec_get(ptemperature_control_task);
 	uint8_t tec_id;
-	if(*arg1 == 'o')
+	if(*arg2 == 'o')
 	{
 		tec_id = 4;
 		cli_printf(cli, "tec ovr mode is off\r\n");
 	}
-	else if ((*arg1 >= '0') && (*arg1 <= '3'))
+	else if ((*arg2 >= '0') && (*arg2 <= '3'))
 	{
-		tec_id = atoi(arg1);
+		tec_id = atoi(arg2);
 		if (tec_profile & (1<<tec_id))
 		{
 			cli_printf(cli, "tec[%d] registered in auto mode\r\n",tec_id);
@@ -536,16 +621,15 @@ static void CMD_TEC_OVR_Set_Output(EmbeddedCli *cli, char *args, void *context)
 	}
 
 
-	const char *arg2 = embeddedCliGetToken(args, 2);
-	uint32_t mvolt = atoi(arg2);
-
+	const char *arg3 = embeddedCliGetToken(args, 3);
+	uint32_t mvolt = atoi(arg3);
 	if ((mvolt < 500) || (mvolt > 3000))
 	{
 		cli_printf(cli, "tec[%d] voltage is out of range (500mV-3000mV)\r\n");
 		return;
 	}
 
-
+	tec_over_set_interval(interval);
 	temperature_profile_tec_ovr_register(ptemperature_control_task, tec_id);
 	temperature_profile_tec_ovr_voltage_set(ptemperature_control_task, mvolt);
 	cli_printf(cli, "OK\r\n");
@@ -917,7 +1001,7 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 
 	if (tokenCount != 6)
 	{
-		cli_printf(cli, "format: exp_set_profile sampling_rate pos laser_percent pre_time experiment_time post_time\r\n");
+		cli_printf(cli, "format: exp_set_profile [sampling_rate] [pos] [laser_percent] [pre_time] [experiment_time] [post_time]\r\n");
 		return;
 	}
 	uint32_t sampling_rate = atoi(embeddedCliGetToken(args, 1));
@@ -926,7 +1010,6 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "sampling rate out of range (1K-800K)\r\n");
 		return;
 	}
-	sampling_rate /= 1000;
 
 	uint32_t pos = atoi(embeddedCliGetToken(args, 2));
 	if ((pos == 0) || (pos > 36))
@@ -948,7 +1031,6 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "pre_time should be larger than 0\r\n");
 		return;
 	}
-	pre_time *= 1000;
 
 	uint32_t sample_time = atoi(embeddedCliGetToken(args, 5));
 	if (sample_time == 0)
@@ -956,7 +1038,6 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "sample time should be larger than 0\r\n");
 		return;
 	}
-	sample_time *= 1000;
 
 	uint32_t post_time = atoi(embeddedCliGetToken(args, 6));
 	if (post_time == 0)
@@ -964,24 +1045,23 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "post_time should be larger than 0\r\n");
 		return;
 	}
-	post_time *= 1000;
 
-	uint32_t num_sample = ((pre_time + sample_time + post_time) * sampling_rate )/1000000;
-	if (num_sample > 2048)	//larrger than 4MB
+	uint32_t num_sample = (((pre_time + sample_time + post_time) * sampling_rate ) /1000) /1024;
+	if (num_sample > 2048)	//larger than 4MB
 	{
 		cli_printf(cli, "total sample must be less than 2048K \r\n");
 		return;
 	}
 
 	experiment_profile_t profile;
-	profile.sampling_rate = sampling_rate;		// kHz
+	profile.sampling_rate = sampling_rate;		// Hz
 	profile.pos = pos;
 	profile.laser_percent = percent;
-	profile.pre_time = pre_time;				// us
-	profile.experiment_time = sample_time;		// us
-	profile.post_time = post_time;				// us
+	profile.pre_time = pre_time;				// mS
+	profile.experiment_time = sample_time;		// mS
+	profile.post_time = post_time;				// mS
 	profile.num_sample = num_sample;			// kSample
-	profile.period = 1000000 / sampling_rate;	// ns
+	profile.period = 1000000 / sampling_rate;	// us
 	if(!experiment_task_set_profile(pexperiment_task,&profile)) cli_printf(cli, "OK\r\n");
 	else cli_printf(cli, "ERROR\r\n");
 }
@@ -997,12 +1077,12 @@ static void cmd_exp_get_profile(EmbeddedCli *cli, char *args, void *context)
 					"sample_time  : %d ms\r\n"
 					"post_time    : %d ms\r\n"
 					"num_sample   : %d kSample\r\n",
-					profile.sampling_rate*1000,
+					profile.sampling_rate,
 					profile.pos,
 					profile.laser_percent,
-					profile.pre_time/1000,
-					profile.experiment_time/1000,
-					profile.post_time/1000,
+					profile.pre_time,
+					profile.experiment_time,
+					profile.post_time,
 					profile.num_sample);
 
 }

@@ -110,9 +110,6 @@ void min_shell_stdio_init(void)
 	circular_char_buffer_init(&tx_buffer, tx_static_buffer,  MIN_SHELL_UART_BUFFER_SIZE);
     // Khởi tạo UART_Stdio
     uart_stdio_init(&min_shell_stdio, MIN_SHELL_UART, &rx_buffer, &tx_buffer);
-
-    // Kích hoạt UART
-    uart_stdio_active(&min_shell_stdio);
 }
 
 static void min_shell_task_init(min_shell_task_t * const me, min_shell_evt_t const * const e) {
@@ -121,6 +118,9 @@ static void min_shell_task_init(min_shell_task_t * const me, min_shell_evt_t con
     MIN_Context_Init(me->min_context, EXP_MIN_PORT);
     MIN_RegisterTimeoutCallback(&min_ctx, MIN_Timeout_Handler);
     SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS); // Re-arm the timer
+
+    // Kích hoạt UART
+    uart_stdio_active(&min_shell_stdio);
 }
 
 static void min_shell_task_dispatch(min_shell_task_t * const me, min_shell_evt_t * const e) {
@@ -149,7 +149,6 @@ static void min_shell_task_ctor(min_shell_task_t * const me, min_shell_task_init
 
 void min_shell_task_ctor_singleton(void)
 {
-
     min_shell_stdio_init(); // Initialize the UART for MIN communication
     circular_buffer_init(&min_shell_task_event_queue,(uint8_t *)min_shell_task_event_buffer,sizeof(min_shell_task_event_buffer),MIN_SHELL_TASK_NUM_EVENTS,sizeof(min_shell_evt_t));
     min_shell_task_init_t min_shell_task_init =

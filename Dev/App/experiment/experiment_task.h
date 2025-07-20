@@ -28,14 +28,14 @@ struct experiment_evt_t{
 };
 
 struct experiment_profile_t{
-	uint16_t sampling_rate;
+	uint32_t sampling_rate;										// Hz
 	uint8_t pos;
 	uint8_t	laser_percent;
-	uint32_t pre_time; //time before switching
-	uint32_t experiment_time;//time when switch the laser on
-	uint32_t post_time; //time after switching off the laser
-	uint32_t num_sample;
-	uint32_t period;
+	uint16_t pre_time; //time before switching					// mS
+	uint16_t experiment_time;//time when switch the laser on	// mS
+	uint16_t post_time; //time after switching off the laser	// mS
+	uint32_t num_sample;										// kSample
+	uint32_t period;											//
 };
 struct data_profile_t{
 	uint32_t total_data;
@@ -80,6 +80,10 @@ uint32_t experiment_task_photodiode_switchoff(experiment_task_t * const me);
 uint32_t experiment_task_ext_laser_switchoff(experiment_task_t * const me);
 uint32_t experiment_task_int_laser_switchoff(experiment_task_t * const me);
 
+
+uint32_t experiment_task_set_pda(experiment_task_t * me,experiment_profile_t * profile);
+uint32_t experiment_task_set_intensity(experiment_task_t * me,experiment_profile_t * profile);
+uint32_t experiment_task_set_position(experiment_task_t * me,experiment_profile_t * profile);
 uint32_t experiment_task_set_profile(experiment_task_t * me,experiment_profile_t * profile);
 uint32_t experiment_task_get_ram_data(experiment_task_t * const me, uint32_t start_addr, uint32_t num_data, uint8_t mode);
 void experiment_task_get_profile(experiment_task_t * me, experiment_profile_t * profile);

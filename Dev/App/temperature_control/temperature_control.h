@@ -130,7 +130,7 @@ uint32_t temperature_profile_tec_ovr_register(temperature_control_task_t *const 
 uint32_t temperature_profile_tec_ovr_voltage_set(temperature_control_task_t *const me, uint16_t	volt_mv);
 uint32_t temperature_profile_tec_ovr_enable(temperature_control_task_t *const me);
 uint32_t temperature_profile_tec_ovr_disable(temperature_control_task_t *const me);
-uint8_t temperature_profile_tec_ovr_get(temperature_control_task_t *const me);
+uint8_t  temperature_profile_tec_ovr_get(temperature_control_task_t *const me);
 uint16_t temperature_profile_tec_ovr_get_voltage(temperature_control_task_t *const me);
 
 uint32_t temperature_control_tec_manual_set_output( temperature_control_task_t *const me,uint32_t tec_idx, uint32_t tec_dir, uint16_t volt_mV);
@@ -148,5 +148,8 @@ void temperature_control_profile_ntc_get( temperature_control_task_t *const me, 
 
 uint32_t temperature_control_profile_set_auto_recover(temperature_control_task_t *const me, uint32_t status);
 uint32_t temperature_control_profile_get_auto_recover(temperature_control_task_t *const me);
+
+uint32_t temperature_control_set_profile(temperature_control_task_t *const me, uint16_t target_temp, uint16_t min_temp, uint16_t max_temp, \
+		uint8_t pri_ntc_id, uint8_t sec_ntc_id, uint8_t auto_recover, uint8_t tec_pos_mask, uint8_t htr_pos_mask, uint16_t tec_mV, uint8_t htr_duty);
 
 #endif /* APP_TEMPERATURE_CONTROL_TEMPERATURE_CONTROL_TASK_H_ */

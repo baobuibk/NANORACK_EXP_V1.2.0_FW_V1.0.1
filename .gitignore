@@ -15,6 +15,8 @@ Release/
 *.map
 *.bin
 *.lst
+*.elf
+*.hex
 
 # STM32CubeMX generated files (optional, depending on your workflow)
 # /Drivers/

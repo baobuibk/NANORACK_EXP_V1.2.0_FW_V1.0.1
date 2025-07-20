@@ -26,11 +26,12 @@ tec_ovr_control_evt_t tec_ovr_control_task_event_buffer[TEC_OVR_CONTROL_TASK_NUM
 static tec_ovr_control_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
 static tec_ovr_control_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 
-
 circular_buffer_t tec_ovr_control_task_event_queue = {0};
 
 extern temperature_control_task_t temperature_control_task_inst ;
 static temperature_control_task_t *ptemperature_control_task = &temperature_control_task_inst;
+
+static uint16_t override_interval = TEC_OVR_CONTROL_TASK_TIME_LOOP;
 
 static state_t tec_ovr_control_handler(tec_ovr_control_task_t * const me, tec_ovr_control_evt_t const * const e);
 
@@ -111,7 +112,7 @@ static state_t tec_ovr_control_handler(tec_ovr_control_task_t * const me, tec_ov
 
 uint32_t tec_ovr_start(void)
 {
-	SST_TimeEvt_arm(&tec_ovr_control_task_inst.tec_ovr_control_task_timeout_timer, TEC_OVR_CONTROL_TASK_TIME_LOOP, TEC_OVR_CONTROL_TASK_TIME_LOOP);
+	SST_TimeEvt_arm(&tec_ovr_control_task_inst.tec_ovr_control_task_timeout_timer, override_interval, override_interval);
 	return ERROR_OK;
 }
 
@@ -122,6 +123,10 @@ uint32_t tec_ovr_stop(void)
 	return ERROR_OK;
 }
 
+void tec_over_set_interval(uint16_t time_mS)
+{
+	override_interval = time_mS;
+}
 
 
 
