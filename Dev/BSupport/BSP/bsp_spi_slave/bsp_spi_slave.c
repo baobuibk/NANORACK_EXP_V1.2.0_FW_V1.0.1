@@ -94,13 +94,15 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA()
     }
 
     LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
+    while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_3));
+
     LL_SPI_DisableDMAReq_TX(SPI1);
     LL_SPI_Disable(SPI1);
 
     LL_DMA_ClearFlag_TC3(DMA2);
     LL_DMA_ClearFlag_TE3(DMA2);
 
-    LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)spi_device_instance.data_context.sample_buffer, LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
+    LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)(spi_device_instance.data_context.sample_buffer), LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
     LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, SAMPLE_BUFFER_SIZE);
 
     LL_SPI_EnableDMAReq_TX(SPI1);

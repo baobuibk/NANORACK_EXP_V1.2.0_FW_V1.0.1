@@ -130,23 +130,60 @@ static void CMD_test(EmbeddedCli *cli, char *args, void *context)
 static void cmd_clear_fram(EmbeddedCli *cli, char *args, void *context)
 {
 	uint8_t buffer[100] = {0};
-	bsp_spi_ram_write_polling(0, 20, buffer);
+	bsp_spi_ram_write_polling(0, 100, buffer);
 
 	cli_printf(cli, "FRAM is empty\r\n");
 	cli_printf(cli, "");
 }
 
+void dump_buffer(EmbeddedCli *cli, const char *buffer, size_t size) {
+    char line[80];
+    const uint32_t bytes_per_line = 16;
+
+    for (size_t i = 0; i < size; i += bytes_per_line) {
+        snprintf(line, sizeof(line), "%04X: ", (unsigned int)i);
+        char *ptr = line + strlen(line);
+
+        for (size_t j = 0; j < bytes_per_line && (i + j) < size; j++) {
+            snprintf(ptr, sizeof(line) - (ptr - line), "%02X ", (unsigned char)buffer[i + j]);
+            ptr += 3;
+        }
+
+        while (ptr < line + 3 * bytes_per_line + 6) {
+            *ptr++ = ' ';
+        }
+
+        *ptr++ = '|';
+        for (size_t j = 0; j < bytes_per_line && (i + j) < size; j++) {
+            char c = buffer[i + j];
+            *ptr++ = (c >= 32 && c <= 126) ? c : '.';
+        }
+        *ptr = '\0';
+
+        embeddedCliPrint(cli, line);
+        embeddedCliPrint(cli, "");
+        LL_mDelay(1);// Nhường CPU
+    }
+}
+
 static void cmd_read_fram(EmbeddedCli *cli, char *args, void *context)
 {
-	uint8_t buffer[100];
-	bsp_spi_ram_read_polling(0, 20, buffer);
+    uint8_t buffer[100];
+    bsp_spi_ram_read_polling(0, 100, buffer);
 
-	cli_printf(cli, "Buffer data in hex:\r\n");
-	for (int i = 0; i < 20; i++) {
-	    cli_printf(cli, "%02X ", buffer[i]);
-	}
-	cli_printf(cli, "\r\n");
+    cli_printf(cli, "Buffer data in hex:\r\n");
+    for (int i = 0; i < 100; i++) {
+        cli_printf(cli, "%02X ", buffer[i]);
+        if ((i + 1) % 16 == 0) {
+            cli_printf(cli, "\r\n");
+        }
+    }
+
+//    dump_buffer(cli, (const char *)buffer, 100);
+
+    cli_printf(cli, "\r\n");
 }
+
 
 
 
@@ -973,7 +1010,6 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "sampling rate out of range (1K-800K)\r\n");
 		return;
 	}
-//	sampling_rate /= 1000;
 
 	uint32_t pos = atoi(embeddedCliGetToken(args, 2));
 	if ((pos == 0) || (pos > 36))
@@ -995,7 +1031,6 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "pre_time should be larger than 0\r\n");
 		return;
 	}
-//	pre_time *= 1000;
 
 	uint32_t sample_time = atoi(embeddedCliGetToken(args, 5));
 	if (sample_time == 0)
@@ -1003,7 +1038,6 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "sample time should be larger than 0\r\n");
 		return;
 	}
-//	sample_time *= 1000;
 
 	uint32_t post_time = atoi(embeddedCliGetToken(args, 6));
 	if (post_time == 0)
@@ -1011,10 +1045,9 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 		cli_printf(cli, "post_time should be larger than 0\r\n");
 		return;
 	}
-//	post_time *= 1000;
 
 	uint32_t num_sample = (((pre_time + sample_time + post_time) * sampling_rate ) /1000) /1024;
-	if (num_sample > 2048)	//larrger than 4MB
+	if (num_sample > 2048)	//larger than 4MB
 	{
 		cli_printf(cli, "total sample must be less than 2048K \r\n");
 		return;
@@ -1024,11 +1057,11 @@ static void cmd_exp_set_profile(EmbeddedCli *cli, char *args, void *context)
 	profile.sampling_rate = sampling_rate;		// Hz
 	profile.pos = pos;
 	profile.laser_percent = percent;
-	profile.pre_time = pre_time;				// us
-	profile.experiment_time = sample_time;		// us
-	profile.post_time = post_time;				// us
+	profile.pre_time = pre_time;				// mS
+	profile.experiment_time = sample_time;		// mS
+	profile.post_time = post_time;				// mS
 	profile.num_sample = num_sample;			// kSample
-	profile.period = 1000000 / sampling_rate;	// ns
+	profile.period = 1000000 / sampling_rate;	// us
 	if(!experiment_task_set_profile(pexperiment_task,&profile)) cli_printf(cli, "OK\r\n");
 	else cli_printf(cli, "ERROR\r\n");
 }

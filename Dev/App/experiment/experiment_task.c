@@ -166,14 +166,14 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case SIG_EXIT:
 		{
-			//DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
+			DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
 			SST_TimeEvt_disarm(&me->laser_current_trigger);
 			return HANDLED_STATUS;
 		}
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
 		{
-			//DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
+			DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
 			if (me->sub_state == S_PRE_SAMPLING)
 			{
 				me->sub_state = S_DATA_SAMPLING;
@@ -184,7 +184,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case EVT_EXPERIMENT_FINISH_SAMPLING:
 		{
-			//DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_SAMPLING\r\n");
+			DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_SAMPLING\r\n");
 			if (me->sub_state == S_DATA_SAMPLING)
 			{
 				me->sub_state = S_POST_SAMPLING;
@@ -194,6 +194,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case EVT_EXPERIMENT_FINISH_POST_SAMPLING:
 		{
+			DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_POST_SAMPLING\r\n");
 			if (me->sub_state == S_POST_SAMPLING)
 			{
 				me->sub_state = NO_SUBSTATE;

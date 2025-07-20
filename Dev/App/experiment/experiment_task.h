@@ -35,7 +35,7 @@ struct experiment_profile_t{
 	uint16_t experiment_time;//time when switch the laser on	// mS
 	uint16_t post_time; //time after switching off the laser	// mS
 	uint32_t num_sample;										// kSample
-	uint32_t period;
+	uint32_t period;											//
 };
 struct data_profile_t{
 	uint32_t total_data;

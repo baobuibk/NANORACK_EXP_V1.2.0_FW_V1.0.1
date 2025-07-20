@@ -88,11 +88,11 @@ void bsp_photo_set_time(bsp_photodiode_time_t * init_photo_time)
 	photo_diode_adc.timing = *init_photo_time;
 	bsp_photodiode_time_t * photo_time = &photo_diode_adc.timing;
 	//timer2 clock is 100 Mhz, meam 100 tick = 1us
-	timer_timing.post_time_ARR = photo_time->post_time * 100;				// tick
-	timer_timing.pre_time_ARR = photo_time->pre_time * 100;
-	timer_timing.sampling_time_ARR = photo_time->sampling_time * 100;
-	//sampling rate in Khz, timer1 clock is 200 Mhz
-	timer_timing.sampling_period_ARR = (1000 * 200 / photo_time->sampling_rate);
+	timer_timing.post_time_ARR = photo_time->post_time * 100000;
+	timer_timing.pre_time_ARR = photo_time->pre_time * 100000;
+	timer_timing.sampling_time_ARR = photo_time->sampling_time * 100000;
+	//sampling rate in Khz, timer1 clock is 200 Mhz, mean 200 tick = 1us
+	timer_timing.sampling_period_ARR = (200000000 / photo_time->sampling_rate); // ticks
 }
 
 void bsp_photodiode_init(void)
@@ -331,6 +331,8 @@ void TIM2_IRQHandler(void)
 //			bsp_photodiode_set_sampling_time();
 			PHOTO_TIMER->ARR = timer_timing.sampling_time_ARR - 1;
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_pre_phase_evt);
+
+			TIM2->CR1 |= TIM_CR1_CEN;
 		break;
 
 		case PHOTO_SAMPLED_SAMPLING:

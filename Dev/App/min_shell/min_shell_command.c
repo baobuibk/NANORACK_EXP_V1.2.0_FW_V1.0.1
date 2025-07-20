@@ -14,6 +14,7 @@
 #include "adc_monitor.h"
 #include "bsp_spi_slave.h"
 #include "system_reset.h"
+#include "bsp_spi_ram.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -439,23 +440,26 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     {
         buffer[0] = MIN_RESP_FAIL;
         buffer[1] = MIN_RESP_FAIL;
-        MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
         min_shell_debug_print("FRAM is empty\r\n");
     }
     else if (chunk_id >= total_chunks)
     {
         buffer[0] = MIN_RESP_FAIL;
         buffer[1] = MIN_RESP_FAIL;
-        MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
         min_shell_debug_print("Chunk index out of range\r\n");
     }
     else
     {
-        MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
         SPI_SlaveDevice_Init();
         SPI_SlaveDevice_CollectData();
         min_shell_debug_print("Sent chunk %d\r\n", chunk_id);
     }
+    MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
+
+
+//    SPI_SlaveDevice_Init();
+//	SPI_SlaveDevice_CollectData();
+//	MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
 }
 
 static void MIN_Handler_GET_CHUNK_CRC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
