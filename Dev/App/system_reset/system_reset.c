@@ -11,21 +11,23 @@
 #include "system_reset.h"
 #include "error_codes.h"
 #include "dbc_assert.h"
+#include "main.h"
 
 //DBC_MODULE_NAME("system_reset")
 
-system_reset_task_t system_reset_task_inst;
 #define SYSTEM_RESET_NUM_EVENT					2
 #define DEFAULT_RESET_POLL_TIME					5000
 
+system_reset_task_t system_reset_task_inst;
+circular_buffer_t system_reset_event_queue = {0};
+static system_reset_evt_t system_reset_current_event = {0};
+static system_reset_evt_t system_reset_event_buffer[SYSTEM_RESET_NUM_EVENT];
+
 static system_reset_evt_t const system_reset_request_event = {.super = {.sig = EVT_SYSTEM_RESET_REQUEST} };
 
-system_reset_evt_t system_reset_current_event = {0};
-system_reset_evt_t system_reset_event_buffer[SYSTEM_RESET_NUM_EVENT];
-circular_buffer_t system_reset_event_queue = {0};
 
 static void system_reset_task_init(system_reset_task_t * const me, system_reset_evt_t * const e);
-//static void system_reset_task_dispatch(system_reset_task_t * const me, system_reset_evt_t * const e);
+static void system_reset_task_dispatch(system_reset_task_t * const me, system_reset_evt_t * const e);
 static state_t system_reset_normal_state_handler(system_reset_task_t * const me, system_reset_evt_t * const e);
 
 void system_reset_house_keeping(void);
@@ -33,16 +35,7 @@ void system_reset_request(void);
 
 static void system_reset_task_dispatch(system_reset_task_t * const me, system_reset_evt_t * const e)
 {
-//    DBC_ASSERT(4u, me != NULL);
-//    DBC_ASSERT(5u, e != NULL);
-
-    system_reset_task_handler_t prev_state = me->state; /* save for later */
-    state_t status = (me->state)(me, e);
-
-//    if (status == TRAN_STATUS) { /* transition taken? */
-//        (prev_state)(me, &exit_evt);
-//        (me->state)(me, &entry_evt);
-//    }
+    (me->state)(me, e);
 }
 
 void system_reset_task_ctor(system_reset_task_t * const me, system_reset_task_init_t * const init)
@@ -78,17 +71,17 @@ static state_t system_reset_normal_state_handler(system_reset_task_t * const me,
 {
 	switch (e->super.sig)
 	{
-	case EVT_SYSTEM_RESET_POLL:
-		system_reset_house_keeping();
-		return HANDLED_STATUS;
-	case EVT_SYSTEM_RESET_REQUEST:
-		system_reset_request();
-		return HANDLED_STATUS;
+		case EVT_SYSTEM_RESET_POLL:
+			system_reset_house_keeping();
+			return HANDLED_STATUS;
+		case EVT_SYSTEM_RESET_REQUEST:
+			system_reset_request();
+			return HANDLED_STATUS;
+		default:
+			return IGNORED_STATUS;
 	}
-	return HANDLED_STATUS;
 }
 
-#include "main.h"
 void system_reset_house_keeping(void)
 {
 	LL_GPIO_TogglePin(LED_G_GPIO_Port, LED_G_Pin);
@@ -96,7 +89,6 @@ void system_reset_house_keeping(void)
 
 void system_reset_request(void)
 {
-//	LL_GPIO_TogglePin(LED_B_GPIO_Port, LED_B_Pin);
 	LL_mDelay(100);
 	NVIC_SystemReset();
 }

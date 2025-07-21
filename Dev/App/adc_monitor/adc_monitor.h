@@ -30,7 +30,6 @@ struct monitor_task_t{
 	SST_TimeEvt monitor_task_timer;
 	monitor_state_handler_t state; /* the "state variable" */
 	monitor_data_t adc_data;
-
 };
 
 struct monitor_init_t {

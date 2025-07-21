@@ -31,10 +31,6 @@ temperature_control_evt_t temperature_control_task_event_buffer[TEMPERATURE_CONT
 circular_buffer_t temperature_control_task_event_queue = {0}; // Circular buffer to hold shell events
 
 
-
-
-
-
 static state_t temperature_control_state_manual_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_cooling_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_off_wait_heat_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
@@ -104,7 +100,6 @@ void temperature_control_task_start(uint8_t priority)
 //only handle command from shell
 static state_t temperature_control_state_manual_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
 {
-
 	switch (e->super.sig)
 	{
 		case SIG_ENTRY:
@@ -202,6 +197,7 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 			return IGNORED_STATUS;
 	}
 }
+
 static state_t temperature_control_state_off_wait_heat_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
 {	
 	switch (e->super.sig)
@@ -437,10 +433,8 @@ void temperature_control_heater_disable_all(temperature_control_task_t * const m
 
 uint16_t temperature_control_profile_tec_voltage_get( temperature_control_task_t *const me)
 {
-
 	return me->temperature_control_profile.tec_voltage;
 	return ERROR_OK;
-
 }
 
 uint32_t temperature_control_auto_mode_set(temperature_control_task_t *const me)
@@ -484,7 +478,6 @@ void temperature_control_tec_output_disable_all(temperature_control_task_t * con
 }
 void temperature_control_tec_init_all(temperature_control_task_t * const me)
 {
-
 	for (uint32_t i = 0;i<4;i++)
 		{
 		lt8722_init(me->tec_table[i]);
@@ -573,7 +566,6 @@ uint32_t temperature_control_profile_tec_register(temperature_control_task_t *co
 
 	me->temperature_control_profile.profile_tec_set |= (1 << tec_idx);
 	return ERROR_OK;
-
 }
 
 uint32_t temperature_control_profile_tec_unregister(temperature_control_task_t *const me,uint8_t tec_idx)

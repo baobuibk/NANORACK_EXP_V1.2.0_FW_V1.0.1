@@ -21,15 +21,15 @@ tec_ovr_control_task_t tec_ovr_control_task_inst;
 #define TEC_OVR_CONTROL_TASK_TIME_LOOP 10000 //loop to control TEC every X ms
 #define TEC_OVR_CONTROL_TASK_NUM_EVENTS 2
 
-tec_ovr_control_evt_t tec_ovr_control_current_event = {0};
-tec_ovr_control_evt_t tec_ovr_control_task_event_buffer[TEC_OVR_CONTROL_TASK_NUM_EVENTS] = {0};
+static tec_ovr_control_evt_t tec_ovr_control_current_event = {0};
+static tec_ovr_control_evt_t tec_ovr_control_task_event_buffer[TEC_OVR_CONTROL_TASK_NUM_EVENTS] = {0};
 static tec_ovr_control_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
 static tec_ovr_control_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 
 circular_buffer_t tec_ovr_control_task_event_queue = {0};
 
 extern temperature_control_task_t temperature_control_task_inst ;
-static temperature_control_task_t *ptemperature_control_task = &temperature_control_task_inst;
+static temperature_control_task_t *p_temperature_control_task = &temperature_control_task_inst;
 
 static uint16_t override_interval = TEC_OVR_CONTROL_TASK_TIME_LOOP;
 
@@ -93,13 +93,13 @@ static state_t tec_ovr_control_handler(tec_ovr_control_task_t * const me, tec_ov
 			if(me->tec_ovr_state == TEC_OVR_OFF)
 			{
 				photo_cool_debug_print("tec_ovr on\r\n");
-				temperature_profile_tec_ovr_enable(ptemperature_control_task);
+				temperature_profile_tec_ovr_enable(p_temperature_control_task);
 				me->tec_ovr_state = TEC_OVR_COOL;
 			}
 			else
 			{
 				photo_cool_debug_print("tec_ovr off\r\n");
-				temperature_profile_tec_ovr_disable(ptemperature_control_task);
+				temperature_profile_tec_ovr_disable(p_temperature_control_task);
 				me->tec_ovr_state = TEC_OVR_OFF;
 			}
 			return HANDLED_STATUS;
@@ -119,7 +119,7 @@ uint32_t tec_ovr_start(void)
 uint32_t tec_ovr_stop(void)
 {
 	SST_TimeEvt_disarm(&tec_ovr_control_task_inst.tec_ovr_control_task_timeout_timer);
-	temperature_profile_tec_ovr_disable(ptemperature_control_task);
+	temperature_profile_tec_ovr_disable(p_temperature_control_task);
 	return ERROR_OK;
 }
 

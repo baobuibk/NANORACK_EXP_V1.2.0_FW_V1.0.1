@@ -18,12 +18,12 @@
 
 DBC_MODULE_NAME("adc_monitor")
 
-monitor_task_t monitor_task_inst;
-#define MONITOR_TASK_NUM_EVENTS 4
-monitor_evt_t current_monitor_e = {0}; // Current event being processed
-monitor_evt_t monitor_e_buffer[MONITOR_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
-circular_buffer_t monitor_e_queue = {0}; // Circular buffer to hold shell events
+#define MONITOR_TASK_NUM_EVENTS			4
 
+monitor_task_t monitor_task_inst;
+circular_buffer_t monitor_e_queue = {0}; // Circular buffer to hold shell events
+static monitor_evt_t current_monitor_e = {0}; // Current event being processed
+static monitor_evt_t monitor_e_buffer[MONITOR_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
 
 static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_evt_t const * const e);
 

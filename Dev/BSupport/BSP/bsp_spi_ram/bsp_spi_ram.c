@@ -10,8 +10,10 @@
 #include "experiment_task.h"
 // Byte dummy cho DMA TX
 
-static experiment_evt_t const done_read_ram_evt = {.super = {.sig = EVT_EXPERIMENT_DONE_READ_RAM}};
+
 extern experiment_task_t experiment_task_inst;
+static experiment_task_t *p_experiment_task_inst = &experiment_task_inst;
+
 // Khởi tạo cấu hình SRAM
 IS66_t IS66WV = {
     .spi = SPI6,
@@ -71,7 +73,8 @@ uint8_t bsp_spi_ram_is_transfer_done(void)
 {
 	return SRAM_IsTransferDone(&IS66WV);
 }
-// Hàm xử lý ngắt DMA RX (SPI2_RX)
+
+// Hàm xử lý ngắt DMA RX (SPI6_RX)
 void DMA2_Stream6_IRQHandler(void)
 {
 	DMA2->HIFCR = DMA_HIFCR_CTCIF6 | DMA_HIFCR_CTCIF5;
@@ -92,7 +95,8 @@ void DMA2_Stream6_IRQHandler(void)
 		IS66WV.transfer_done = 1;
 		if(!IS66WV.sram_mode)		// If mode read
 		{
-			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_read_ram_evt);
+//			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_read_ram_evt);
+			experiment_task_done_read_ram_evt(p_experiment_task_inst);
 		}
 	}
 

@@ -15,6 +15,7 @@
 #include "bsp_spi_slave.h"
 #include "system_reset.h"
 #include "bsp_spi_ram.h"
+#include "system_log.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -24,16 +25,16 @@
 // Header Define
 // =================================================================
 extern temperature_control_task_t temperature_control_task_inst;
-static temperature_control_task_t *ptemperature_control_task = &temperature_control_task_inst;
+static temperature_control_task_t *p_temperature_control_task = &temperature_control_task_inst;
 
 extern experiment_task_t experiment_task_inst;
-static experiment_task_t *pexperiment_task = &experiment_task_inst;
+static experiment_task_t *p_experiment_task = &experiment_task_inst;
 
 extern system_reset_task_t system_reset_task_inst;
-static system_reset_task_t *system_reset_task = &system_reset_task_inst;
+static system_reset_task_t *p_system_reset_task = &system_reset_task_inst;
 
-static uint8_t ntc_report_mask = 0xFF;
-
+extern system_log_task_t system_log_task_inst;
+static system_log_task_t *p_system_log_task = &system_log_task_inst;
 // =================================================================
 // Command Handlers
 // =================================================================
@@ -56,23 +57,12 @@ static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte)
     return crc;
 }
 
-void min_handshake_busy(void)
-{
-	LL_GPIO_SetOutputPin(MIN_HandShake_GPIO_Port, MIN_HandShake_Pin);
-}
-
-void min_handshake_ready(void)
-{
-	LL_GPIO_ResetOutputPin(MIN_HandShake_GPIO_Port, MIN_HandShake_Pin);
-}
-
-
 static void MIN_Handler_PLEASE_RESET_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
     MIN_Send(ctx, PLEASE_RESET_ACK, NULL, 0);
     min_shell_debug_print("RESET REQUEST:\r\n", len);
 
-    system_reset(system_reset_task);
+    system_reset(p_system_reset_task);
 }
 
 static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -101,9 +91,10 @@ static void MIN_Handler_SET_WORKING_RTC_CMD(MIN_Context_t *ctx, const uint8_t *p
 static void MIN_Handler_SET_NTC_CONTROL_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
 	uint8_t buffer[1] = {MIN_ERROR_OK};
-	ntc_report_mask = payload[0];
+	uint8_t ntc_log_mask = payload[0];
+	system_log_task_set_ntc_log_mask(p_system_log_task, ntc_log_mask);
 	MIN_Send(ctx, SET_NTC_CONTROL_ACK, buffer, 1);
-	min_shell_debug_print("NTC report mask: 0x%X\r\n", ntc_report_mask);
+	min_shell_debug_print("NTC report mask: 0x%X\r\n", ntc_log_mask);
 }
 
 static void MIN_Handler_SET_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -144,7 +135,7 @@ static void MIN_Handler_SET_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *
 
     if (!ret)
     {
-    	temperature_control_set_profile(ptemperature_control_task, target_temp, min_temp, max_temp, pri_ntc_id, sec_ntc_id, auto_recover, tec_pos_mask, htr_pos_mask, tec_mV, htr_duty);
+    	temperature_control_set_profile(p_temperature_control_task, target_temp, min_temp, max_temp, pri_ntc_id, sec_ntc_id, auto_recover, tec_pos_mask, htr_pos_mask, tec_mV, htr_duty);
     	min_shell_debug_print("target_temp: %d\r\n", target_temp);
     	min_shell_debug_print("min_temp: %d\r\n", min_temp);
     	min_shell_debug_print("max_temp: %d\r\n", max_temp);
@@ -169,7 +160,7 @@ static void MIN_Handler_START_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t
 {
     uint8_t reserved = 0xFF;
     min_shell_debug_print("Start temperature control auto\r\n");
-    temperature_control_auto_mode_set(ptemperature_control_task);
+    temperature_control_auto_mode_set(p_temperature_control_task);
     MIN_Send(ctx, START_TEMP_PROFILE_ACK, &reserved, 1);
 }
 
@@ -177,7 +168,7 @@ static void MIN_Handler_STOP_TEMP_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t 
 {
     uint8_t reserved = 0xFF;
     min_shell_debug_print("Stop temperature control auto\r\n");
-    temperature_control_man_mode_set(ptemperature_control_task);
+    temperature_control_man_mode_set(p_temperature_control_task);
     MIN_Send(ctx, STOP_TEMP_PROFILE_ACK, &reserved, 1);
 }
 
@@ -203,14 +194,14 @@ static void MIN_Handler_SET_OVERRIDE_TEC_PROFILE_CMD(MIN_Context_t *ctx, const u
     else if (over_tec_id == 4)
     {
         MIN_Send(ctx, SET_OVERRIDE_TEC_PROFILE_ACK, buffer, 2);
-        temperature_profile_tec_ovr_register(ptemperature_control_task, 4);
+        temperature_profile_tec_ovr_register(p_temperature_control_task, 4);
     	min_shell_debug_print("Unregister TEC for override mode\r\n");
         min_shell_debug_print("SET_OVERRIDE_TEC_PROFILE_ACK\r\n");
         return;
     }
     else
     {
-    	uint8_t tec_profile = temperature_control_profile_tec_get(ptemperature_control_task);
+    	uint8_t tec_profile = temperature_control_profile_tec_get(p_temperature_control_task);
         if (tec_profile & (1 << over_tec_id))
         {
         	ret++;
@@ -227,8 +218,8 @@ static void MIN_Handler_SET_OVERRIDE_TEC_PROFILE_CMD(MIN_Context_t *ctx, const u
 	if (!ret)
     {
         tec_over_set_interval(interval);
-        temperature_profile_tec_ovr_register(ptemperature_control_task, over_tec_id);
-        temperature_profile_tec_ovr_voltage_set(ptemperature_control_task, over_TEC_mV);
+        temperature_profile_tec_ovr_register(p_temperature_control_task, over_tec_id);
+        temperature_profile_tec_ovr_voltage_set(p_temperature_control_task, over_TEC_mV);
     }
     else
     {
@@ -295,7 +286,7 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
     }
 //    post_time *= 1000;
 
-    uint32_t num_sample = (((pre_time + samp_time + post_time) * samp_rate) / 1000) /1024;
+    uint32_t num_sample = ((pre_time + samp_time + post_time) * samp_rate) / 1000000;
     if (num_sample > 2048) // larrger than 4MB
     {
         ret++;
@@ -310,8 +301,8 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
         profile.experiment_time = samp_time;  // mS
         profile.post_time = post_time;        // mS
         profile.num_sample = num_sample;      // kSample
-        profile.period = 1000000 / samp_rate; // ns
-        if (!experiment_task_set_pda(pexperiment_task, &profile))
+        profile.period = 1000000 / samp_rate; // uS
+        if (!experiment_task_set_pda(p_experiment_task, &profile))
         {
             min_shell_debug_print("Min set PDA DONE\r\n");
         }
@@ -345,10 +336,10 @@ static void MIN_Handler_SET_LASER_INTENSITY_CMD(MIN_Context_t *ctx, const uint8_
     else
     {
         experiment_profile_t profile;
-        experiment_task_get_profile(pexperiment_task, &profile);
+        experiment_task_get_profile(p_experiment_task, &profile);
 
         profile.laser_percent = percent;
-        if (!experiment_task_set_intensity(pexperiment_task, &profile))
+        if (!experiment_task_set_intensity(p_experiment_task, &profile))
         {
             min_shell_debug_print("Min SET_LASER_INTENSITY DONE\r\n");
         }
@@ -375,10 +366,10 @@ static void MIN_Handler_SET_POSITION_CMD(MIN_Context_t *ctx, const uint8_t *payl
     else
     {
         experiment_profile_t profile;
-        experiment_task_get_profile(pexperiment_task, &profile);
+        experiment_task_get_profile(p_experiment_task, &profile);
 
         profile.pos = laser_idx;
-        if (!experiment_task_set_position(pexperiment_task, &profile))
+        if (!experiment_task_set_position(p_experiment_task, &profile))
         {
             min_shell_debug_print("Min SET_POSITION DONE\r\n");
         }
@@ -395,7 +386,7 @@ static void MIN_Handler_SET_POSITION_CMD(MIN_Context_t *ctx, const uint8_t *payl
 static void MIN_Handler_START_SAMPLE_CYCLE_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
     uint8_t buffer[1] = {MIN_RESP_OK};
-	if (experiment_start_measuring(pexperiment_task))
+	if (experiment_start_measuring(p_experiment_task))
     {
         buffer[0] = MIN_RESP_FAIL;
         min_shell_debug_print("Wrong profile, please check\r\n");
@@ -403,7 +394,7 @@ static void MIN_Handler_START_SAMPLE_CYCLE_CMD(MIN_Context_t *ctx, const uint8_t
     else
     {
     	min_handshake_busy();
-        min_shell_debug_print("Start sampling...\r\n");
+        min_shell_debug_print("Stop Min\r\nStart sampling...\r\n");
     }
 
     MIN_Send(ctx, START_SAMPLE_CYCLE_ACK, buffer, 1);
@@ -413,7 +404,7 @@ static void MIN_Handler_GET_INFO_SAMPLE_CMD(MIN_Context_t *ctx, const uint8_t *p
 {
     uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
     experiment_profile_t profile;
-    experiment_task_get_profile(pexperiment_task, &profile);
+    experiment_task_get_profile(p_experiment_task, &profile);
     if (profile.num_sample == 0)
     {
         buffer[0] = 0;
@@ -434,7 +425,7 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
     uint8_t chunk_id = payload[0];
     experiment_profile_t profile;
-    experiment_task_get_profile(pexperiment_task, &profile);
+    experiment_task_get_profile(p_experiment_task, &profile);
     uint8_t total_chunks = profile.num_sample / 16;
     if (total_chunks == 0)
     {
@@ -450,16 +441,12 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     }
     else
     {
-        SPI_SlaveDevice_Init();
-        SPI_SlaveDevice_CollectData();
+//        SPI_SlaveDevice_Init();
+//        SPI_SlaveDevice_CollectData();
+    	experiment_start_send_to_spi(p_experiment_task, chunk_id);
         min_shell_debug_print("Sent chunk %d\r\n", chunk_id);
     }
     MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
-
-
-//    SPI_SlaveDevice_Init();
-//	SPI_SlaveDevice_CollectData();
-//	MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
 }
 
 static void MIN_Handler_GET_CHUNK_CRC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -495,7 +482,7 @@ static void MIN_Handler_SET_EXT_LASER_INTENSITY_CMD(MIN_Context_t *ctx, const ui
 	}
 	else
 	{
-		experiment_task_laser_set_current(pexperiment_task, 1, percent);
+		experiment_task_laser_set_current(p_experiment_task, 1, percent);
 		min_shell_debug_print("SET_EXT_LASER_INTENSITY_ACK: %d\r\n", percent);
 	}
 
@@ -514,7 +501,7 @@ static void MIN_Handler_TURN_ON_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t 
 	}
 	else
 	{
-		experiment_task_ext_laser_switchon(pexperiment_task, laser_idx);
+		experiment_task_ext_laser_switchon(p_experiment_task, laser_idx);
 		min_shell_debug_print("TURN_ON_EXT_LASER_ACK\r\n");
 	}
 
@@ -524,7 +511,7 @@ static void MIN_Handler_TURN_OFF_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t
 {
 	uint8_t buffer[1] = {MIN_ERROR_OK};
 	MIN_Send(ctx, TURN_OFF_EXT_LASER_ACK, buffer, 1);
-	experiment_task_ext_laser_switchoff(pexperiment_task);
+	experiment_task_ext_laser_switchoff(p_experiment_task);
 	min_shell_debug_print("TURN_OFF_EXT_LASER_ACK\r\n");
 }
 
@@ -548,8 +535,8 @@ static void MIN_Handler_TURN_OFF_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t
 //
 //	if (!ret)
 //	{
-//		experiment_task_laser_set_current(pexperiment_task, 0, percent);
-//		experiment_task_int_laser_switchon(pexperiment_task,  laser_idx);
+//		experiment_task_laser_set_current(p_experiment_task, 0, percent);
+//		experiment_task_int_laser_switchon(p_experiment_task,  laser_idx);
 //		min_shell_debug_print("SET_LASER_INT_CMD is OK\r\n");
 //	}
 //	else
@@ -581,8 +568,8 @@ static void MIN_Handler_TURN_OFF_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t
 //
 //	if (!ret)
 //	{
-//		experiment_task_laser_set_current(pexperiment_task, 1, percent);
-//		experiment_task_ext_laser_switchon(pexperiment_task,  laser_idx);
+//		experiment_task_laser_set_current(p_experiment_task, 1, percent);
+//		experiment_task_ext_laser_switchon(p_experiment_task,  laser_idx);
 //		min_shell_debug_print("SET_LASER_EXT_CMD is OK\r\n");
 //	}
 //	else
@@ -645,7 +632,6 @@ static const MIN_Command_t command_table[] = {
     {GET_LASER_CURRENT_CMD, MIN_Handler_GET_LASER_CURRENT_CMD},
 
 };
-// ĐÃ TEST ĐẾN POSITION
 
 static const int command_table_size = sizeof(command_table) / sizeof(command_table[0]);
 

@@ -47,6 +47,7 @@ void app_start(void)
 	system_reset_task_start(10);
 	return;
 }
+
 void app_run(void)
 {
 	SST_Task_run();

@@ -25,8 +25,8 @@ min_shell_task_t min_shell_inst;
 static MIN_Context_t min_ctx;
 static MIN_Context_t *registered_contexts[MAX_MIN_CONTEXTS] = {0};
 
-min_shell_evt_t min_shell_current_event = {0}; // Current event being processed
-min_shell_evt_t min_shell_task_event_buffer[MIN_SHELL_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
+static min_shell_evt_t min_shell_current_event = {0}; // Current event being processed
+static min_shell_evt_t min_shell_task_event_buffer[MIN_SHELL_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
 circular_buffer_t min_shell_task_event_queue = {0}; // Circular buffer to hold shell events
 static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_shell_evt_t const * const e);
 static void min_shell_task_dispatch(min_shell_task_t * const me, min_shell_evt_t * const e) ;
@@ -161,11 +161,12 @@ void min_shell_task_ctor_singleton(void)
     };
     min_shell_task_ctor(&min_shell_inst, &min_shell_task_init);
 }
+
 void min_shell_task_start(uint8_t priority)
 {
     SST_Task_start(&min_shell_inst.super,priority);
- 
 }
+
 static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_shell_evt_t const * const e)
 {
     DBC_ASSERT(3u, me != NULL);
@@ -175,9 +176,9 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
     		SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
     		return HANDLED_STATUS;
         case EVT_MIN_POLL:
-
         	min_shell_received_length = MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE;
-            if(uart_stdio_read(me->min_shell_uart, min_shell_received_data, &min_shell_received_length))
+
+        	if(uart_stdio_read(me->min_shell_uart, min_shell_received_data, &min_shell_received_length))
 			{
             	MIN_App_Poll(me->min_context, min_shell_received_data, min_shell_received_length);
 			}

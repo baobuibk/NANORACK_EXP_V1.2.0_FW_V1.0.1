@@ -32,7 +32,6 @@ struct shell_task_t {
     uint16_t crc;
 } ;
 
-
 struct shell_task_init_t{
 	shell_state_handler_t init_state; /* the "init state variable" */
     EmbeddedCli * shell_uart_cli;
@@ -40,6 +39,7 @@ struct shell_task_init_t{
     shell_evt_t const * current_evt;
     circular_buffer_t * shell_task_event_buffer;
 } ;
+
 struct shell_evt_t {
     SST_Evt super;
 } ;
@@ -50,4 +50,8 @@ void shell_task_ctor(shell_task_t * const me, shell_task_init_t * const init) ;
 void CLI_UART_stdio_rx_callback();
 
 void shell_send_buffer(shell_task_t * const me, uint16_t *buffer, uint32_t size, uint8_t mode);
+
+void shell_uart_send_buffer_bin_evt(shell_task_t * const me);
+void shell_uart_send_crc_evt(shell_task_t * const me);
+
 #endif /* APP_SHELL_SHELL_H_ */
