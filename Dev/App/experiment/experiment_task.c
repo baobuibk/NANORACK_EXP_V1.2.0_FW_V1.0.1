@@ -41,7 +41,7 @@ static experiment_evt_t const done_read_ram_evt = {.super = {.sig = EVT_EXPERIME
 static experiment_evt_t const done_send_chunk = {.super = {.sig = EVT_EXPERIMENT_DONE_SEND_CHUNK}};
 
 static data_profile_t remain_data_profile;
-static uint16_t experiment_data_buffer[EXPERIMENT_CHUNK_SIZE];
+static uint16_t experiment_data_buffer[EXPERIMENT_CHUNK_SIZE] __attribute__((aligned(4)));
 static uint16_t batch_size;
 
 static uint16_t laser_int_current[EXPERIMENT_LASER_CURRENT_SIZE];
@@ -145,15 +145,15 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		case SIG_ENTRY:
 		{
 			DBG(DBG_LEVEL_INFO,"Start Sampling...\r\n");
-			//DBG(DBG_LEVEL_INFO,"entry experiment_task_state_data_aqui_handler\r\n");
+//			DBG(DBG_LEVEL_INFO,"entry experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
-	//      Switch the photodiode on
+//	      	Switch the photodiode on
 			experiment_task_photodiode_switchon(me, me->profile.pos);
-			//DBG(DBG_LEVEL_INFO,"switch on photo %d\r\n", me->profile.pos);
-	//		Switch the SPI to ADC supported mode
+//			DBG(DBG_LEVEL_INFO,"switch on photo %d\r\n", me->profile.pos);
+//			Switch the SPI to ADC supported mode
 			experiment_task_photo_ADC_prepare_SPI(me);
-			//DBG(DBG_LEVEL_INFO,"switch on photo %d and change SPI mode to SPI ADC Mode\r\n", me->profile.pos);
-	//		Prepare the timer for sampling
+//			DBG(DBG_LEVEL_INFO,"switch on photo %d and change SPI mode to SPI ADC Mode\r\n", me->profile.pos);
+//			Prepare the timer for sampling
 			bsp_photodiode_time_t init_photo_time;
 			init_photo_time.pre_time = me->profile.pre_time ;
 			init_photo_time.sampling_time = me->profile.experiment_time ;
@@ -172,7 +172,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case SIG_EXIT:
 		{
-			DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
+//			DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
 			SST_TimeEvt_disarm(&me->laser_current_trigger);
 			return HANDLED_STATUS;
@@ -227,9 +227,8 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 				laser_int_current[laser_int_current_idx++]= bsp_laser_get_int_current();
 				bsp_laser_int_trigger_adc();
 			}
-
-
-			else	SST_TimeEvt_disarm(&me->laser_current_trigger);
+			else
+				SST_TimeEvt_disarm(&me->laser_current_trigger);
 			return HANDLED_STATUS;
 		}
 		default:
@@ -296,10 +295,9 @@ static state_t experiment_task_state_send_to_min_handler(experiment_task_t * con
 		case SIG_ENTRY:
 		{
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
-//			SPI_SlaveDevice_Init();
-			SPI_SlaveDevice_Init(experiment_data_buffer);
-
 			bsp_spi_ram_read_dma(me->data_profile.start_address, EXPERIMENT_CHUNK_SIZE, (uint8_t *)experiment_data_buffer);
+
+			SPI_SlaveDevice_Init((uint16_t *)experiment_data_buffer);
 
 			return HANDLED_STATUS;
 		}

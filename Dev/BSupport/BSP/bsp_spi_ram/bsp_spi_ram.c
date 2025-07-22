@@ -95,7 +95,6 @@ void DMA2_Stream6_IRQHandler(void)
 		IS66WV.transfer_done = 1;
 		if(!IS66WV.sram_mode)		// If mode read
 		{
-//			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_read_ram_evt);
 			experiment_task_done_read_ram_evt(p_experiment_task_inst);
 		}
 	}

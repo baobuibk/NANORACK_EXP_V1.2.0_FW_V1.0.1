@@ -46,7 +46,7 @@ void monitor_task_ctor(monitor_task_t * const me, monitor_init_t const * const i
     me->adc_data.laser_current[0] = 0;		//set current laser int = 0
 }
 
-void monitor_task_ctor_singleton()
+void adc_monitor_task_ctor_singleton()
 {
  circular_buffer_init(&monitor_e_queue,(uint8_t *)&monitor_e_buffer,sizeof(monitor_e_buffer),MONITOR_TASK_NUM_EVENTS,sizeof(monitor_evt_t));
  monitor_init_t init = {
@@ -57,10 +57,11 @@ void monitor_task_ctor_singleton()
  monitor_task_ctor(&monitor_task_inst, &init);
 }
 
-void monitor_task_start(uint8_t priority)
+void adc_monitor_task_start(uint8_t priority)
 {
 	SST_Task_start(&monitor_task_inst.super,priority);
 }
+
 static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_evt_t const * const e)
 {
 	switch (e->super.sig)

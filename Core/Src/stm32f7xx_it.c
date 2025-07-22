@@ -191,7 +191,7 @@ void SysTick_Handler(void)
 	//SCH_RunSystemTickTimer();
 	SST_TimeEvt_tick();
   /* USER CODE END SysTick_IRQn 0 */
-
+  HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */

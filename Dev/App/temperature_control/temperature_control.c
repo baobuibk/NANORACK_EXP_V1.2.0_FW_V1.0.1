@@ -22,10 +22,25 @@ temperature_control_task_t temperature_control_task_inst ;
 static temperature_control_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
 static temperature_control_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 
-#define TEMPERATURE_CONTROL_TASK_TIME_LOOP 100 //loop to check and control TEC every 100 ms
-#define TEMPERATURE_CONTROL_TASK_NUM_EVENTS 2
-#define TEMPERATURE_CONTROL_WAIT_TIMEOUT_NUM  30 // 3 second timeout for waiting for temperature control events
-#define TEMPERATURE_CONTROL_HYSTERIS          10 //hysteris 1 celcius
+#define TEMPERATURE_CONTROL_TASK_TIME_LOOP 			100 //loop to check and control TEC every 100 ms
+#define TEMPERATURE_CONTROL_TASK_NUM_EVENTS 		2
+#define TEMPERATURE_CONTROL_WAIT_TIMEOUT_NUM  		30 // 3 second timeout for waiting for temperature control events
+#define TEMPERATURE_CONTROL_HYSTERIS          		10 // hysteris 1 celcius
+
+#define TEMP_LIM_MIN_DEFAULT						200
+#define TEMP_TARGET_DEFAULT							250
+#define TEMP_LIM_MAX_DEFAULT						300
+
+#define TEMP_PRI_NTC_DEFAULT						1
+#define TEMP_SEC_NTC_DEFAULT						1
+
+#define TEMP_TEC_VOLT_DEFAULT						1000
+#define TEMP_HTR_DUTY_DEFAULT						20
+
+#define TEMP_TEC_RUNNING_DEFAULT					0x03
+#define TEMP_HTR_RUNNING_DEFAULT					0x03
+
+
 temperature_control_evt_t temperature_control_current_event = {0}; // Current event being processed
 temperature_control_evt_t temperature_control_task_event_buffer[TEMPERATURE_CONTROL_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
 circular_buffer_t temperature_control_task_event_queue = {0}; // Circular buffer to hold shell events
@@ -33,24 +48,43 @@ circular_buffer_t temperature_control_task_event_queue = {0}; // Circular buffer
 
 static state_t temperature_control_state_manual_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_cooling_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
-static state_t temperature_control_state_off_wait_heat_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
+static state_t temperature_control_state_wait_heat_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_heating_heater_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
-//static state_t temperature_control_state_heating_heater_tec_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_wait_cool_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 static state_t temperature_control_state_ntc_error_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e);
 
 static void temperature_control_task_init(temperature_control_task_t * const me,temperature_control_evt_t const * const e)
 {
-
 	temp_control_debug_print("temperature control init\r\n");
+
+	//temperature_control_default
 	bsp_temperature_power_on();
 	me->tec_heater_power_status = 1;
-	temperature_control_tec_init_all(me); //initialized all tecs
+	temperature_control_tec_init_all(me);
+	me->temperature_control_profile.profile_min_temp		= TEMP_LIM_MIN_DEFAULT;
+	me->temperature_control_profile.setpoint 				= TEMP_TARGET_DEFAULT;
+	me->temperature_control_profile.profile_max_temp		= TEMP_LIM_MAX_DEFAULT;
 
-	temperature_control_tec_output_disable_all(me);
-	temperature_control_heater_disable_all(me); //disable heater output
+	me->temperature_control_profile.pri_NTC_idx				= TEMP_PRI_NTC_DEFAULT;
+	me->temperature_control_profile.sec_NTC_idx				= TEMP_SEC_NTC_DEFAULT;
 
-	SST_TimeEvt_disarm(&me->temperature_control_task_timeout_timer);
+	me->temperature_control_profile.tec_voltage				= TEMP_TEC_VOLT_DEFAULT;
+	me->temperature_control_profile.heater_duty_cycle		= TEMP_HTR_DUTY_DEFAULT;
+
+//	me->temperature_control_profile.profile_tec_set			= TEMP_TEC_RUNNING_DEFAULT;
+//	me->temperature_control_profile.profile_heater_set		= TEMP_HTR_RUNNING_DEFAULT;
+
+//	int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
+//	if (temperature > me->temperature_control_profile.setpoint)
+//		me->state = temperature_control_state_cooling_handler;
+//	else me->state = (temperature_control_state_wait_heat_handler);
+//	SST_TimeEvt_arm(&me->temperature_control_task_timeout_timer, TEMPERATURE_CONTROL_TASK_TIME_LOOP, TEMPERATURE_CONTROL_TASK_TIME_LOOP);
+
+//	SST_TimeEvt_disarm(&me->temperature_control_task_timeout_timer);
+
+//	em đang dev thêm đoạn này chưa hoàn chỉnh
+
+
 }
 static void temperature_control_task_dispatch(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
 {
@@ -68,7 +102,6 @@ void temperature_control_task_ctor(temperature_control_task_t * const me, temper
                                 (SST_Evt *)init->current_evt, init->temperature_control_task_event_buffer);
     SST_TimeEvt_ctor(&me->temperature_control_task_timeout_timer, EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP, &(me->super));
     me->state = init->init_state; // Set the initial state to process handler
-    me->tec_heater_power_status = 0;
     me->tec_inited = 0;
     me->temperature_control_profile.profile_tec_set = 0; // all off
     me->temperature_control_profile.profile_heater_set = 0; // all off
@@ -97,7 +130,6 @@ void temperature_control_task_start(uint8_t priority)
 	SST_Task_start(&temperature_control_task_inst.super,priority);
 }
 
-//only handle command from shell
 static state_t temperature_control_state_manual_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
 {
 	switch (e->super.sig)
@@ -118,9 +150,11 @@ static state_t temperature_control_state_manual_handler(temperature_control_task
 			{
 				case TEMPERATURE_AUTOMODE_START:
 				{
+					temp_control_debug_print("Src: MANUAL ->> Event: CMD TEMPERATURE_AUTOMODE_START\r\n");
 					if (me->tec_heater_power_status == 0)
-					{ //switch to AUTO, but tec power is off
-						temperature_control_power_control(me,1);
+					{
+						//switch to AUTO, but tec power is off
+						temperature_control_power_control(me, 1);
 						temperature_control_tec_init_all(me); //initialized all tecs
 						temperature_control_tec_output_disable_all(me);
 					}
@@ -129,22 +163,32 @@ static state_t temperature_control_state_manual_handler(temperature_control_task
 						me->temperature_control_profile.profile_max_temp,
 						me->temperature_control_profile.profile_min_temp))
 					{
+						temp_control_debug_print("Src: MANUAL ->> Dest: NTC_ERROR\r\n");
 						me->state = temperature_control_state_ntc_error_handler;
 						return TRAN_STATUS;
 					}
 					int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
 					if (temperature > me->temperature_control_profile.setpoint)
+					{
+						temp_control_debug_print("Src: MANUAL ->> Dest: COOLING\r\n");
 						me->state = temperature_control_state_cooling_handler;
-					else me->state = (temperature_control_state_off_wait_heat_handler);
+					}
+					else
+					{
+						temp_control_debug_print("Src: MANUAL ->> Dest: WAIT_HEAT\r\n");
+						me->state = (temperature_control_state_wait_heat_handler);
+					}
 
 					SST_TimeEvt_arm(&me->temperature_control_task_timeout_timer, TEMPERATURE_CONTROL_TASK_TIME_LOOP, TEMPERATURE_CONTROL_TASK_TIME_LOOP);
 
 					return TRAN_STATUS;
 				}
-				default: return IGNORED_STATUS;
+				default:
+					return IGNORED_STATUS;
 			}
 		}
-		default: return IGNORED_STATUS;
+		default:
+			return IGNORED_STATUS;
 	}
 }
 
@@ -155,7 +199,7 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 	{
 		case SIG_ENTRY:
 		{
-			temp_control_debug_print("entry temperature_control_state_cooling_handler\r\n");
+			temp_control_debug_print("Entry COOLING\r\n");
 			me->counter = 0;
 			temperature_control_auto_tec_set_output(me, TEC_COOL); //set all tecs on the profile to the desired voltage
 			temperature_control_auto_tec_enable_output(me); // Turn on TEC output
@@ -176,13 +220,12 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 			if (temperature > me->temperature_control_profile.setpoint) return HANDLED_STATUS;	// Continue cooling
 			else // Stop cooling, transition to stopped state to wait for natural heating
 			{
-				me->state = (temperature_control_state_off_wait_heat_handler);
+				me->state = (temperature_control_state_wait_heat_handler);
 				return TRAN_STATUS;
 			}
 		}
 		case EVT_TEMPERATURE_CONTROL_HAS_CMD:
 		{
-			//return (temperature_control_handle_command(me, e->cmd, e->payload));
 			switch (e->cmd)
 			{
 				case TEMPERATURE_MANMODE_START:
@@ -198,13 +241,13 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 	}
 }
 
-static state_t temperature_control_state_off_wait_heat_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
+static state_t temperature_control_state_wait_heat_handler(temperature_control_task_t * const me, temperature_control_evt_t const * const e)
 {	
 	switch (e->super.sig)
 	{
 		case SIG_ENTRY:
 		{
-			temp_control_debug_print("entry temperature_control_state_off_wait_heat_handler\r\n");
+			temp_control_debug_print("entry temperature_control_state_wait_heat_handler\r\n");
    			me->counter = 0; // Reset counter for waiting
    			temperature_control_tec_output_disable_all(me); // Disable TEC output
    			temperature_control_heater_disable_all(me); //disable all heater
@@ -217,20 +260,26 @@ static state_t temperature_control_state_off_wait_heat_handler(temperature_contr
 				me->temperature_control_profile.profile_max_temp,
 				me->temperature_control_profile.profile_min_temp))
 			{
+				temp_control_debug_print("Src: WAIT_HEAT ->> Dest: NTC_ERROR\r\n");
 				me->state = temperature_control_state_ntc_error_handler;
-			   return TRAN_STATUS;
+				return TRAN_STATUS;
 			}
 			int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
 			if (temperature > me->temperature_control_profile.setpoint)
-			{ //temperature larger than setpoint, turn on TEC on COOL mode
+			{
+				// temperature larger than setpoint, turn on TEC on COOL mode
+				temp_control_debug_print("Src: WAIT_HEAT ->> Dest: COOLING\r\n");
 				me->state = temperature_control_state_cooling_handler;
 				return TRAN_STATUS;
 			}
-			else // temperature is still lower than setpoint, wait for natural heating, calculate time to wait
+			else
 			{
+				// temperature is still lower than setpoint, wait for natural heating, calculate time to wait
 				me->counter++;
 				if ((me->counter >= TEMPERATURE_CONTROL_WAIT_TIMEOUT_NUM) || ((me->temperature_control_profile.setpoint - temperature) > TEMPERATURE_CONTROL_HYSTERIS))
-				{ // can not wait any longer, turn on heater
+				{
+					// can not wait any longer, turn on heater
+					temp_control_debug_print("Src: WAIT_HEAT ->> Dest: HEATING\r\n");
 					me->state = temperature_control_state_heating_heater_handler;
 					return TRAN_STATUS;
    				}
@@ -242,6 +291,7 @@ static state_t temperature_control_state_off_wait_heat_handler(temperature_contr
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
+					temp_control_debug_print("Src: WAIT_HEAT ->> Dest: MANUAL\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
 					return TRAN_STATUS;
 				}
@@ -265,6 +315,8 @@ static state_t temperature_control_state_heating_heater_handler(temperature_cont
   	    }
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+
+			temp_control_debug_print("EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP        heat\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
 				me->temperature_control_profile.sec_NTC_idx,
 				me->temperature_control_profile.profile_max_temp,
@@ -287,6 +339,7 @@ static state_t temperature_control_state_heating_heater_handler(temperature_cont
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
+					temp_control_debug_print("TEMPERATURE_MANMODE_START           heat\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
 					return TRAN_STATUS;
 				}
@@ -310,6 +363,7 @@ static state_t temperature_control_state_wait_cool_handler(temperature_control_t
   	    }
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+			temp_control_debug_print("EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP      cool\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
 				me->temperature_control_profile.sec_NTC_idx,
 				me->temperature_control_profile.profile_max_temp,
@@ -320,7 +374,8 @@ static state_t temperature_control_state_wait_cool_handler(temperature_control_t
 			}
 			int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
 			if (temperature < me->temperature_control_profile.setpoint)
-			{ //temperature automatically below setpoint, heat it up
+			{
+				//temperature automatically below setpoint, heat it up
 			   me->state = temperature_control_state_heating_heater_handler;
 			   return TRAN_STATUS;
 			}
@@ -340,6 +395,7 @@ static state_t temperature_control_state_wait_cool_handler(temperature_control_t
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
+					temp_control_debug_print("TEMPERATURE_MANMODE_START           heat\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
 					return TRAN_STATUS;
 				}
@@ -358,13 +414,14 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 		case SIG_ENTRY:
 		{
 			temp_control_debug_print("entry temperature_control_state_error_ntc_handler\r\n");
-			temperature_control_tec_output_disable_all(me); //turn off all heater
-			temperature_control_heater_disable_all(me);
+			temperature_control_tec_output_disable_all(me); 	//turn off all tec
+			temperature_control_heater_disable_all(me);			//turn off all heater
    			return HANDLED_STATUS;
   	    }
 
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+			temp_control_debug_print("Src: NTC_ERROR ->> Event: time_loop\r\n");
 			if(me->temperature_control_profile.auto_recover)
 			{
 				if(!temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
@@ -372,12 +429,17 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 					me->temperature_control_profile.profile_max_temp,
 					me->temperature_control_profile.profile_min_temp))
 				{
+					// Không còn lỗi do NTC nữa
 					int16_t temperature = temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx);
 					if (temperature > me->temperature_control_profile.setpoint)
+					{
+						temp_control_debug_print("Src: NTC_ERROR (Recovery) ->> Dest: COOLING\r\n");
 						me->state = temperature_control_state_cooling_handler;
+					}
 					else
 					{
-						me->state = temperature_control_state_off_wait_heat_handler;
+						temp_control_debug_print("Src: NTC_ERROR (Recovery) ->> Dest: WAIT_HEAT\r\n");
+						me->state = temperature_control_state_wait_heat_handler;
 					}
 					return TRAN_STATUS;
 				}
@@ -391,6 +453,8 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 			{
 				case TEMPERATURE_MANMODE_START:
 				{
+					temp_control_debug_print("Src: NTC_ERROR ->> Event: CMD TEMPERATURE_MANMODE_START\r\n");
+					temp_control_debug_print("Src: NTC_ERROR ->> Dest: MANUAL\r\n");
 					me->state = temperature_control_state_manual_handler; // Transition to manual mode
 					return TRAN_STATUS;
 				}
@@ -461,7 +525,7 @@ void temperature_control_auto_tec_set_output(temperature_control_task_t * const 
 	 uint16_t voltage_mv = me->temperature_control_profile.tec_voltage;
 	 for (uint32_t i =0; i<4; i++)
 	 {
-		 if (tec_set & (1 << i))	//tec is in the profile
+		 if (tec_set & (0x01 << i))	//tec is in the profile
 		 {
 			uint8_t status = (me->tec_table[i]->status);
 			if (!(status & (1 << TEC_INIT_POS)))	//not init yet, first init
@@ -471,17 +535,19 @@ void temperature_control_auto_tec_set_output(temperature_control_task_t * const 
 		 }
 	 }
 }
+
 void temperature_control_tec_output_disable_all(temperature_control_task_t * const me)
 {
-
 	for (uint32_t i = 0;i<4;i++) lt8722_set_swen_req(me->tec_table[i],0);
 }
+
 void temperature_control_tec_init_all(temperature_control_task_t * const me)
 {
 	for (uint32_t i = 0;i<4;i++)
-		{
-		lt8722_init(me->tec_table[i]);
-		}
+	{
+		if (!lt8722_init(me->tec_table[i]))
+			me->tec_inited |= (0x01 << i);
+	}
 }
 
 uint32_t temperature_control_tec_init(temperature_control_task_t * const me,uint32_t tec_idx)
@@ -703,6 +769,7 @@ bool temperature_control_is_powered_on(temperature_control_task_t * const me)
 uint32_t temperature_control_set_profile(temperature_control_task_t *const me, uint16_t target_temp, uint16_t min_temp, uint16_t max_temp, \
 		uint8_t pri_ntc_id, uint8_t sec_ntc_id, uint8_t auto_recover, uint8_t tec_pos_mask, uint8_t htr_pos_mask, uint16_t tec_mV, uint8_t htr_duty)
 {
+	temperature_control_man_mode_set(&temperature_control_task_inst);
 	me->temperature_control_profile.setpoint = target_temp;
 	me->temperature_control_profile.profile_min_temp = min_temp;
 	me->temperature_control_profile.profile_max_temp = max_temp;

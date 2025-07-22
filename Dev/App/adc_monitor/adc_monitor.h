@@ -38,8 +38,8 @@ struct monitor_init_t {
 	circular_buffer_t * event_buffer;
 };
 
-void monitor_task_ctor_singleton(void);
-void monitor_task_start(uint8_t priority);
+void adc_monitor_task_ctor_singleton(void);
+void adc_monitor_task_start(uint8_t priority);
 
 uint16_t temperature_monitor_get_ntc_error(uint32_t channel1, uint32_t channel2, int16_t max_temp, int16_t min_temp);
 int16_t laser_monitor_get_laser_current(uint32_t channel);

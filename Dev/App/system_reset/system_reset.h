@@ -25,6 +25,7 @@ struct system_reset_evt_t {
 struct system_reset_task_t {
 	SST_Task super;
 	SST_TimeEvt system_reset_timer;
+	SST_TimeEvt system_reset_delay_time;
 	system_reset_task_handler_t state; /* the "state variable" */
 	uint32_t interval;
 };

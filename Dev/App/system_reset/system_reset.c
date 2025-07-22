@@ -12,18 +12,17 @@
 #include "error_codes.h"
 #include "dbc_assert.h"
 #include "main.h"
+#include "bsp_system.h"
 
 //DBC_MODULE_NAME("system_reset")
 
-#define SYSTEM_RESET_NUM_EVENT					2
+#define SYSTEM_RESET_NUM_EVENT					10
 #define DEFAULT_RESET_POLL_TIME					5000
 
 system_reset_task_t system_reset_task_inst;
 circular_buffer_t system_reset_event_queue = {0};
 static system_reset_evt_t system_reset_current_event = {0};
 static system_reset_evt_t system_reset_event_buffer[SYSTEM_RESET_NUM_EVENT];
-
-static system_reset_evt_t const system_reset_request_event = {.super = {.sig = EVT_SYSTEM_RESET_REQUEST} };
 
 
 static void system_reset_task_init(system_reset_task_t * const me, system_reset_evt_t * const e);
@@ -42,9 +41,11 @@ void system_reset_task_ctor(system_reset_task_t * const me, system_reset_task_in
 {
 	SST_Task_ctor(&me->super, (SST_Handler)system_reset_task_init, (SST_Handler)system_reset_task_dispatch, (SST_Evt*)init->current_evt, init->event_buffer);
 	SST_TimeEvt_ctor(&me->system_reset_timer, EVT_SYSTEM_RESET_POLL, &me->super);
+	SST_TimeEvt_ctor(&me->system_reset_delay_time, EVT_SYSTEM_RESET_REQUEST, &me->super);
 	me->state = init->init_state;
 	me->interval = DEFAULT_RESET_POLL_TIME;
 	SST_TimeEvt_disarm(&me->system_reset_timer);
+	SST_TimeEvt_disarm(&me->system_reset_delay_time);
 }
 
 void system_reset_task_ctor_singleton()
@@ -89,11 +90,10 @@ void system_reset_house_keeping(void)
 
 void system_reset_request(void)
 {
-	LL_mDelay(100);
-	NVIC_SystemReset();
+	System_On_Bootloader_Reset();
 }
 
 void system_reset(system_reset_task_t * const me)
 {
-	SST_Task_post(&me->super, (SST_Evt *)&system_reset_request_event);
+	SST_TimeEvt_arm(&me->system_reset_delay_time, 500, 0);
 }

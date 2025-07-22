@@ -12,6 +12,15 @@
 #include "basetypedef.h"
 #include "stdbool.h"
 #include "stdint.h"
+#include "uart_dbg.h"
+
+#define BSP_SPI_DEBUG_PRINTING
+
+#ifdef BSP_SPI_DEBUG_PRINTING
+    #define bsp_spi_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define bsp_spi_debug_print(...)
+#endif
 
 
 #define SAMPLE_BUFFER_SIZE		(16* 1024)		//16KB

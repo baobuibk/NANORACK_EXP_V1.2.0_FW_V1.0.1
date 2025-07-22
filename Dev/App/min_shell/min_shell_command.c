@@ -263,28 +263,24 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
         ret++;
         min_shell_debug_print("sampling rate out of range (1K-800K)\r\n");
     }
-//    samp_rate /= 1000;
 
     if (pre_time == 0)
     {
         ret++;
         min_shell_debug_print("pre_time should be larger than 0\r\n");
     }
-//    pre_time *= 1000;
 
     if (samp_time == 0)
     {
         ret++;
         min_shell_debug_print("sample time should be larger than 0\r\n");
     }
-//    samp_time *= 1000;
 
     if (post_time == 0)
     {
         ret++;
         min_shell_debug_print("post_time should be larger than 0\r\n");
     }
-//    post_time *= 1000;
 
     uint32_t num_sample = ((pre_time + samp_time + post_time) * samp_rate) / 1000000;
     if (num_sample > 2048) // larrger than 4MB
@@ -296,7 +292,7 @@ static void MIN_Handler_SET_PDA_PROFILE_CMD(MIN_Context_t *ctx, const uint8_t *p
     if (!ret)
     {
         experiment_profile_t profile;
-        profile.sampling_rate = samp_rate;    // Hz
+        profile.sampling_rate = samp_rate;    // Hz	// (Sample/second)
         profile.pre_time = pre_time;          // mS
         profile.experiment_time = samp_time;  // mS
         profile.post_time = post_time;        // mS
@@ -441,8 +437,6 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     }
     else
     {
-//        SPI_SlaveDevice_Init();
-//        SPI_SlaveDevice_CollectData();
     	experiment_start_send_to_spi(p_experiment_task, chunk_id);
         min_shell_debug_print("Sent chunk %d\r\n", chunk_id);
     }

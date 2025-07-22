@@ -10,13 +10,9 @@
 
 #define PHOTO_COOL_DEBUG_PRINTING
 
-
 #define TEC_OVR_CONTROL_COMMAND_PAYLOAD_LENGTH	15
 #include "sst.h"
 #include "fsm.h"
-
-
-
 
 #ifdef PHOTO_COOL_DEBUG_PRINTING
     #define photo_cool_debug_print(...) DBG(0,__VA_ARGS__)
@@ -36,7 +32,6 @@ struct tec_ovr_control_evt_t
 	SST_Evt super;
 	uint8_t cmd;
 	uint8_t payload[TEC_OVR_CONTROL_COMMAND_PAYLOAD_LENGTH];
-
 };
 
 

@@ -101,8 +101,6 @@ void MIN_Timeout_Handler(MIN_Context_t *ctx) {
 	min_debug_print("MIN-Timeout!\r\n");
 }
 
-
-
 // Khởi tạo bộ đệm vòng (item_size = 1 byte)
 void min_shell_stdio_init(void)
 {

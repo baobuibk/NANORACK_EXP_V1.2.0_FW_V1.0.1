@@ -31,18 +31,17 @@ enum {TEMPERATURE_POWER_OFF,TEMPERATURE_POWER_ON};
 enum {STOPPED, MANUAL, COOLING_TEC, HEATING_HEATER, HEATING_HEATER_TEC, OFF_WAIT_HEAT};
 enum {TEC_POWER, TEMPERATURE_MAN_CONTROL, HEATER_MAN_CONTROL, CONFIGURE_PROFILE,TEMPERATURE_AUTOMODE_START,TEMPERATURE_MANMODE_START};
 typedef state_t (*temperature_control_state_handler_t)(temperature_control_task_t * const me, temperature_control_evt_t  const * const e);
+
 struct single_tec_data_t {
 	uint8_t tec_status_reg;
 	uint8_t tec_volt;
-
 };
+
 struct temperature_control_evt_t{
 	SST_Evt super;
 	uint8_t cmd;
 	uint8_t payload[TEMPERATURE_CONTROl_COMMAND_PAYLOAD_LENGTH];
-
 };
-
 
 struct temperature_control_profile_t{
 	uint8_t	pri_NTC_idx;		// primary NTC for reference temperature
@@ -55,26 +54,25 @@ struct temperature_control_profile_t{
 	uint8_t heater_duty_cycle; 	// duty cycle for each heater, 0-100%
 	int16_t setpoint;
     uint16_t tec_voltage; // output voltage for each tec
-    };
+};
 
 struct temperature_tec_ovr_profile_t{
 	uint8_t profile_tec_ovr_set;	//index of tec ovr set
     uint16_t tec_ovr_voltage; // output voltage for each tec
-    };
+};
 
 struct temperature_control_task_t {
     SST_Task super;
     temperature_control_state_handler_t state; /* the "state variable" */
     uint32_t state_num;
-    uint32_t	counter;
+    uint32_t counter;
     SST_TimeEvt temperature_control_task_timeout_timer;
-    uint8_t		tec_heater_power_status;
-    struct lt8722_dev * tec_table[4]; //pointer to 4 TECs
-    uint8_t		tec_inited; //low 4 bits for TEC init status, high 4 bit for output status
-
+    uint8_t tec_heater_power_status;
+    struct lt8722_dev * tec_table[4];		//pointer to 4 TECs
+    uint8_t tec_inited;						//low 4 bits for TEC init status, high 4 bit for output status
     temperature_control_profile_t temperature_control_profile;
     temperature_tec_ovr_profile_t temperature_tec_ovr_profile;
-} ;
+};
 
 struct temperature_control_task_init_t {
 	temperature_control_state_handler_t init_state;
@@ -93,8 +91,6 @@ struct temperature_control_task_init_t {
 
 void temperature_control_task_singleton_ctor(void);
 void temperature_control_task_start(uint8_t priority);
-
-
 
 void temperature_control_power_control(temperature_control_task_t * const me, uint32_t status);
 bool temperature_control_is_powered_on(temperature_control_task_t * const me);

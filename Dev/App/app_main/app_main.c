@@ -20,15 +20,12 @@
 
 //DBC_MODULE_NAME("app_main")
 
-
-
-
 void app_init(void)
 {
-	shell_task_ctor_singleton();
-	temperature_control_task_singleton_ctor();
-	monitor_task_ctor_singleton();
 	experiment_task_singleton_ctor();
+	temperature_control_task_singleton_ctor();
+	adc_monitor_task_ctor_singleton();
+	shell_task_ctor_singleton();
 	tec_ovr_control_task_singleton_ctor();
 	min_shell_task_ctor_singleton();
 	system_log_task_ctor_singleton();
@@ -38,12 +35,15 @@ void app_init(void)
 void app_start(void)
 {
 	experiment_task_start(1);
-	shell_task_start(4);
 	temperature_control_task_start(2);
-	monitor_task_start(3);
+	adc_monitor_task_start(3);
+	shell_task_start(4);
 	tec_ovr_control_task_start(5);
-	system_log_task_start(6);
-	min_shell_task_start(7);
+	min_shell_task_start(6);
+	system_log_task_start(7);
+
+
+
 	system_reset_task_start(10);
 	return;
 }
