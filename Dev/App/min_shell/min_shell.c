@@ -12,33 +12,32 @@
 #include "configs.h"
 #include "DBC_assert.h"
 #include "board.h"
+#include "error_codes.h"
+#include "hand_shake/hand_shake.h"
 
 DBC_MODULE_NAME("min_shell")
 
-#define MIN_SHELL_POLL_INTERVAL_MS 10 // Polling interval in milliseconds
-#define MIN_SHELL_TASK_NUM_EVENTS 10
-#define MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE 256
-min_shell_task_t min_shell_inst;
+#define MIN_SHELL_TASK_NUM_EVENTS				10
+#define MIN_SHELL_POLL_INTERVAL_MS				10
+#define MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE 	256
+#define MIN_SHELL_BUSY_TIMEOUT					20000
 
-//static struct min_context min_ctx;
 
-static MIN_Context_t min_ctx;
-static MIN_Context_t *registered_contexts[MAX_MIN_CONTEXTS] = {0};
-
+min_shell_task_t min_shell_task_inst;
+circular_buffer_t min_shell_task_event_queue = {0}; // Circular buffer to hold shell events
 static min_shell_evt_t min_shell_current_event = {0}; // Current event being processed
 static min_shell_evt_t min_shell_task_event_buffer[MIN_SHELL_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
-circular_buffer_t min_shell_task_event_queue = {0}; // Circular buffer to hold shell events
-static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_shell_evt_t const * const e);
-static void min_shell_task_dispatch(min_shell_task_t * const me, min_shell_evt_t * const e) ;
-
-static uint8_t min_shell_received_data[MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE];
-static uint32_t min_shell_received_length = MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE;
 static min_shell_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
 static min_shell_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 
+static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_shell_evt_t const * const e);
+static void min_shell_task_dispatch(min_shell_task_t * const me, min_shell_evt_t * const e) ;
+
 #define MIN_SHELL_UART_BUFFER_SIZE 256
-
-
+static MIN_Context_t min_ctx;
+static MIN_Context_t *registered_contexts[MAX_MIN_CONTEXTS] = {0};
+static uint8_t min_shell_received_data[MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE];
+static uint32_t min_shell_received_length = MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE;
 static circular_char_buffer_t rx_buffer;
 static circular_char_buffer_t tx_buffer;
 static uint8_t rx_static_buffer[MIN_SHELL_UART_BUFFER_SIZE];
@@ -110,7 +109,8 @@ void min_shell_stdio_init(void)
     uart_stdio_init(&min_shell_stdio, MIN_SHELL_UART, &rx_buffer, &tx_buffer);
 }
 
-static void min_shell_task_init(min_shell_task_t * const me, min_shell_evt_t const * const e) {
+static void min_shell_task_init(min_shell_task_t * const me, min_shell_evt_t const * const e)
+{
     DBC_ASSERT(1u, me != NULL);
     me->min_context = &min_ctx; // Assign the context to the task
     MIN_Context_Init(me->min_context, EXP_MIN_PORT);
@@ -139,10 +139,12 @@ static void min_shell_task_ctor(min_shell_task_t * const me, min_shell_task_init
     SST_Task_ctor(&me->super, (SST_Handler) min_shell_task_init, (SST_Handler) min_shell_task_dispatch,
                   (SST_Evt *) init->current_evt, init->min_shell_event_buffer);
     SST_TimeEvt_ctor(&me->min_poll_timer, EVT_MIN_POLL, &(me->super)); // Initialize the polling timer
+    SST_TimeEvt_ctor(&me->min_busy_timeout_timer, EVT_MIN_BUSY_TIMEOUT, &(me->super)); // Initialize the min_busy_timeout_timer
     me->state = init->init_state; // Set the initial state
     me->min_context = init->min_context; // Set the MIN context
     me->min_shell_uart = init->min_shell_uart; // Set the UART for MIN communication
     SST_TimeEvt_disarm(&me->min_poll_timer); // Disarm the polling timer
+    SST_TimeEvt_disarm(&me->min_busy_timeout_timer); // Disarm the min_busy_timeout_timer
 }
 
 void min_shell_task_ctor_singleton(void)
@@ -157,12 +159,12 @@ void min_shell_task_ctor_singleton(void)
         .current_evt = &min_shell_current_event, // Pointer to the current event being processed
         .min_shell_event_buffer = &min_shell_task_event_queue // Pointer to the circular buffer for events
     };
-    min_shell_task_ctor(&min_shell_inst, &min_shell_task_init);
+    min_shell_task_ctor(&min_shell_task_inst, &min_shell_task_init);
 }
 
 void min_shell_task_start(uint8_t priority)
 {
-    SST_Task_start(&min_shell_inst.super,priority);
+    SST_Task_start(&min_shell_task_inst.super,priority);
 }
 
 static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_shell_evt_t const * const e)
@@ -173,6 +175,7 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
     	case SIG_ENTRY:
     		SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
     		return HANDLED_STATUS;
+
         case EVT_MIN_POLL:
         	min_shell_received_length = MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE;
 
@@ -184,13 +187,39 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
             MIN_App_Poll(me->min_context, NULL, 0);
             return HANDLED_STATUS;
 
+        case EVT_MIN_BUSY:
+        	SST_TimeEvt_disarm(&me->min_poll_timer);
+        	handshake_min_busy();
+        	min_shell_debug_print("Src: Min process ->> Event: min busy");
+        	SST_TimeEvt_arm(&me->min_busy_timeout_timer, MIN_SHELL_BUSY_TIMEOUT, 0);
+        	return HANDLED_STATUS;
+
+        case EVT_MIN_READY:
+        case EVT_MIN_BUSY_TIMEOUT:
+        	SST_TimeEvt_disarm(&me->min_busy_timeout_timer);
+        	handshake_min_ready();
+        	min_shell_debug_print("Src: Min process ->> Event: min busy timeout. Return Polling event");
+        	SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
+        	return HANDLED_STATUS;
         default:
             return IGNORED_STATUS;
     }
 }
 
 
+uint32_t min_shell_busy_set(min_shell_task_t * const me)
+{
+	min_shell_evt_t min_busy_set_evt = {.super = {.sig = EVT_MIN_BUSY}, };
+	SST_Task_post(&me->super, (SST_Evt *)&min_busy_set_evt);
+	return ERROR_OK;
+}
 
+uint32_t min_shell_busy_clear(min_shell_task_t * const me)
+{
+	min_shell_evt_t min_busy_clear_evt = {.super = {.sig = EVT_MIN_READY}, };
+	SST_Task_post(&me->super, (SST_Evt *)&min_busy_clear_evt);
+	return ERROR_OK;
+}
 
 
 ////////////////////////////////// CALLBACKS ///////////////////////////////////
@@ -202,14 +231,14 @@ uint16_t min_tx_space(uint8_t port)
   // Ignore 'port' because we have just one context. But in a bigger application
   // with multiple ports we could make an array indexed by port to select the serial
   // port we need to use.
-  return circular_char_buffer_get_free_space(min_shell_inst.min_shell_uart->rx_buffer);
+  return circular_char_buffer_get_free_space(min_shell_task_inst.min_shell_uart->rx_buffer);
 }
 
 // Send a character on the designated port.
 void min_tx_byte(uint8_t port, uint8_t byte)
 {
   // Ignore 'port' because we have just one context.
-	uart_stdio_write_char(min_shell_inst.min_shell_uart, byte);
+	uart_stdio_write_char(min_shell_task_inst.min_shell_uart, byte);
 
 }
 
@@ -250,22 +279,9 @@ void MIN_Send(MIN_Context_t *ctx, uint8_t min_id, const uint8_t *payload, uint8_
     }
 }
 
-
-
 void UART7_IRQHandler(void)
 {
-	uart_stdio_rx_callback(min_shell_inst.min_shell_uart);
-	uart_stdio_tx_callback(min_shell_inst.min_shell_uart);
+	uart_stdio_rx_callback(min_shell_task_inst.min_shell_uart);
+	uart_stdio_tx_callback(min_shell_task_inst.min_shell_uart);
 }
-
-//void min_shell_rx_callback(void) // Callback xử lý ngắt nhận
-//{
-//    // Read data from the UART and process it
-//    if (LL_USART_IsActiveFlag_RXNE(MIN_SHELL_UART)) {
-//    	min_shell_received_data[0] = LL_USART_ReceiveData8(MIN_SHELL_UART);
-//
-//    	has_data_evt.data_len = 1;
-//        SST_Task_post(&min_shell_inst.super, (SST_Evt *)&has_data_evt); // Post event to shell task
-//    }
-//}
 

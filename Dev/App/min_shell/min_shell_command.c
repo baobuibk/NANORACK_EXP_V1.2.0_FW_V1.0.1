@@ -16,14 +16,20 @@
 #include "system_reset.h"
 #include "bsp_spi_ram.h"
 #include "system_log.h"
+#include "date_time.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <string.h>
 #include <stdio.h>
+
 // =================================================================
 // Header Define
 // =================================================================
+
+extern min_shell_task_t min_shell_task_inst;
+static min_shell_task_t *p_min_shell_task = &min_shell_task_inst;
+
 extern temperature_control_task_t temperature_control_task_inst;
 static temperature_control_task_t *p_temperature_control_task = &temperature_control_task_inst;
 
@@ -35,6 +41,7 @@ static system_reset_task_t *p_system_reset_task = &system_reset_task_inst;
 
 extern system_log_task_t system_log_task_inst;
 static system_log_task_t *p_system_log_task = &system_log_task_inst;
+
 // =================================================================
 // Command Handlers
 // =================================================================
@@ -74,18 +81,14 @@ static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *p
 
 static void MIN_Handler_SET_WORKING_RTC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-	uint8_t Day  = payload[0];
-	uint8_t Hour = payload[1];
-	uint8_t Min  = payload[2];
-	uint8_t Sec  = payload[3];
+	uint8_t day  = payload[0];
+	uint8_t hour = payload[1];
+	uint8_t min  = payload[2];
+	uint8_t second  = payload[3];
 
 	MIN_Send(ctx, SET_WORKING_RTC_ACK, payload, len);
-
-	//
-	// Cài đặt tgian chưa có hàmm-- hoàn thiện sau
-	//
-
-	min_shell_debug_print("set time: day: %d %d:%d:%d\r\n", Day, Hour, Min, Sec);
+	date_time_set(day, hour, min, second);
+	min_shell_debug_print("set time: day: %d %d:%d:%d\r\n", day, hour, min, second);
 }
 
 static void MIN_Handler_SET_NTC_CONTROL_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -389,7 +392,7 @@ static void MIN_Handler_START_SAMPLE_CYCLE_CMD(MIN_Context_t *ctx, const uint8_t
     }
     else
     {
-    	min_handshake_busy();
+    	min_shell_busy_set(p_min_shell_task);
         min_shell_debug_print("Stop Min\r\nStart sampling...\r\n");
     }
 
@@ -437,8 +440,8 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     }
     else
     {
-    	experiment_start_send_to_spi(p_experiment_task, chunk_id);
-        min_shell_debug_print("Sent chunk %d\r\n", chunk_id);
+    	experiment_sample_send_to_spi(p_experiment_task, chunk_id);
+        min_shell_debug_print("Already prepare sample chunk %d\r\n", chunk_id);
     }
     MIN_Send(ctx, GET_CHUNK_ACK, buffer, 2);
 }
@@ -456,12 +459,21 @@ static void MIN_Handler_GET_CHUNK_CRC_CMD(MIN_Context_t *ctx, const uint8_t *pay
 
 static void MIN_Handler_GET_LASER_CURRENT_DATA_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-    return;
+    uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
+    experiment_current_send_to_spi(p_experiment_task);
+    min_shell_debug_print("Already prepare current chunk\r\n");
+    MIN_Send(ctx, GET_LASER_CURRENT_DATA_ACK, buffer, 2);
 }
 
 static void MIN_Handler_GET_LASER_CURRENT_CRC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-    return;
+    uint8_t buffer[2];
+    uint16_t crc = SPI_SlaveDevide_GetDataCRC();
+    buffer[0] = (crc >> 8) & 0xFF;
+    buffer[1] = crc & 0xFF;
+    MIN_Send(ctx, GET_LASER_CURRENT_CRC_ACK, buffer, 2);
+
+    min_shell_debug_print("Current chunk CRC: 0x%04X\r\n", payload[0], crc);
 }
 
 static void MIN_Handler_SET_EXT_LASER_INTENSITY_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -509,71 +521,6 @@ static void MIN_Handler_TURN_OFF_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t
 	min_shell_debug_print("TURN_OFF_EXT_LASER_ACK\r\n");
 }
 
-//static void MIN_Handler_SET_LASER_INT_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
-//{
-//	uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
-//	uint8_t laser_idx = payload[0];
-//	uint8_t percent   = payload[1];
-//	uint8_t ret = 0;
-//
-//	if ((laser_idx < 1) || (laser_idx > INTERNAL_CHAIN_CHANNEL_NUM))
-//	{
-//		ret++;
-//		min_shell_debug_print("argument 1 out of range (1-36)\r\n");
-//	}
-//	if (percent > 100)
-//	{
-//		ret++;
-//		min_shell_debug_print("argument 1 out of range (0-100)\r\n");
-//	}
-//
-//	if (!ret)
-//	{
-//		experiment_task_laser_set_current(p_experiment_task, 0, percent);
-//		experiment_task_int_laser_switchon(p_experiment_task,  laser_idx);
-//		min_shell_debug_print("SET_LASER_INT_CMD is OK\r\n");
-//	}
-//	else
-//	{
-//		buffer[0] = MIN_RESP_FAIL;
-//		buffer[1] = MIN_RESP_FAIL;
-//		min_shell_debug_print("SET_LASER_INT_CMD is FAIL\r\n");
-//	}
-//	MIN_Send(ctx, SET_LASER_INT_ACK, buffer, 2);
-//}
-//
-//static void MIN_Handler_SET_LASER_EXT_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
-//{
-//	uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
-//	uint8_t laser_idx = payload[0];
-//	uint8_t percent   = payload[1];
-//	uint8_t ret = 0;
-//
-//	if ((laser_idx < 1) || (laser_idx > EXTERNAL_CHAIN_CHANNEL_NUM))
-//	{
-//		ret++;
-//		min_shell_debug_print("argument 1 out of range (1-8)\r\n");
-//	}
-//	if (percent > 100)
-//	{
-//		ret++;
-//		min_shell_debug_print("argument 1 out of range (0-100)\r\n");
-//	}
-//
-//	if (!ret)
-//	{
-//		experiment_task_laser_set_current(p_experiment_task, 1, percent);
-//		experiment_task_ext_laser_switchon(p_experiment_task,  laser_idx);
-//		min_shell_debug_print("SET_LASER_EXT_CMD is OK\r\n");
-//	}
-//	else
-//	{
-//		buffer[0] = MIN_RESP_FAIL;
-//		buffer[1] = MIN_RESP_FAIL;
-//		min_shell_debug_print("SET_LASER_EXT_CMD is FAIL\r\n");
-//	}
-//	MIN_Send(ctx, SET_LASER_INT_ACK, buffer, 2);
-//}
 
 static void MIN_Handler_GET_LASER_CURRENT_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
@@ -621,8 +568,7 @@ static const MIN_Command_t command_table[] = {
     {TURN_ON_EXT_LASER_CMD, MIN_Handler_TURN_ON_EXT_LASER_CMD},
     {TURN_OFF_EXT_LASER_CMD, MIN_Handler_TURN_OFF_EXT_LASER_CMD},
 
-//    {SET_LASER_INT_CMD, MIN_Handler_SET_LASER_INT_CMD},
-//    {SET_LASER_EXT_CMD, MIN_Handler_SET_LASER_EXT_CMD},
+
     {GET_LASER_CURRENT_CMD, MIN_Handler_GET_LASER_CURRENT_CMD},
 
 };

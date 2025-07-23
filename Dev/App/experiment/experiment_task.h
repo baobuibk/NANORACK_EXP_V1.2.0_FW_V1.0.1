@@ -96,6 +96,8 @@ uint32_t experiment_task_done_send_header_evt(experiment_task_t * const me);
 uint32_t experiment_task_done_read_ram_evt(experiment_task_t * const me);
 uint32_t experiment_task_done_send_chunk(experiment_task_t * const me);
 uint32_t experiment_task_photo_ADC_prepare_SPI(experiment_task_t * const me);
-uint32_t experiment_start_send_to_spi(experiment_task_t * const me, uint16_t chunk_id);
+
+uint32_t experiment_sample_send_to_spi(experiment_task_t * const me, uint16_t chunk_id);
+uint32_t experiment_current_send_to_spi(experiment_task_t * const me);
 
 #endif /* APP_EXPERIMENT_EXPERIMENT_TASK_H_ */

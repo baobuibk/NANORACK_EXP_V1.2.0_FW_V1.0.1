@@ -85,7 +85,6 @@ enum {
     SYSTEM_STARTED
 };
 
-void lwl_stdio_init(void);
 void lwl_start(void);
 
 // Other APIs.
@@ -97,7 +96,9 @@ void LWL(uint8_t id, ...) ;
 // The special __COUNTER__ macro (not official C but supported by many
 // compilers) is used to generate LWL IDs.
 
+void lwl_buffer_full_notify(void);
 
+void lwl_clear_notification(void);
 
 
 #endif // _LWL_H_

@@ -27,6 +27,7 @@
 #include "sst.h"
 #include "shell.h"
 #include "min_shell.h"
+#include "date_time.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -188,12 +189,12 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-	//SCH_RunSystemTickTimer();
-	SST_TimeEvt_tick();
+  //SCH_RunSystemTickTimer();
+  SST_TimeEvt_tick();
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  date_time_update();
   /* USER CODE END SysTick_IRQn 1 */
 }
 

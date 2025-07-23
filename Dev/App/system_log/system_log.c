@@ -5,26 +5,29 @@
  *      Author: Admin
  */
 #include "lwl.h"
-#include "adc_monitor.h"
 #include "app_signals.h"
 #include "system_log.h"
 #include "error_codes.h"
 #include "dbc_assert.h"
 
+#include "adc_monitor.h"
+
 //DBC_MODULE_NAME("system_log")
 
-#define SYSTEM_LOG_NUM_EVENT 			1
-#define DEFAULT_POLL_TIME 				1000
+#define SYSTEM_LOG_NUM_EVENT 		1
+#define DEFAULT_POLL_TIME 			1000
+
 
 system_log_task_t system_log_task_inst;
-circular_buffer_t system_log_event_queue = {0};static system_log_evt_t system_log_current_event = {0};static system_log_evt_t system_log_event_buffer[SYSTEM_LOG_NUM_EVENT];
-
+circular_buffer_t system_log_event_queue = {0};
+static system_log_evt_t system_log_current_event = {0};
+static system_log_evt_t system_log_event_buffer[SYSTEM_LOG_NUM_EVENT];
 
 static void system_log_task_init(system_log_task_t * const me, system_log_evt_t * const e);
 //static void system_log_task_dispatch(system_log_task_t * const me, system_log_evt_t * const e);
 static state_t system_log_normal_state_handler(system_log_task_t * const me, system_log_evt_t * const e);
 
-void system_log_house_keeping(void);
+void system_log_house_keeping(system_log_task_t * const me);
 
 void system_log_task_ctor(system_log_task_t * const me, system_log_task_init_t * const init)
 {
@@ -32,20 +35,19 @@ void system_log_task_ctor(system_log_task_t * const me, system_log_task_init_t *
 	SST_TimeEvt_ctor(&me->system_log_timer, EVT_SYSTEM_LOG_POLL, &me->super);
 	me->state = init->init_state;
 	me->interval = DEFAULT_POLL_TIME;
+	me->ntc_log_mask = 0xFF;
 	SST_TimeEvt_disarm(&me->system_log_timer);
 }
 
 void system_log_task_ctor_singleton()
 {
+	circular_buffer_init(&system_log_event_queue, (uint8_t *)system_log_event_buffer, sizeof(system_log_event_buffer), SYSTEM_LOG_NUM_EVENT, sizeof(system_log_evt_t));
 	system_log_task_init_t init = {
 			.current_evt = &system_log_current_event,
 			.event_buffer = &system_log_event_queue,
 			.init_state = system_log_normal_state_handler
 	};
-	circular_buffer_init(&system_log_event_queue, (uint8_t *)&system_log_event_buffer, sizeof(system_log_event_buffer), SYSTEM_LOG_NUM_EVENT, sizeof(system_log_evt_t));
-	lwl_stdio_init();
 	system_log_task_ctor(&system_log_task_inst,&init);
-
 }
 
 static void system_log_task_init(system_log_task_t * const me, system_log_evt_t * const e)
@@ -58,26 +60,23 @@ void system_log_task_start(uint8_t priority)
 {
 	SST_Task_start(&system_log_task_inst.super, priority);
 }
-
 static state_t system_log_normal_state_handler(system_log_task_t * const me, system_log_evt_t * const e)
 {
 	// assume the only event is SYSTEM_LOG_POLL
 	switch (e->super.sig)
 	{
-		case EVT_SYSTEM_LOG_POLL:
-			system_log_house_keeping();
-			return HANDLED_STATUS;
-		default:
-			return IGNORED_STATUS;
+	case EVT_SYSTEM_LOG_POLL:
+		system_log_house_keeping(me);
 	}
+	return HANDLED_STATUS;
 }
 
 
-void system_log_house_keeping()
+void system_log_house_keeping(system_log_task_t * const me)
 {
 	LWL(TIMESTAMP, LWL_4(SST_getTick()));
-	for (uint32_t i=0; i<8; i++)
-		if (system_log_task_inst.ntc_log_mask & (0x01 << i))
+	for (uint32_t i=0;i<8;i++)
+		if (me->ntc_log_mask & (0x01 << i))
 			LWL(TEMPERATURE_SINGLE_NTC,LWL_1(i),LWL_2(temperature_monitor_get_ntc_temperature(i)));
 }
 
@@ -89,8 +88,8 @@ void system_log_set_interval(uint32_t interval)
 void system_log_enable()
 {
 	SST_TimeEvt_arm(&system_log_task_inst.system_log_timer, system_log_task_inst.interval, system_log_task_inst.interval);
-
 }
+
 void system_log_disable()
 {
 	SST_TimeEvt_disarm(&system_log_task_inst.system_log_timer);
