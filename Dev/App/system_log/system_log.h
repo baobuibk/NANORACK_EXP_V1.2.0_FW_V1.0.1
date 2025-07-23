@@ -8,8 +8,6 @@
 #ifndef APP_SYSTEM_LOG_SYSTEM_LOG_H_
 #define APP_SYSTEM_LOG_SYSTEM_LOG_H_
 
-
-
 #include "sst.h"
 #include "fsm.h"
 
@@ -28,6 +26,7 @@ struct system_log_task_t{
 	SST_TimeEvt system_log_timer;
 	system_log_task_handler_t state; /* the "state variable" */
 	uint32_t	interval;
+	uint8_t ntc_log_mask;
 };
 
 struct system_log_task_init_t {
@@ -39,4 +38,6 @@ struct system_log_task_init_t {
 
 void system_log_task_ctor_singleton(void);
 void system_log_task_start(uint8_t priority);
+
+void system_log_task_set_ntc_log_mask(system_log_task_t *const me, uint8_t mask);
 #endif /* APP_SYSTEM_LOG_SYSTEM_LOG_H_ */

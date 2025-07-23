@@ -20,13 +20,25 @@
 
 DBC_MODULE_NAME("shell")
 
-
+#define SHELL_TASK_NUM_EVENTS		30
 shell_task_t shell_task_inst ;
-#define SHELL_TASK_NUM_EVENTS 30
-shell_evt_t shell_current_event = {0}; // Current event being processed
-shell_evt_t shell_task_event_buffer[SHELL_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
+
+static shell_evt_t shell_current_event = {0}; // Current event being processed
+static shell_evt_t shell_task_event_buffer[SHELL_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
+static shell_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
+static shell_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
+static shell_evt_t const uart_empty_evt = {.super = {.sig = EVT_SHELL_UART_EMPTY},									};
+static shell_evt_t const uart_send_buffer_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER},};
+static shell_evt_t const uart_send_chunk_evt = {.super = {.sig = EVT_SHELL_SEND_CHUNK},};
+static shell_evt_t const uart_send_buffer_bin_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER_BINARY},};
+static shell_evt_t const uart_send_crc_evt = {.super = {.sig = EVT_SHELL_SEND_CRC},};
+
 circular_buffer_t shell_task_event_queue = {0}; // Circular buffer to hold shell events
 
+extern experiment_task_t experiment_task_inst;
+static experiment_task_t *p_experiment_task = &experiment_task_inst;
+
+// UART_STDIO
 #define SHELL_UART_RX_BUFFER_SIZE 1024
 #define SHELL_UART_TX_BUFFER_SIZE 4*1024
 
@@ -38,14 +50,14 @@ uint8_t tx_static_buffer[SHELL_UART_TX_BUFFER_SIZE];
 
 static bool enable_shell_empty = false;
 
-#define SHELL_UART_CLI_BUFFER_SIZE	4096
-#define SHELL_UART_CLI_RX_BUFFER_SIZE	128
-#define SHELL_UART_CLI_CMD_BUFFER_SIZE	64
-#define SHELL_UART_CLI_HISTORY_BUFFER_SIZE 256
+#define SHELL_UART_CLI_BUFFER_SIZE			4096
+#define SHELL_UART_CLI_RX_BUFFER_SIZE		128
+#define SHELL_UART_CLI_CMD_BUFFER_SIZE		64
+#define SHELL_UART_CLI_HISTORY_BUFFER_SIZE	256
 
-#define SHELL_POLL_INTERVAL 10
+#define SHELL_POLL_INTERVAL 				10
 
-#define SHELL_UART_INITATION		    "EXP $ "
+#define SHELL_UART_INITATION		    	"EXP $ "
 
 static EmbeddedCli * shell_uart_cli = NULL;
 static CLI_UINT  shell_buffer[BYTES_TO_CLI_UINTS(SHELL_UART_CLI_BUFFER_SIZE * sizeof(char))];
@@ -62,17 +74,6 @@ static void shell_htoa(shell_task_t * const me);
 static void shell_binary(shell_task_t * const me);
 static void crc16_CCITT_update(uint16_t *crc, uint16_t data);
 
-static shell_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
-static shell_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
-static shell_evt_t const uart_empty_evt = {.super = {.sig = EVT_SHELL_UART_EMPTY},
-											};
-static shell_evt_t const uart_send_buffer_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER},};
-static shell_evt_t const uart_send_chunk_evt = {.super = {.sig = EVT_SHELL_SEND_CHUNK},};
-
-
-static experiment_evt_t const done_send_header_evt = {.super = {.sig = EVT_EXPERIMENT_DONE_SEND_HEADER},};
-static experiment_evt_t const done_send_chunk = {.super = {.sig = EVT_EXPERIMENT_DONE_SEND_CHUNK}};
-extern experiment_task_t experiment_task_inst;
 // Khởi tạo bộ đệm vòng (item_size = 1 byte)
 void shell_stdio_init(void)
 {
@@ -81,9 +82,6 @@ void shell_stdio_init(void)
 
     // Khởi tạo UART_Stdio
     uart_stdio_init(&uart_stdio, CLI_UART, &rx_buffer, &tx_buffer);
-
-    // Kích hoạt UART
-
 }
 
 static uint32_t shell_cli_init(void) {
@@ -196,7 +194,6 @@ static state_t shell_state_process_handler(shell_task_t * const me, shell_evt_t 
             return IGNORED_STATUS;
         }
     }
-    
 }
 
 
@@ -301,7 +298,7 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
         case SIG_ENTRY:
         {
         	// Send 3 byte header
-        	uint32_t header = (0x003FFFFF & (experiment_task_inst.data_profile.total_data * 2)) | 0xFFC00000;
+        	uint32_t header = (0x003FFFFF & (experiment_task_inst.data_profile.num_data * 2)) | 0xFFC00000;
 			bytes_temp[0] = (uint8_t)(header >> 16);
 			bytes_temp[1] = (uint8_t)(header >> 8);
 			bytes_temp[2] = (uint8_t)header;
@@ -311,7 +308,8 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 			}
 
 			// Create event if done send evt
-			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_header_evt);
+//			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_header_evt);
+			experiment_task_done_send_header_evt(p_experiment_task);
 			return HANDLED_STATUS;
         }
 
@@ -333,7 +331,8 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 				}
 			}
 			// Create event if done send chunk and have other chunk
-			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+//			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+			experiment_task_done_send_chunk(p_experiment_task);
 			return HANDLED_STATUS;
         }
 
@@ -353,7 +352,8 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 				if(!me->remain_word)
 				{
 					enable_shell_empty = false;
-					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+//					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+					experiment_task_done_send_chunk(p_experiment_task);
 				}
 			}
 
@@ -374,7 +374,8 @@ static state_t shell_state_send_long_buffer_binary_handler(shell_task_t * const 
 				if(!me->remain_word)
 				{
 					enable_shell_empty = false;
-					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+//					SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+					experiment_task_done_send_chunk(p_experiment_task);
 				}
 			}
 
@@ -432,7 +433,9 @@ static void shell_htoa(shell_task_t * const me)
 	me->htoa_buffer[3] = hex_chars[data & 0x0F];         // Nibble thấp nhất (bit 3-0)
 	me->htoa_buffer[4] = ' ';
     me->htoa_buffer_index = 0;
-    if (!me->remain_word)	SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+    if (!me->remain_word)
+//    	SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&done_send_chunk);
+    	experiment_task_done_send_chunk(p_experiment_task);
 }
 
 void shell_send_buffer(shell_task_t * const me, uint16_t *buffer, uint32_t size, uint8_t mode)
@@ -447,4 +450,13 @@ void shell_send_buffer(shell_task_t * const me, uint16_t *buffer, uint32_t size,
 	else SST_Task_post(&me->super, (SST_Evt *)&uart_send_buffer_evt);
 }
 
+void shell_uart_send_buffer_bin_evt(shell_task_t * const me)
+{
+	SST_Task_post(&me->super, (SST_Evt *)&uart_send_buffer_bin_evt);
+}
+
+void shell_uart_send_crc_evt(shell_task_t * const me)
+{
+	SST_Task_post(&me->super, (SST_Evt *)&uart_send_crc_evt);
+}
 

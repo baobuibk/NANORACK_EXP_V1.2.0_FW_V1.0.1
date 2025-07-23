@@ -28,22 +28,24 @@ struct experiment_evt_t{
 };
 
 struct experiment_profile_t{
-	uint32_t sampling_rate;										// Hz
+	uint32_t sampling_rate;										// Hz		(Sample/second)
 	uint8_t pos;
 	uint8_t	laser_percent;
 	uint16_t pre_time; //time before switching					// mS
 	uint16_t experiment_time;//time when switch the laser on	// mS
 	uint16_t post_time; //time after switching off the laser	// mS
 	uint32_t num_sample;										// kSample
-	uint32_t period;											//
+	uint32_t period;											// uS
 };
+
 struct data_profile_t{
-	uint32_t total_data;
+//	uint32_t total_data;
 	uint32_t start_address;
 	uint32_t num_data;
 	uint8_t	destination; //0: send to UART console, 1: to SPI
 	uint8_t mode; //0 ascii, 1: binary
 };
+
 struct experiment_task_t{
 	SST_Task super;
 	experiment_task_handler_t state;
@@ -69,6 +71,7 @@ struct experiment_task_init_t {
 	circular_buffer_t * event_buffer;
 	uint8_t	sub_state;
 };
+
 void experiment_task_singleton_ctor(void);
 void experiment_task_start(uint8_t priority);
 uint32_t experiment_task_laser_set_current(experiment_task_t * const me, uint32_t laser_id, uint32_t percent);
@@ -89,6 +92,12 @@ uint32_t experiment_task_get_ram_data(experiment_task_t * const me, uint32_t sta
 void experiment_task_get_profile(experiment_task_t * me, experiment_profile_t * profile);
 uint32_t experiment_start_measuring(experiment_task_t * const me);
 uint32_t experiment_task_data_transfer(experiment_task_t * const me);
+uint32_t experiment_task_done_send_header_evt(experiment_task_t * const me);
+uint32_t experiment_task_done_read_ram_evt(experiment_task_t * const me);
+uint32_t experiment_task_done_send_chunk(experiment_task_t * const me);
 uint32_t experiment_task_photo_ADC_prepare_SPI(experiment_task_t * const me);
+
+uint32_t experiment_sample_send_to_spi(experiment_task_t * const me, uint16_t chunk_id);
+uint32_t experiment_current_send_to_spi(experiment_task_t * const me);
 
 #endif /* APP_EXPERIMENT_EXPERIMENT_TASK_H_ */

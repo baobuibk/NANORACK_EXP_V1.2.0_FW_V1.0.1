@@ -12,6 +12,15 @@
 #include "basetypedef.h"
 #include "stdbool.h"
 #include "stdint.h"
+#include "uart_dbg.h"
+
+#define BSP_SPI_DEBUG_PRINTING
+
+#ifdef BSP_SPI_DEBUG_PRINTING
+    #define bsp_spi_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define bsp_spi_debug_print(...)
+#endif
 
 
 #define SAMPLE_BUFFER_SIZE		(16* 1024)		//16KB
@@ -24,7 +33,7 @@ typedef enum {
 } SPI_TransferState_t;
 
 typedef struct {
-	uint8_t sample_buffer[SAMPLE_BUFFER_SIZE];
+	uint16_t * p_tx_buffer;
 	uint16_t crc; // CRC16-XMODEM of the data
 	_Bool is_valid; // Flag indicating if context is valid
 } DataProcessContext_t;
@@ -36,7 +45,7 @@ typedef struct {
 } SPI_SlaveDevice_t;
 
 SPI_SlaveDevice_t* SPI_SlaveDevice_GetHandle(void);
-Std_ReturnType SPI_SlaveDevice_Init(void);
+Std_ReturnType SPI_SlaveDevice_Init(uint16_t * p_tx_buffer);
 Std_ReturnType SPI_SlaveDevice_CollectData(void);
 Std_ReturnType SPI_SlaveDevice_GetDataInfo(DataProcessContext_t *context);
 Std_ReturnType SPI_SlaveDevice_ReinitDMA(void);

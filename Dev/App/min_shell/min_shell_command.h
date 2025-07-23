@@ -10,9 +10,9 @@
 
 
 #include "min_shell.h"
+#include "hand_shake/hand_shake.h"
 
 #include <stdint.h>
-
 
 // =================================================================
 // Command IDs (Maximum ID: 63)
@@ -142,11 +142,5 @@ const MIN_Command_t *MIN_GetCommandTable(void);
  * @return Number of entries in the command table.
  */
 int MIN_GetCommandTableSize(void);
-
-
-
-void min_handshake_busy(void);
-
-void min_handshake_ready(void);
 
 #endif /* APP_MIN_SHELL_MIN_SHELL_COMMAND_H_ */

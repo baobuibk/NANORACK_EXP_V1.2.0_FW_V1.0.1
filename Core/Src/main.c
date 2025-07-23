@@ -99,14 +99,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_PWR);
-  LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SYSCFG);
-
-  /* System interrupt init*/
-  NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
-
-  /* SysTick_IRQn interrupt configuration */
-  NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -259,8 +252,13 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_Init1msTick(200000000);
   LL_SetSystemCoreClock(200000000);
+
+   /* Update the time base */
+  if (HAL_InitTick (TICK_INT_PRIORITY) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
    /* Set Timers Clock Prescalers */
   LL_RCC_SetTIMPrescaler(LL_RCC_TIM_PRESCALER_TWICE);
@@ -1609,6 +1607,9 @@ static void MX_GPIO_Init(void)
   LL_GPIO_ResetOutputPin(MIN_HandShake_GPIO_Port, MIN_HandShake_Pin);
 
   /**/
+  LL_GPIO_ResetOutputPin(IRQ_0_GPIO_Port, IRQ_0_Pin);
+
+  /**/
   LL_GPIO_ResetOutputPin(LED_G_GPIO_Port, LED_G_Pin);
 
   /**/
@@ -1769,7 +1770,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(MIN_HandShake_GPIO_Port, &GPIO_InitStruct);
 
   /**/
@@ -1812,8 +1813,10 @@ static void MX_GPIO_Init(void)
 
   /**/
   GPIO_InitStruct.Pin = IRQ_0_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(IRQ_0_GPIO_Port, &GPIO_InitStruct);
 
   /**/

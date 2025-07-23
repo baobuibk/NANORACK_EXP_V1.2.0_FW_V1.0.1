@@ -1,22 +1,24 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
-
+#include "module.h"
 #include "log.h"
 #include "lwl.h"
-#include "module.h"
-#include "uart_stdio.h"
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Common macros
 ////////////////////////////////////////////////////////////////////////////////
-#define LWL_TX_BUFFER_SIZE 256
+
 #define LWL_START_BYTE 0xAA // Start byte for each log record
 
 #ifdef CONFIG_LWL_BUF_SIZE
-    #define LWL_BUF_SIZE (CONFIG_LWL_BUF_SIZE)
+    #define 	LWL_BUF_SIZE 		(CONFIG_LWL_BUF_SIZE)
+ 	 #define 	LWL_BUF_THRESHOLD 	(CONFIG_LWL_BUF_THRESHOLD)
 #else
-    #define LWL_BUF_SIZE 1008
+    #define LWL_BUF_SIZE 			8*1024
+	#define LWL_BUF_THRESHOLD 		7*1024
 #endif
 
 
@@ -62,15 +64,20 @@ struct lwl_msg {
 };
 
 // For writing to flash, this structure needs to be a multiple of 8 bytes.
-struct lwl_data {
+struct lwl_data_buffer {
     uint32_t put_idx;
     uint8_t buf[LWL_BUF_SIZE];
 };
 
-static UART_stdio_t lwl_uart_stdio;
-static circular_char_buffer_t tx_buffer;
-static uint8_t tx_static_buffer[LWL_TX_BUFFER_SIZE];
-static struct lwl_data lwl_data;
+typedef struct lwl_t{
+	uint32_t lwl_data_index;
+	bool	 lwl_data_over_threshold;
+	struct lwl_data_buffer lwl_data[2];
+
+}lwl_t;
+
+
+static struct lwl_t lwl;
 
 
 
@@ -102,19 +109,19 @@ static const struct lwl_msg lwl_msg_table[] = {
 };
 static const uint8_t lwl_msg_table_size = sizeof(lwl_msg_table) / sizeof(lwl_msg_table[0]);
 
-////////////////////////////////////////////////////////////////////////////////
-// Private function declarations
-////////////////////////////////////////////////////////////////////////////////
-void lwl_stdio_init(void) {
-    circular_char_buffer_init(&tx_buffer, tx_static_buffer, LWL_TX_BUFFER_SIZE);
-    uart_stdio_init(&lwl_uart_stdio, LWL_UART, NULL, &tx_buffer);
+
+void lwl_init(lwl_t *lwl) {
+    // Xóa toàn bộ cấu trúc về 0 bằng memset
+    memset(lwl, 0, sizeof(lwl_t));
 }
 
-void lwl_start(void) {
-    lwl_stdio_init();
-    uart_stdio_active(&lwl_uart_stdio);
-    lwl_data.put_idx = 0;
+void lwl_start() {
+    // Xóa toàn bộ cấu trúc về 0 bằng memset
+	lwl_init(&lwl);
+	lwl_clear_notification();
+
 }
+
 
 /*
  * @brief Record a lightweight log with start byte, length, and CRC.
@@ -131,6 +138,8 @@ void LWL(uint8_t id, ...) {
     va_list ap;
     uint32_t put_idx;
 
+    struct lwl_data_buffer * lwl_data = &lwl.lwl_data[lwl.lwl_data_index];
+
     // Validate ID
     if (id == 0 || id >= lwl_msg_table_size || lwl_msg_table[id].fmt == NULL) {
         return; // Invalid ID
@@ -142,22 +151,19 @@ void LWL(uint8_t id, ...) {
     va_start(ap, id);
     CRIT_BEGIN_NEST();
 
-    put_idx = lwl_data.put_idx % LWL_BUF_SIZE;
-    lwl_data.put_idx = (put_idx + length + 1) % LWL_BUF_SIZE; // +1 for START_BYTE
+    put_idx = lwl_data->put_idx % LWL_BUF_SIZE;
+    lwl_data->put_idx = (put_idx + length + 1) % LWL_BUF_SIZE; // +1 for START_BYTE
 
     // Write start byte
-    lwl_data.buf[put_idx] = LWL_START_BYTE;
-    uart_stdio_write_char(&lwl_uart_stdio, LWL_START_BYTE);
+    lwl_data->buf[put_idx] = LWL_START_BYTE;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
 
     // Write length
-    lwl_data.buf[put_idx] = length;
-    uart_stdio_write_char(&lwl_uart_stdio, length);
+    lwl_data->buf[put_idx] = length;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
 
     // Write ID
-    lwl_data.buf[put_idx] = id;
-    uart_stdio_write_char(&lwl_uart_stdio, id);
+    lwl_data->buf[put_idx] = id;
     uint8_t crc_data[1 + msg->num_arg_bytes]; // Buffer for CRC calculation
     crc_data[0] = id;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
@@ -165,16 +171,21 @@ void LWL(uint8_t id, ...) {
     // Write arguments and collect for CRC
     for (uint8_t i = 0; i < msg->num_arg_bytes; i++) {
         uint32_t arg = va_arg(ap, unsigned);
-        lwl_data.buf[put_idx] = (uint8_t)(arg & 0xFF);
-        crc_data[i + 1] = lwl_data.buf[put_idx];
-        uart_stdio_write_char(&lwl_uart_stdio, lwl_data.buf[put_idx]);
+        lwl_data->buf[put_idx] = (uint8_t)(arg & 0xFF);
+        crc_data[i + 1] = lwl_data->buf[put_idx];
         put_idx = (put_idx + 1) % LWL_BUF_SIZE;
     }
 
     // Calculate and write CRC
     uint8_t crc = calculate_crc8(crc_data, 1 + msg->num_arg_bytes);
-    lwl_data.buf[put_idx] = crc;
-    uart_stdio_write_char(&lwl_uart_stdio, crc);
+    lwl_data->buf[put_idx] = crc;
+
+    if (lwl_data->put_idx > LWL_BUF_THRESHOLD) 		//buffer nearly full
+    {
+    	lwl.lwl_data_over_threshold = 1;
+    	if (lwl.lwl_data_index == 0) lwl.lwl_data_index = 1; else lwl.lwl_data_index = 0; //swap buffer
+    	lwl_buffer_full_notify();
+    }
 
     CRIT_END_NEST();
     va_end(ap);
@@ -187,10 +198,29 @@ int32_t cmd_lwl_test() {
     return 0;
 }
 
-//void lwl_stdio_tx_callback() {
-//    uart_stdio_tx_callback(&lwl_uart_stdio);
-//}
+__weak void lwl_buffer_full_notify()
+{
+	return;
+}
 
-void USART3_IRQHandler(void) {
-	uart_stdio_tx_callback(&lwl_uart_stdio);
+__weak void lwl_clear_notification()
+{
+	return;
+}
+
+uint8_t * 	lwl_get_log_buffer(uint32_t index)
+{
+	return &(lwl.lwl_data[index].buf[0]);
+}
+uint32_t 	lwl_get_log_size(uint32_t index)
+{
+	return lwl.lwl_data[index].put_idx;
+}
+uint32_t	lwl_get_current_index()
+{
+	return lwl.lwl_data_index;
+}
+void 		lwl_reinit_buffer(struct lwl_data_buffer * lwl_buffer)
+{
+	memset(lwl_buffer, 0, sizeof(struct lwl_data_buffer));
 }

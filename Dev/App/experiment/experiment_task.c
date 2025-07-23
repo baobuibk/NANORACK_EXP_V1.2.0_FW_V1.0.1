@@ -16,43 +16,53 @@
 #include "string.h"
 #include "shell.h"
 #include "min_shell_command.h"
+#include "hand_shake/hand_shake.h"
+#include "bsp_spi_slave.h"
+#include "spi_handshake.h"
 
 DBC_MODULE_NAME("experiment_task")
 
-#define EXPERIMENT_TASK_NUM_EVENTS  	2
-#define EXPERIMENT_TASK_AQUI_TIMEOUT	20000
-#define EXPERIMENT_CHUNK_SIZE			(4*1024)
-#define EXPERIMENT_LASER_CURRENT_SIZE	(16*1024)
-#define EXPERIMENT_LASER_CURRENT_TIMOUT	1
+#define EXPERIMENT_TASK_NUM_EVENTS  		2
+#define EXPERIMENT_TASK_AQUI_TIMEOUT		20000
+#define EXPERIMENT_CHUNK_SIZE				(16*1024)
+#define EXPERIMENT_LASER_CURRENT_SIZE		(16*1024)
+#define EXPERIMENT_LASER_CURRENT_POLL_TIME	1
+
+extern shell_task_t shell_task_inst;
+static shell_task_t *p_shell_task = &shell_task_inst;
+
+extern min_shell_task_t min_shell_task_inst;
+static min_shell_task_t *p_min_shell_task = &min_shell_task_inst;
+
+extern spi_handshake_task_t spi_handshake_task_inst;
+static spi_handshake_task_t *p_spi_handshake_task = &spi_handshake_task_inst;
 
 experiment_task_t experiment_task_inst;
-extern shell_task_t shell_task_inst ;
-static shell_task_t *pshell_task_instt = &shell_task_inst;
-
+circular_buffer_t experiment_task_event_queue = {0}; // Circular buffer to hold shell events
+static experiment_evt_t experiment_task_current_event = {0}; // Current event being processed
+static experiment_evt_t experiment_task_event_buffer[EXPERIMENT_TASK_NUM_EVENTS];
 static experiment_evt_t const entry_evt = {.super = {.sig = SIG_ENTRY} };
 static experiment_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 static experiment_evt_t const start_measuring_evt = {.super = {.sig = EVT_EXPERIMENT_START_MEASURE} };
-static experiment_evt_t const start_sending_evt = {.super = {.sig = EVT_EXPERIMENT_START_SENDING} };
-
-static shell_evt_t const uart_send_buffer_bin_evt = {.super = {.sig = EVT_SHELL_SEND_BUFFER_BINARY},};
-static shell_evt_t const uart_send_crc_evt = {.super = {.sig = EVT_SHELL_SEND_CRC},};
-
+static experiment_evt_t const start_send_to_shell_evt = {.super = {.sig = EVT_EXPERIMENT_START_SEND_TO_SHELL} };
+static experiment_evt_t const start_send_to_spi_evt = {.super = {.sig = EVT_EXPERIMENT_START_SEND_TO_SPI} };
+static experiment_evt_t const done_send_header_evt = {.super = {.sig = EVT_EXPERIMENT_DONE_SEND_HEADER},};
+static experiment_evt_t const done_read_ram_evt = {.super = {.sig = EVT_EXPERIMENT_DONE_READ_RAM}};
+static experiment_evt_t const done_send_chunk = {.super = {.sig = EVT_EXPERIMENT_DONE_SEND_CHUNK}};
 
 static data_profile_t remain_data_profile;
-static uint16_t ram_buffer[EXPERIMENT_CHUNK_SIZE];
+static uint16_t experiment_data_buffer[EXPERIMENT_CHUNK_SIZE] __attribute__((aligned(4)));
 static uint16_t batch_size;
 
-static uint16_t laser_int_current[EXPERIMENT_LASER_CURRENT_SIZE];
+static uint16_t laser_int_current_buffer[EXPERIMENT_LASER_CURRENT_SIZE] __attribute__((aligned(4)));;
 static uint16_t laser_int_current_idx;
+
 
-experiment_evt_t experiment_task_current_event = {0}; // Current event being processed
-experiment_evt_t experiment_task_event_buffer[EXPERIMENT_TASK_NUM_EVENTS];
-
-circular_buffer_t experiment_task_event_queue = {0}; // Circular buffer to hold shell events
 
 static state_t experiment_task_state_manual_handler(experiment_task_t * const me, experiment_evt_t const * const e);
 static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const me, experiment_evt_t const * const e);
-static state_t experiment_task_state_data_send_handler(experiment_task_t * const me, experiment_evt_t const * const e);
+static state_t experiment_task_state_send_to_shell_handler(experiment_task_t * const me, experiment_evt_t const * const e);
+static state_t experiment_task_state_send_to_spi_handler(experiment_task_t * const me, experiment_evt_t const * const e);
 
 static void experiment_task_init(experiment_task_t * const me,experiment_evt_t const * const e)
 {
@@ -113,22 +123,27 @@ static state_t experiment_task_state_manual_handler(experiment_task_t * const me
 		}
 
 		case EVT_EXPERIMENT_START_MEASURE:
-			{
-
-				me->state = experiment_task_state_data_aqui_handler;
-				return TRAN_STATUS;
-			}
-		case EVT_EXPERIMENT_START_SENDING:
-			{
-				//memcpy((void *)&me->data_profile, e->payload, sizeof(data_profile_t));
-
-				me->state = experiment_task_state_data_send_handler;
-				return TRAN_STATUS;
-			}
-			default:
-				return IGNORED_STATUS;
+		{
+			me->state = experiment_task_state_data_aqui_handler;
+			return TRAN_STATUS;
 		}
+
+		case EVT_EXPERIMENT_START_SEND_TO_SHELL:
+		{
+			me->state = experiment_task_state_send_to_shell_handler;
+			return TRAN_STATUS;
+		}
+
+		case EVT_EXPERIMENT_START_SEND_TO_SPI:
+		{
+			me->state = experiment_task_state_send_to_spi_handler;
+			return TRAN_STATUS;
+		}
+
+		default:
+			return IGNORED_STATUS;
 	}
+}
 
 
 
@@ -139,15 +154,15 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		case SIG_ENTRY:
 		{
 			DBG(DBG_LEVEL_INFO,"Start Sampling...\r\n");
-			//DBG(DBG_LEVEL_INFO,"entry experiment_task_state_data_aqui_handler\r\n");
+//			DBG(DBG_LEVEL_INFO,"entry experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
-	//      Switch the photodiode on
+//	      	Switch the photodiode on
 			experiment_task_photodiode_switchon(me, me->profile.pos);
-			//DBG(DBG_LEVEL_INFO,"switch on photo %d\r\n", me->profile.pos);
-	//		Switch the SPI to ADC supported mode
+//			DBG(DBG_LEVEL_INFO,"switch on photo %d\r\n", me->profile.pos);
+//			Switch the SPI to ADC supported mode
 			experiment_task_photo_ADC_prepare_SPI(me);
-			//DBG(DBG_LEVEL_INFO,"switch on photo %d and change SPI mode to SPI ADC Mode\r\n", me->profile.pos);
-	//		Prepare the timer for sampling
+//			DBG(DBG_LEVEL_INFO,"switch on photo %d and change SPI mode to SPI ADC Mode\r\n", me->profile.pos);
+//			Prepare the timer for sampling
 			bsp_photodiode_time_t init_photo_time;
 			init_photo_time.pre_time = me->profile.pre_time ;
 			init_photo_time.sampling_time = me->profile.experiment_time ;
@@ -157,7 +172,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			bsp_laser_int_set_current(me->profile.laser_percent);
 			bsp_photo_set_time(& init_photo_time);
 
-			SST_TimeEvt_arm(&me->laser_current_trigger, EXPERIMENT_LASER_CURRENT_TIMOUT, EXPERIMENT_LASER_CURRENT_TIMOUT);
+			SST_TimeEvt_arm(&me->laser_current_trigger, EXPERIMENT_LASER_CURRENT_POLL_TIME, EXPERIMENT_LASER_CURRENT_POLL_TIME);
 			laser_int_current_idx = 0;
 
 			bsp_photodiode_sample_start();
@@ -166,7 +181,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case SIG_EXIT:
 		{
-			DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
+//			DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
 			SST_TimeEvt_disarm(&me->laser_current_trigger);
 			return HANDLED_STATUS;
@@ -201,7 +216,10 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 			}
 			else me->sub_state = S_AQUI_ERROR;
 			DBG(DBG_LEVEL_INFO,"Sampling Done!\r\n");
-			min_handshake_ready();
+
+			// Cho phép giao tiếp Min với OBC
+			min_shell_busy_clear(p_min_shell_task);
+
 			me->state = experiment_task_state_manual_handler;
 			return TRAN_STATUS;
 		}
@@ -215,12 +233,11 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		{
 			if(laser_int_current_idx < EXPERIMENT_LASER_CURRENT_SIZE)
 			{
-				laser_int_current[laser_int_current_idx++]= bsp_laser_get_int_current();
+				laser_int_current_buffer[laser_int_current_idx++] = bsp_laser_get_int_current();
 				bsp_laser_int_trigger_adc();
 			}
-
-
-			else	SST_TimeEvt_disarm(&me->laser_current_trigger);
+			else
+				SST_TimeEvt_disarm(&me->laser_current_trigger);
 			return HANDLED_STATUS;
 		}
 		default:
@@ -228,30 +245,31 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 	}
 }
 
-static state_t experiment_task_state_data_send_handler(experiment_task_t * const me, experiment_evt_t const * const e)
+static state_t experiment_task_state_send_to_shell_handler(experiment_task_t * const me, experiment_evt_t const * const e)
 {
 	switch (e->super.sig)
 	{
 		case SIG_ENTRY:
 		{
-			//DBG(DBG_LEVEL_INFO,"entry experiment_task_state_data_send_handler\r\n");
+			//DBG(DBG_LEVEL_INFO,"entry experiment_task_state_send_to_shell_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
 		    remain_data_profile.num_data = me->data_profile.num_data;
 		    remain_data_profile.start_address = me->data_profile.start_address;
-		    SST_Task_post((SST_Task *)&shell_task_inst.super, (SST_Evt *)&uart_send_buffer_bin_evt);
+//		    SST_Task_post((SST_Task *)&shell_task_inst.super, (SST_Evt *)&uart_send_buffer_bin_evt);
+		    shell_uart_send_buffer_bin_evt(p_shell_task);
 			return HANDLED_STATUS;
 		}
 
 		case EVT_EXPERIMENT_DONE_SEND_HEADER:
 		{
 		    batch_size = (remain_data_profile.num_data > EXPERIMENT_CHUNK_SIZE) ? EXPERIMENT_CHUNK_SIZE : remain_data_profile.num_data;
-			bsp_spi_ram_read_dma(remain_data_profile.start_address * 2, batch_size * 2, (uint8_t *)ram_buffer);
+			bsp_spi_ram_read_dma(remain_data_profile.start_address * 2, batch_size * 2, (uint8_t *)experiment_data_buffer);
 			return HANDLED_STATUS;
 		}
 
 		case EVT_EXPERIMENT_DONE_READ_RAM:
 		{
-			shell_send_buffer(pshell_task_instt, ram_buffer, batch_size, me->data_profile.mode);
+			shell_send_buffer(p_shell_task, experiment_data_buffer, batch_size, me->data_profile.mode);
 			return HANDLED_STATUS;
 		}
 
@@ -262,12 +280,13 @@ static state_t experiment_task_state_data_send_handler(experiment_task_t * const
 			if(remain_data_profile.num_data > 0)
 			{
 				batch_size = (remain_data_profile.num_data > EXPERIMENT_CHUNK_SIZE) ? EXPERIMENT_CHUNK_SIZE : remain_data_profile.num_data;
-				bsp_spi_ram_read_dma(remain_data_profile.start_address * 2, batch_size * 2, (uint8_t *)ram_buffer);
+				bsp_spi_ram_read_dma(remain_data_profile.start_address * 2, batch_size * 2, (uint8_t *)experiment_data_buffer);
 				return HANDLED_STATUS;
 			}
 			else
 			{
-				SST_Task_post((SST_Task *)&shell_task_inst.super, (SST_Evt *)&uart_send_crc_evt);
+//				SST_Task_post((SST_Task *)&shell_task_inst.super, (SST_Evt *)&uart_send_crc_evt);
+				shell_uart_send_crc_evt(p_shell_task);
 				me->state = experiment_task_state_manual_handler;
 				return TRAN_STATUS;
 			}
@@ -278,28 +297,77 @@ static state_t experiment_task_state_data_send_handler(experiment_task_t * const
 	}
 }
 
+static state_t experiment_task_state_send_to_spi_handler(experiment_task_t * const me, experiment_evt_t const * const e)
+{
+	switch (e->super.sig)
+	{
+		case SIG_ENTRY:
+		{
+			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
+			bsp_spi_ram_read_dma(me->data_profile.start_address, EXPERIMENT_CHUNK_SIZE, (uint8_t *)experiment_data_buffer);
+
+			// Cấu hình địa chỉ buffer
+			SPI_SlaveDevice_Init((uint16_t *)experiment_data_buffer);
+			return HANDLED_STATUS;
+		}
+
+		case EVT_EXPERIMENT_DONE_READ_RAM:
+		{
+			// Khởi động DMA SPI TX
+			SPI_SlaveDevice_CollectData();
+			// Bật tín hiệu DataReady
+			spi_handshake_task_data_ready(p_spi_handshake_task);
+			// Quay về manual handler
+			me->state = experiment_task_state_manual_handler;
+			return TRAN_STATUS;
+		}
+
+		default:
+			return IGNORED_STATUS;
+
+	}
+}
 
 uint32_t experiment_task_get_ram_data(experiment_task_t * const me, uint32_t start_addr, uint32_t num_data, uint8_t mode)	// mode0: send ASCII, mode1: send binary
 {
-	me->data_profile.total_data = num_data;
+//	me->data_profile.total_data = num_data;
 	me->data_profile.start_address = start_addr;
 	me->data_profile.num_data = num_data;
 	me->data_profile.mode = mode;
-	pshell_task_instt->crc = 0xffff;
-	SST_Task_post(&me->super, (SST_Evt *)&start_sending_evt);
+	p_shell_task->crc = 0xffff;
+	SST_Task_post(&me->super, (SST_Evt *)&start_send_to_shell_evt);
 	return ERROR_OK;
 }
 
 uint32_t experiment_task_data_transfer(experiment_task_t * const me)
 {
-	me->data_profile.total_data = me->num_data_real;
+//	me->data_profile.total_data = me->num_data_real;
 	me->data_profile.start_address = 0;
 	me->data_profile.num_data = me->num_data_real;
 	me->data_profile.mode = 1;
-	pshell_task_instt->crc = 0xffff;
-	SST_Task_post(&me->super, (SST_Evt *)&start_sending_evt);
+	p_shell_task->crc = 0xffff;
+	SST_Task_post(&me->super, (SST_Evt *)&start_send_to_shell_evt);
 	return ERROR_OK;
 }
+
+uint32_t experiment_task_done_send_header_evt(experiment_task_t * const me)
+{
+	SST_Task_post(&me->super, (SST_Evt *)&done_send_header_evt);
+	return ERROR_OK;
+}
+
+uint32_t experiment_task_done_read_ram_evt(experiment_task_t * const me)
+{
+	SST_Task_post(&me->super, (SST_Evt *)&done_read_ram_evt);
+	return ERROR_OK;
+}
+
+uint32_t experiment_task_done_send_chunk(experiment_task_t * const me)
+{
+	SST_Task_post(&me->super, (SST_Evt *)&done_send_chunk);
+	return ERROR_OK;
+}
+
 
 uint32_t experiment_task_laser_set_current(experiment_task_t * const me, uint32_t laser_id, uint32_t percent)
 {
@@ -320,6 +388,7 @@ uint32_t experiment_task_laser_get_current(experiment_task_t * const me, uint32_
 	if (laser_id > 0) index = 1; else index = 0;
 	return me->laser_current[index];
 }
+
 uint32_t experiment_task_int_laser_switchon(experiment_task_t * const me, uint32_t laser_id)
 {
 	if (laser_id > INTERNAL_CHAIN_CHANNEL_NUM) return ERROR_NOT_SUPPORTED;
@@ -332,6 +401,7 @@ uint32_t experiment_task_int_laser_switchon(experiment_task_t * const me, uint32
 	me->int_laser_pos = laser_id;
 	return ERROR_OK;
 }
+
 uint32_t experiment_task_int_laser_switchoff(experiment_task_t * const me)
 {
 	if(me->laser_spi_mode != 1)
@@ -343,6 +413,7 @@ uint32_t experiment_task_int_laser_switchoff(experiment_task_t * const me)
 	me->int_laser_pos = 0xFF;
 	return ERROR_OK;
 }
+
 uint32_t experiment_task_ext_laser_switchon(experiment_task_t * const me, uint32_t laser_id)
 {
 	if (laser_id > EXTERNAL_CHAIN_CHANNEL_NUM) return ERROR_NOT_SUPPORTED;
@@ -355,6 +426,7 @@ uint32_t experiment_task_ext_laser_switchon(experiment_task_t * const me, uint32
 	me->ext_laser_pos = laser_id;
 	return ERROR_OK;
 }
+
 uint32_t experiment_task_ext_laser_switchoff(experiment_task_t * const me)
 {
 	if(me->laser_spi_mode != 1)
@@ -379,6 +451,7 @@ uint32_t experiment_task_photodiode_switchon(experiment_task_t * const me, uint3
 	me->photo_pos = photo_id;
 	return ERROR_OK;
 }
+
 uint32_t experiment_task_photodiode_switchoff(experiment_task_t * const me)
 {
 //	if(me->photodiode_mode != SW_MODE)
@@ -456,4 +529,22 @@ uint32_t experiment_start_measuring(experiment_task_t * const me)
 	return ERROR_OK;
 }
 
+uint32_t experiment_sample_send_to_spi(experiment_task_t * const me, uint16_t chunk_id)
+{
+	me->data_profile.start_address = chunk_id * EXPERIMENT_CHUNK_SIZE;
+	me->data_profile.num_data = EXPERIMENT_CHUNK_SIZE;
+	me->data_profile.destination = 1;
+	SST_Task_post(&me->super, (SST_Evt *)&start_send_to_spi_evt);
+	return ERROR_OK;
+}
 
+uint32_t experiment_current_send_to_spi(experiment_task_t * const me)
+{
+	// Cấu hình địa chỉ buffer
+	SPI_SlaveDevice_Init((uint16_t *)laser_int_current_buffer);
+	// Khởi động DMA SPI TX
+	SPI_SlaveDevice_CollectData();
+	// Bật tín hiệu DataReady
+	spi_handshake_task_data_ready(p_spi_handshake_task);
+	return ERROR_OK;
+}

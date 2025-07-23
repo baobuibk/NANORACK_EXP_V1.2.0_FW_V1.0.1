@@ -18,12 +18,12 @@
 
 DBC_MODULE_NAME("adc_monitor")
 
-monitor_task_t monitor_task_inst;
-#define MONITOR_TASK_NUM_EVENTS 4
-monitor_evt_t current_monitor_e = {0}; // Current event being processed
-monitor_evt_t monitor_e_buffer[MONITOR_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
-circular_buffer_t monitor_e_queue = {0}; // Circular buffer to hold shell events
+#define MONITOR_TASK_NUM_EVENTS			4
 
+monitor_task_t monitor_task_inst;
+circular_buffer_t monitor_e_queue = {0}; // Circular buffer to hold shell events
+static monitor_evt_t current_monitor_e = {0}; // Current event being processed
+static monitor_evt_t monitor_e_buffer[MONITOR_TASK_NUM_EVENTS] = {0}; // Array to hold shell events
 
 static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_evt_t const * const e);
 
@@ -46,7 +46,7 @@ void monitor_task_ctor(monitor_task_t * const me, monitor_init_t const * const i
     me->adc_data.laser_current[0] = 0;		//set current laser int = 0
 }
 
-void monitor_task_ctor_singleton()
+void adc_monitor_task_ctor_singleton()
 {
  circular_buffer_init(&monitor_e_queue,(uint8_t *)&monitor_e_buffer,sizeof(monitor_e_buffer),MONITOR_TASK_NUM_EVENTS,sizeof(monitor_evt_t));
  monitor_init_t init = {
@@ -57,10 +57,11 @@ void monitor_task_ctor_singleton()
  monitor_task_ctor(&monitor_task_inst, &init);
 }
 
-void monitor_task_start(uint8_t priority)
+void adc_monitor_task_start(uint8_t priority)
 {
 	SST_Task_start(&monitor_task_inst.super,priority);
 }
+
 static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_evt_t const * const e)
 {
 	switch (e->super.sig)

@@ -8,14 +8,13 @@
 #include "bsp_spi_slave.h"
 #include "stm32f7xx_ll_spi.h"
 #include "stm32f7xx_ll_dma.h"
-#include "gpio_irq/gpio_irq.h"
 #include "bsp_spi_ram.h"
 
 
 static SPI_SlaveDevice_t spi_device_instance = {
     .transfer_state = SPI_TRANSFER_WAIT,
 	.data_context = {
-	    .sample_buffer = {0},
+		.p_tx_buffer = 0x00,
 	    .crc = 0x0000,
 	    .is_valid = false
 	},
@@ -40,11 +39,14 @@ SPI_SlaveDevice_t* SPI_SlaveDevice_GetHandle(void)
     return &spi_device_instance;
 }
 
-Std_ReturnType SPI_SlaveDevice_Init(void)
+Std_ReturnType SPI_SlaveDevice_Init(uint16_t * p_tx_buffer)
 {
     if (spi_device_instance.is_initialized) {
         return E_OK;
     }
+
+//    LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_3, LL_DMA_MDATAALIGN_BYTE);
+//    LL_DMA_SetPeriphAddress(DMA2, LL_DMA_STREAM_3, LL_SPI_DMA_GetRegAddr(DMA2));
 
     LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_3);
     LL_DMA_EnableIT_TE(DMA2, LL_DMA_STREAM_3);
@@ -52,7 +54,20 @@ Std_ReturnType SPI_SlaveDevice_Init(void)
     spi_device_instance.data_context.is_valid = false;
     spi_device_instance.is_initialized = true;
     spi_device_instance.transfer_state = SPI_TRANSFER_PREPARE;
-    return E_OK;
+
+    spi_device_instance.data_context.p_tx_buffer = p_tx_buffer;
+
+    bsp_spi_debug_print("%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n",
+    		*(p_tx_buffer + 0),
+			*(p_tx_buffer + 1),
+			*(p_tx_buffer + 2),
+			*(p_tx_buffer + 3),
+			*(p_tx_buffer + 4),
+			*(p_tx_buffer + 5),
+			*(p_tx_buffer + 6),
+			*(p_tx_buffer + 7));
+
+	return E_OK;
 }
 
 Std_ReturnType SPI_SlaveDevice_CollectData(void)
@@ -60,11 +75,10 @@ Std_ReturnType SPI_SlaveDevice_CollectData(void)
     if (!spi_device_instance.is_initialized) {
         return E_ERROR;
     }
-    bsp_spi_ram_read_dma(0x00, SAMPLE_BUFFER_SIZE, spi_device_instance.data_context.sample_buffer);
 
 	uint16_t crc = 0x0000;
 	for (uint16_t i = 0; i < SAMPLE_BUFFER_SIZE; i++) {
-		crc = UpdateCRC16_XMODEM(crc, spi_device_instance.data_context.sample_buffer[i]);
+		crc = UpdateCRC16_XMODEM(crc, *(spi_device_instance.data_context.p_tx_buffer + i));
 	}
 
 	spi_device_instance.data_context.crc = crc;
@@ -102,8 +116,9 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA()
     LL_DMA_ClearFlag_TC3(DMA2);
     LL_DMA_ClearFlag_TE3(DMA2);
 
-    LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)(spi_device_instance.data_context.sample_buffer), LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
+    LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)spi_device_instance.data_context.p_tx_buffer, LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
     LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, SAMPLE_BUFFER_SIZE);
+//    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, 100);
 
     LL_SPI_EnableDMAReq_TX(SPI1);
     LL_SPI_Enable(SPI1);
@@ -151,12 +166,10 @@ void DMA2_Stream3_IRQHandler(void)
 		LL_DMA_ClearFlag_TC3(DMA2);
 		SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_COMPLETE);
 		SPI_SlaveDevice_Disable();
-		GPIO_IRQ_TransDone();
 	}
 	if (LL_DMA_IsActiveFlag_TE3(DMA2)) {
 		LL_DMA_ClearFlag_TE3(DMA2);
 		SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_ERROR);
 		SPI_SlaveDevice_Disable();
-		GPIO_IRQ_Error();
 	}
 }
