@@ -135,6 +135,8 @@ void Error_Handler(void);
 #define LASER_MOSI_GPIO_Port GPIOE
 #define LASER_EXT_SW_CS_Pin LL_GPIO_PIN_15
 #define LASER_EXT_SW_CS_GPIO_Port GPIOE
+#define Log_OverFlow_Pin LL_GPIO_PIN_10
+#define Log_OverFlow_GPIO_Port GPIOB
 #define MIN_HandShake_Pin LL_GPIO_PIN_11
 #define MIN_HandShake_GPIO_Port GPIOB
 #define LASER_DAC_LATCH_Pin LL_GPIO_PIN_12

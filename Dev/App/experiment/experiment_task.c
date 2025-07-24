@@ -16,9 +16,9 @@
 #include "string.h"
 #include "shell.h"
 #include "min_shell_command.h"
-#include "hand_shake/hand_shake.h"
 #include "bsp_spi_slave.h"
-#include "spi_handshake.h"
+#include "bsp_handshake.h"
+#include "../spi_transmit/spi_transmit.h"
 
 DBC_MODULE_NAME("experiment_task")
 
@@ -34,8 +34,8 @@ static shell_task_t *p_shell_task = &shell_task_inst;
 extern min_shell_task_t min_shell_task_inst;
 static min_shell_task_t *p_min_shell_task = &min_shell_task_inst;
 
-extern spi_handshake_task_t spi_handshake_task_inst;
-static spi_handshake_task_t *p_spi_handshake_task = &spi_handshake_task_inst;
+extern spi_transmit_task_t spi_transmit_task_inst;
+static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
 
 experiment_task_t experiment_task_inst;
 circular_buffer_t experiment_task_event_queue = {0}; // Circular buffer to hold shell events
@@ -316,7 +316,7 @@ static state_t experiment_task_state_send_to_spi_handler(experiment_task_t * con
 			// Khởi động DMA SPI TX
 			SPI_SlaveDevice_CollectData();
 			// Bật tín hiệu DataReady
-			spi_handshake_task_data_ready(p_spi_handshake_task);
+			spi_transmit_task_data_ready(p_spi_transmit_task);
 			// Quay về manual handler
 			me->state = experiment_task_state_manual_handler;
 			return TRAN_STATUS;
@@ -545,6 +545,6 @@ uint32_t experiment_current_send_to_spi(experiment_task_t * const me)
 	// Khởi động DMA SPI TX
 	SPI_SlaveDevice_CollectData();
 	// Bật tín hiệu DataReady
-	spi_handshake_task_data_ready(p_spi_handshake_task);
+	spi_transmit_task_data_ready(p_spi_transmit_task);
 	return ERROR_OK;
 }

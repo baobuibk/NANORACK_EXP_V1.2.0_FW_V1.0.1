@@ -26,7 +26,7 @@ DBC_MODULE_NAME("tec_control")
 #define TEMP_TARGET_DEFAULT							250
 #define TEMP_LIM_MAX_DEFAULT						1000
 
-#define TEMP_PRI_NTC_DEFAULT						0
+#define TEMP_PRI_NTC_DEFAULT						1
 #define TEMP_SEC_NTC_DEFAULT						1
 
 #define TEMP_TEC_VOLT_DEFAULT						600

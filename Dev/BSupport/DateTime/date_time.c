@@ -74,7 +74,7 @@ void date_time_update(void)
 }
 
 
-void date_time_get(uint32_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *seconds)
+void date_time_get(uint8_t *days, uint8_t *hours, uint8_t *minutes, uint8_t *seconds)
 {
     if (days) *days = s_RealTimeClock_context.day;
     if (hours) *hours = s_RealTimeClock_context.hour;
