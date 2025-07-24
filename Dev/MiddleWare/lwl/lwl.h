@@ -62,8 +62,8 @@
 enum {
     INVALID = 0, // ID 0 is reserved (invalid)
     TIMESTAMP = 1,
-    TEMPERATURE_NTC,
 	TEMPERATURE_SINGLE_NTC,
+    TEMPERATURE_NTC,
     TEMPERATURE_ERROR,
     TEMPERATURE_AUTOMMODE_ON,
     TEMPERATURE_AUTOMMODE_TEC_ON,
@@ -97,8 +97,9 @@ void LWL(uint8_t id, ...) ;
 // compilers) is used to generate LWL IDs.
 
 void lwl_buffer_full_notify(void);
-
 void lwl_clear_notification(void);
 
+uint16_t * lwl_get_full_buffer_addr(void);
+uint32_t lwl_log_send_to_spi(void);
 
 #endif // _LWL_H_

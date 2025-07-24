@@ -17,6 +17,7 @@
 #include "bsp_spi_ram.h"
 #include "system_log.h"
 #include "date_time.h"
+#include "lwl.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -521,7 +522,6 @@ static void MIN_Handler_TURN_OFF_EXT_LASER_CMD(MIN_Context_t *ctx, const uint8_t
 	min_shell_debug_print("TURN_OFF_EXT_LASER_ACK\r\n");
 }
 
-
 static void MIN_Handler_GET_LASER_CURRENT_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
 	uint16_t int_current = laser_monitor_get_laser_current(0);
@@ -531,6 +531,14 @@ static void MIN_Handler_GET_LASER_CURRENT_CMD(MIN_Context_t *ctx, const uint8_t 
 	MIN_Send(ctx, GET_LASER_CURRENT_ACK, buffer, 5);
 	min_shell_debug_print("int_laser_current: %d mA\r\n", int_current);
 	min_shell_debug_print("ext_laser_current: %d mA\r\n", ext_current);
+}
+
+static void MIN_Handler_GET_LOG_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
+{
+    uint8_t buffer[1] = {MIN_ERROR_OK};
+    lwl_log_send_to_spi();
+    min_shell_debug_print("Already prepare log chunk\r\n");
+    MIN_Send(ctx, GET_LOG_ACK, buffer, 1);
 }
 
 // =================================================================
@@ -568,6 +576,7 @@ static const MIN_Command_t command_table[] = {
     {TURN_ON_EXT_LASER_CMD, MIN_Handler_TURN_ON_EXT_LASER_CMD},
     {TURN_OFF_EXT_LASER_CMD, MIN_Handler_TURN_OFF_EXT_LASER_CMD},
 
+	{GET_LOG_CMD, MIN_Handler_GET_LOG_CMD},
 
     {GET_LASER_CURRENT_CMD, MIN_Handler_GET_LASER_CURRENT_CMD},
 

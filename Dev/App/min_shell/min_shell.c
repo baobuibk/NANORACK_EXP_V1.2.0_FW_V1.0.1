@@ -13,7 +13,7 @@
 #include "DBC_assert.h"
 #include "board.h"
 #include "error_codes.h"
-#include "hand_shake/hand_shake.h"
+#include "bsp_handshake.h"
 
 DBC_MODULE_NAME("min_shell")
 
@@ -189,7 +189,7 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
 
         case EVT_MIN_BUSY:
         	SST_TimeEvt_disarm(&me->min_poll_timer);
-        	handshake_min_busy();
+        	bsp_handshake_min_busy();
         	min_shell_debug_print("Src: Min process ->> Event: min busy");
         	SST_TimeEvt_arm(&me->min_busy_timeout_timer, MIN_SHELL_BUSY_TIMEOUT, 0);
         	return HANDLED_STATUS;
@@ -197,7 +197,7 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
         case EVT_MIN_READY:
         case EVT_MIN_BUSY_TIMEOUT:
         	SST_TimeEvt_disarm(&me->min_busy_timeout_timer);
-        	handshake_min_ready();
+        	bsp_handshake_min_ready();
         	min_shell_debug_print("Src: Min process ->> Event: min busy timeout. Return Polling event");
         	SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS);
         	return HANDLED_STATUS;

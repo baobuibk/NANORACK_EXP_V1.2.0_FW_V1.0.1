@@ -4,7 +4,17 @@
 #include "module.h"
 #include "log.h"
 #include "lwl.h"
+#include "error_codes.h"
+#include "bsp_handshake.h"
+#include "bsp_spi_slave.h"
+#include "spi_transmit.h"
 
+
+/////////////
+// EXTERN
+/////////////
+extern spi_transmit_task_t spi_transmit_task_inst;
+static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,8 +27,9 @@
     #define 	LWL_BUF_SIZE 		(CONFIG_LWL_BUF_SIZE)
  	 #define 	LWL_BUF_THRESHOLD 	(CONFIG_LWL_BUF_THRESHOLD)
 #else
-    #define LWL_BUF_SIZE 			8*1024
-	#define LWL_BUF_THRESHOLD 		7*1024
+    #define LWL_BUF_SIZE 			(16*1024)
+	#define LWL_BUF_THRESHOLD 		(LWL_BUF_SIZE - 60)
+//	#define LWL_BUF_THRESHOLD 		50
 #endif
 
 
@@ -70,23 +81,21 @@ struct lwl_data_buffer {
 };
 
 typedef struct lwl_t{
-	uint32_t lwl_data_index;
-	bool	 lwl_data_over_threshold;
-	struct lwl_data_buffer lwl_data[2];
-
+	uint32_t lwl_working_buf_index;
+	uint32_t lwl_full_buf_index;
+	bool	 lwl_buf_over_threshold;
+	struct lwl_data_buffer lwl_data_buf[2];
 }lwl_t;
 
-
 static struct lwl_t lwl;
-
-
 
 // Log message table (ID is the index)
 static const struct lwl_msg lwl_msg_table[] = {
     {NULL, 0}, // ID 0: invalid
-    {"Time:Time Counter in sec = %4d", 4}, // ID 1: TIMESTAMP, 4 bytes
-    {"Temperature NTC0: %2d NTC1: %2d NTC3:%2d NTC4: %2d NTC5:%2d NTC6:%2d NTC7:%2d NTC8: %2d", 16}, // ID 2: TEMPERATURE_NTC, 8x2 bytes
+	{"Time: Day %2d, %2d:%2d:%2d", 4},
 	{"NTC channel %1d : %2d", 3},
+    {"Temperature NTC0: %2d NTC1: %2d NTC3:%2d NTC4: %2d NTC5:%2d NTC6:%2d NTC7:%2d NTC8: %2d", 16}, // ID 2: TEMPERATURE_NTC, 8x2 bytes
+
 	{"Temperature: ERROR, Pri NTC = %2d Sec NTC = %2d", 4}, // ID 3: TEMPERATURE_ERROR, 2x2 bytes
     {"Temperature: AUTO MODE", 0}, // ID 4: TEMPERATURE_AUTOMMODE_ON, No arguments
     {"TEC: AUTO mode TEC ON with voltage %2d", 2}, // ID 5: TEMPERATURE_AUTOMMODE_TEC_ON, 2 bytes
@@ -107,6 +116,7 @@ static const struct lwl_msg lwl_msg_table[] = {
     {"System: Finish Peripheral Initialization", 0}, // ID 20: SYSTEM_INITIALIZED, No arguments
     {"System: Start Applications", 0}, // ID 21: SYSTEM_STARTED, No arguments
 };
+
 static const uint8_t lwl_msg_table_size = sizeof(lwl_msg_table) / sizeof(lwl_msg_table[0]);
 
 
@@ -138,7 +148,7 @@ void LWL(uint8_t id, ...) {
     va_list ap;
     uint32_t put_idx;
 
-    struct lwl_data_buffer * lwl_data = &lwl.lwl_data[lwl.lwl_data_index];
+    struct lwl_data_buffer * lwl_data_buf = &lwl.lwl_data_buf[lwl.lwl_working_buf_index];
 
     // Validate ID
     if (id == 0 || id >= lwl_msg_table_size || lwl_msg_table[id].fmt == NULL) {
@@ -151,19 +161,19 @@ void LWL(uint8_t id, ...) {
     va_start(ap, id);
     CRIT_BEGIN_NEST();
 
-    put_idx = lwl_data->put_idx % LWL_BUF_SIZE;
-    lwl_data->put_idx = (put_idx + length + 1) % LWL_BUF_SIZE; // +1 for START_BYTE
+    put_idx = lwl_data_buf->put_idx % LWL_BUF_SIZE;
+    lwl_data_buf->put_idx = (put_idx + length + 1) % LWL_BUF_SIZE; // +1 for START_BYTE
 
     // Write start byte
-    lwl_data->buf[put_idx] = LWL_START_BYTE;
+    lwl_data_buf->buf[put_idx] = LWL_START_BYTE;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
 
     // Write length
-    lwl_data->buf[put_idx] = length;
+    lwl_data_buf->buf[put_idx] = length;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
 
     // Write ID
-    lwl_data->buf[put_idx] = id;
+    lwl_data_buf->buf[put_idx] = id;
     uint8_t crc_data[1 + msg->num_arg_bytes]; // Buffer for CRC calculation
     crc_data[0] = id;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
@@ -171,19 +181,30 @@ void LWL(uint8_t id, ...) {
     // Write arguments and collect for CRC
     for (uint8_t i = 0; i < msg->num_arg_bytes; i++) {
         uint32_t arg = va_arg(ap, unsigned);
-        lwl_data->buf[put_idx] = (uint8_t)(arg & 0xFF);
-        crc_data[i + 1] = lwl_data->buf[put_idx];
+        lwl_data_buf->buf[put_idx] = (uint8_t)(arg & 0xFF);
+        crc_data[i + 1] = lwl_data_buf->buf[put_idx];
         put_idx = (put_idx + 1) % LWL_BUF_SIZE;
     }
 
     // Calculate and write CRC
     uint8_t crc = calculate_crc8(crc_data, 1 + msg->num_arg_bytes);
-    lwl_data->buf[put_idx] = crc;
+    lwl_data_buf->buf[put_idx] = crc;
 
-    if (lwl_data->put_idx > LWL_BUF_THRESHOLD) 		//buffer nearly full
+    if (lwl_data_buf->put_idx > LWL_BUF_THRESHOLD) 		//buffer nearly full
     {
-    	lwl.lwl_data_over_threshold = 1;
-    	if (lwl.lwl_data_index == 0) lwl.lwl_data_index = 1; else lwl.lwl_data_index = 0; //swap buffer
+    	lwl.lwl_buf_over_threshold = 1;
+
+    	if (lwl.lwl_working_buf_index == 0)
+		{
+    		lwl.lwl_working_buf_index = 1;
+    		lwl.lwl_full_buf_index = 0;
+		}
+    	else
+    	{
+    		lwl.lwl_working_buf_index = 0;
+    		lwl.lwl_full_buf_index = 1;
+    	}
+
     	lwl_buffer_full_notify();
     }
 
@@ -200,27 +221,45 @@ int32_t cmd_lwl_test() {
 
 __weak void lwl_buffer_full_notify()
 {
-	return;
+	bsp_handshake_spi_buffer_full_notify();
 }
 
 __weak void lwl_clear_notification()
 {
-	return;
+	bsp_handshake_spi_clear_notification();
 }
 
-uint8_t * 	lwl_get_log_buffer(uint32_t index)
-{
-	return &(lwl.lwl_data[index].buf[0]);
-}
-uint32_t 	lwl_get_log_size(uint32_t index)
-{
-	return lwl.lwl_data[index].put_idx;
-}
-uint32_t	lwl_get_current_index()
-{
-	return lwl.lwl_data_index;
-}
-void 		lwl_reinit_buffer(struct lwl_data_buffer * lwl_buffer)
+//uint8_t * lwl_get_log_buffer(uint32_t index)
+//{
+//	return &(lwl.lwl_data_buf[index].buf[0]);
+//}
+//uint32_t lwl_get_log_size(uint32_t index)
+//{
+//	return lwl.lwl_data_buf[index].put_idx;
+//}
+//uint32_t lwl_get_current_index(void)
+//{
+//	return lwl.lwl_working_buf_index;
+//}
+
+void lwl_reinit_buffer(struct lwl_data_buffer * lwl_buffer)
 {
 	memset(lwl_buffer, 0, sizeof(struct lwl_data_buffer));
 }
+
+uint16_t * lwl_get_full_buffer_addr(void)
+{
+	return (uint16_t *)lwl.lwl_data_buf[lwl.lwl_full_buf_index].buf;
+}
+
+uint32_t lwl_log_send_to_spi(void)
+{
+	// Cấu hình địa chỉ buffer
+	SPI_SlaveDevice_Init((uint16_t *)lwl_get_full_buffer_addr());
+	// Khởi động DMA SPI TX
+	SPI_SlaveDevice_CollectData();
+	// Bật tín hiệu DataReady
+	spi_transmit_task_data_ready(p_spi_transmit_task);
+	return ERROR_OK;
+}
+

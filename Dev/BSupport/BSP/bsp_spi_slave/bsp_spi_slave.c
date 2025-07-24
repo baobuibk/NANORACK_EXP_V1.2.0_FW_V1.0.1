@@ -58,15 +58,15 @@ Std_ReturnType SPI_SlaveDevice_Init(uint16_t * p_tx_buffer)
     spi_device_instance.data_context.p_tx_buffer = p_tx_buffer;
 
     bsp_spi_debug_print("%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n",
-    		*(p_tx_buffer + 0),
-			*(p_tx_buffer + 1),
-			*(p_tx_buffer + 2),
-			*(p_tx_buffer + 3),
-			*(p_tx_buffer + 4),
-			*(p_tx_buffer + 5),
-			*(p_tx_buffer + 6),
-			*(p_tx_buffer + 7));
-
+			 *(p_tx_buffer + 0) 		& 0xFF,
+    		(*(p_tx_buffer + 0) >> 8)	& 0xFF,
+			 *(p_tx_buffer + 1) 		& 0xFF,
+    		(*(p_tx_buffer + 1) >> 8)	& 0xFF,
+			 *(p_tx_buffer + 2) 		& 0xFF,
+			(*(p_tx_buffer + 2) >> 8)	& 0xFF,
+			 *(p_tx_buffer + 3) 		& 0xFF,
+			(*(p_tx_buffer + 3) >> 8)	& 0xFF
+			);
 	return E_OK;
 }
 
@@ -118,7 +118,6 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA()
 
     LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)spi_device_instance.data_context.p_tx_buffer, LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
     LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, SAMPLE_BUFFER_SIZE);
-//    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, 100);
 
     LL_SPI_EnableDMAReq_TX(SPI1);
     LL_SPI_Enable(SPI1);

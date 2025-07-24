@@ -17,7 +17,7 @@
 #include "photodiode_cool.h"
 #include "system_log.h"
 #include "system_reset.h"
-#include "spi_handshake.h"
+#include "../spi_transmit/spi_transmit.h"
 
 //DBC_MODULE_NAME("app_main")
 
@@ -29,10 +29,10 @@ void app_init(void)
 	adc_monitor_task_ctor_singleton();
 	tec_ovr_control_task_singleton_ctor();
 	min_shell_task_ctor_singleton();
-//	system_log_task_ctor_singleton();
+	system_log_task_ctor_singleton();
 	system_reset_task_ctor_singleton();
 
-	spi_handshake_task_singleton_ctor();
+	spi_transmit_task_singleton_ctor();
 }
 
 void app_start(void)
@@ -42,10 +42,10 @@ void app_start(void)
 	temperature_control_task_start(2);
 	adc_monitor_task_start(3);
 	tec_ovr_control_task_start(5);
-//	system_log_task_start(6);
+	system_log_task_start(6);
 	min_shell_task_start(7);
 
-	spi_handshake_task_start(8);
+	spi_transmit_task_start(8);
 
 	system_reset_task_start(10);
 	return;

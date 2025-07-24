@@ -9,6 +9,7 @@
 #include "system_log.h"
 #include "error_codes.h"
 #include "dbc_assert.h"
+#include "date_time.h"
 
 #include "adc_monitor.h"
 
@@ -62,7 +63,6 @@ void system_log_task_start(uint8_t priority)
 }
 static state_t system_log_normal_state_handler(system_log_task_t * const me, system_log_evt_t * const e)
 {
-	// assume the only event is SYSTEM_LOG_POLL
 	switch (e->super.sig)
 	{
 	case EVT_SYSTEM_LOG_POLL:
@@ -74,7 +74,11 @@ static state_t system_log_normal_state_handler(system_log_task_t * const me, sys
 
 void system_log_house_keeping(system_log_task_t * const me)
 {
-	LWL(TIMESTAMP, LWL_4(SST_getTick()));
+//	LWL(TIMESTAMP, LWL_4(SST_getTick()));
+
+	uint8_t days, hours, minutes, seconds;
+	date_time_get(&days, &hours, &minutes, &seconds);
+	LWL(TIMESTAMP, LWL_1(days), LWL_1(hours), LWL_1(minutes), LWL_1(seconds));
 	for (uint32_t i=0;i<8;i++)
 		if (me->ntc_log_mask & (0x01 << i))
 			LWL(TEMPERATURE_SINGLE_NTC,LWL_1(i),LWL_2(temperature_monitor_get_ntc_temperature(i)));
