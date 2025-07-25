@@ -13,7 +13,8 @@
 #include "stddef.h"
 #include "temperature_control.h"
 #include "adc_monitor.h"
-
+#include "configs.h"
+#include "wdg.h"
 
 DBC_MODULE_NAME("tec_control")
 
@@ -34,6 +35,8 @@ DBC_MODULE_NAME("tec_control")
 
 #define TEMP_TEC_RUNNING_DEFAULT					0x01
 #define TEMP_HTR_RUNNING_DEFAULT					0x01
+
+#define TEMP_OVERRIDE_TEC_DEFAULT					4
 
 
 temperature_control_task_t temperature_control_task_inst ;
@@ -67,6 +70,9 @@ static void temperature_control_task_init(temperature_control_task_t * const me,
 
 	me->temperature_control_profile.profile_tec_set			= TEMP_TEC_RUNNING_DEFAULT;
 	me->temperature_control_profile.profile_heater_set		= TEMP_HTR_RUNNING_DEFAULT;
+
+	me->temperature_tec_ovr_profile.profile_tec_ovr_set		= TEMP_OVERRIDE_TEC_DEFAULT;
+	me->temperature_tec_ovr_profile.tec_ovr_voltage			= TEMP_TEC_VOLT_DEFAULT;
 
 	SST_TimeEvt_arm(&me->temperature_control_task_timeout_timer, TEMPERATURE_CONTROL_TASK_TIME_LOOP, TEMPERATURE_CONTROL_TASK_TIME_LOOP);
 }
@@ -119,14 +125,17 @@ static state_t temperature_control_state_manual_handler(temperature_control_task
 	switch (e->super.sig)
 	{
 		case SIG_ENTRY:
-		{
+			wdg_unregister(WDG_TEMP_CTRL_ID);
 			temp_control_debug_print("Entry MANUAL\r\n");
 			SST_TimeEvt_disarm(&me->temperature_control_task_timeout_timer);
 			temperature_control_auto_tec_disable_output(me);
 			temperature_control_auto_heater_disable_output(me);
 			me->state_num = TEMPERATURE_MAN_CONTROL;
 			return HANDLED_STATUS;
-		}
+
+		case SIG_EXIT:
+			wdg_register(WDG_TEMP_CTRL_ID, WDG_TEMP_CTRL_TIMEOUT);
+			return HANDLED_STATUS;
 
 		case EVT_TEMPERATURE_CONTROL_HAS_CMD:
 		{
@@ -200,6 +209,7 @@ static state_t temperature_control_state_cooling_handler(temperature_control_tas
 
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+			wdg_feed(WDG_TEMP_CTRL_ID);
 			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: COOLING ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
@@ -263,6 +273,7 @@ static state_t temperature_control_state_wait_heat_handler(temperature_control_t
 		}
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+			wdg_feed(WDG_TEMP_CTRL_ID);
 			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: WAIT_HEAT ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
@@ -337,6 +348,7 @@ static state_t temperature_control_state_heating_heater_handler(temperature_cont
 		}
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+			wdg_feed(WDG_TEMP_CTRL_ID);
 			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: HEATING ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
@@ -398,6 +410,7 @@ static state_t temperature_control_state_wait_cool_handler(temperature_control_t
 		}
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+			wdg_feed(WDG_TEMP_CTRL_ID);
 			temp_control_debug_print("Pri_NTC %d\r\n", temperature_monitor_get_ntc_temperature(me->temperature_control_profile.pri_NTC_idx));
 			temp_control_debug_print("Src: WAIT_COOL ->> Event: time_loop\r\n");
 			if(temperature_monitor_get_ntc_error(me->temperature_control_profile.pri_NTC_idx,
@@ -473,6 +486,7 @@ static state_t temperature_control_state_ntc_error_handler(temperature_control_t
 		}
 		case EVT_TEMPERATURE_CONTROL_TIMEOUT_CONTROL_LOOP:
 		{
+			wdg_feed(WDG_TEMP_CTRL_ID);
 			temp_control_debug_print("Src: NTC_ERROR ->> Event: time_loop\r\n");
 			if(me->temperature_control_profile.auto_recover)
 			{
@@ -757,6 +771,8 @@ uint32_t temperature_profile_tec_ovr_voltage_set(temperature_control_task_t *con
 uint32_t temperature_profile_tec_ovr_enable(temperature_control_task_t *const me)
 {
 	uint8_t tec_idx = me->temperature_tec_ovr_profile.profile_tec_ovr_set;
+	if (tec_idx >= 4)
+		return ERROR_INVALID_PARAM;
 	uint16_t volt_mV = me->temperature_tec_ovr_profile.tec_ovr_voltage;
 	uint8_t tec_status = me->tec_table[tec_idx]->status;
 
@@ -841,7 +857,7 @@ uint32_t temperature_control_set_profile(temperature_control_task_t *const me, u
 	me->temperature_control_profile.sec_NTC_idx = sec_ntc_id;
 	me->temperature_control_profile.auto_recover = auto_recover;
 	me->temperature_control_profile.profile_tec_set = tec_pos_mask;
-	me->temperature_control_profile.profile_tec_set = htr_pos_mask;
+	me->temperature_control_profile.profile_heater_set = htr_pos_mask;
 	me->temperature_control_profile.tec_voltage = tec_mV;
 	me->temperature_control_profile.heater_duty_cycle = htr_duty;
 	return ERROR_OK;

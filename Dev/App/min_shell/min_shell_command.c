@@ -47,23 +47,23 @@ static system_log_task_t *p_system_log_task = &system_log_task_inst;
 // Command Handlers
 // =================================================================
 
-static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte)
-{
-    const uint16_t polynomial = 0x1021; // CRC16 XMODEM
-    crc ^= (uint16_t)byte << 8;
-    for (uint8_t bit = 0; bit < 8; bit++)
-    {
-        if (crc & 0x8000)
-        {
-            crc = (crc << 1) ^ polynomial;
-        }
-        else
-        {
-            crc <<= 1;
-        }
-    }
-    return crc;
-}
+//static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte)
+//{
+//    const uint16_t polynomial = 0x1021; // CRC16 XMODEM
+//    crc ^= (uint16_t)byte << 8;
+//    for (uint8_t bit = 0; bit < 8; bit++)
+//    {
+//        if (crc & 0x8000)
+//        {
+//            crc = (crc << 1) ^ polynomial;
+//        }
+//        else
+//        {
+//            crc <<= 1;
+//        }
+//    }
+//    return crc;
+//}
 
 static void MIN_Handler_PLEASE_RESET_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
@@ -78,6 +78,8 @@ static void MIN_Handler_TEST_CONNECTION_CMD(MIN_Context_t *ctx, const uint8_t *p
 	uint32_t var = (payload[0] << 24) | (payload[1] << 16) | (payload[2] << 8) | payload[3];
     MIN_Send(ctx, TEST_CONNECTION_ACK, payload, len);
     min_shell_debug_print("Payload TEST_CONNECTION_CMD (%d bytes): %d\r\n", len, var);
+//    LL_mDelay(5000);
+//    LL_mDelay(1000);
 }
 
 static void MIN_Handler_SET_WORKING_RTC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
@@ -180,7 +182,7 @@ static void MIN_Handler_SET_OVERRIDE_TEC_PROFILE_CMD(MIN_Context_t *ctx, const u
 {
 	uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
 	uint8_t ret = 0;
-	uint16_t interval = (payload[0] << 8) | payload[1];
+	uint16_t interval = ((payload[0] << 8) | payload[1]) * 1000;
 	uint8_t over_tec_id = payload[2];
 	uint16_t over_TEC_mV = (payload[3] << 8) | payload[4];
 
@@ -402,20 +404,23 @@ static void MIN_Handler_START_SAMPLE_CYCLE_CMD(MIN_Context_t *ctx, const uint8_t
 
 static void MIN_Handler_GET_INFO_SAMPLE_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-    uint8_t buffer[2] = {MIN_RESP_OK, MIN_ERROR_OK};
+    uint8_t buffer[2];
     experiment_profile_t profile;
     experiment_task_get_profile(p_experiment_task, &profile);
     if (profile.num_sample == 0)
     {
         buffer[0] = 0;
+        buffer[1] = 0;
         min_shell_debug_print("Sample store empty\r\n");
     }
     else
     {
-        buffer[0] = (profile.num_sample / 16);
-        if (profile.num_sample % 16)
-        	buffer[0] += 1;
-        min_shell_debug_print("Total sample chunks: %d\r\n", buffer[0]);
+        uint16_t total_chunks = (profile.num_sample / 8);
+        if (profile.num_sample % 8)
+        	total_chunks += 1;
+        min_shell_debug_print("Total sample chunks: %d\r\n", total_chunks);
+        buffer[0] = (uint8_t)(total_chunks >> 8) 	& 0xFF;
+        buffer[1] = (uint8_t)(total_chunks			& 0xFF);
     }
     MIN_Send(ctx, GET_INFO_SAMPLE_ACK, buffer, 2);
 }
@@ -426,7 +431,9 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     uint8_t chunk_id = payload[0];
     experiment_profile_t profile;
     experiment_task_get_profile(p_experiment_task, &profile);
-    uint8_t total_chunks = profile.num_sample / 16;
+    uint16_t total_chunks = (profile.num_sample / 8);
+    if (profile.num_sample % 8)
+    	total_chunks += 1;
     if (total_chunks == 0)
     {
         buffer[0] = MIN_RESP_FAIL;
@@ -531,6 +538,7 @@ static void MIN_Handler_GET_LASER_CURRENT_CMD(MIN_Context_t *ctx, const uint8_t 
 	MIN_Send(ctx, GET_LASER_CURRENT_ACK, buffer, 5);
 	min_shell_debug_print("int_laser_current: %d mA\r\n", int_current);
 	min_shell_debug_print("ext_laser_current: %d mA\r\n", ext_current);
+	return;
 }
 
 static void MIN_Handler_GET_LOG_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)

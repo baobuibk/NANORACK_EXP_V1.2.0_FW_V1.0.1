@@ -11,11 +11,10 @@
 #include "experiment_task.h"
 #include "app_signals.h"
 #include "bsp_spi_ram.h"
-#define PHOTO_DMA DMA1
-#define PHOTO_SPI SPI2
-#define PHOTO_TIMER TIM2
 
-
+#define PHOTO_DMA			DMA1
+#define PHOTO_SPI			SPI2
+#define PHOTO_TIMER			TIM2
 
 uint16_t photo_data_buffer[BUFFER_FULL_SIZE];
 uint16_t * const upper_data_buffer = photo_data_buffer + BUFFER_HALF_SIZE;
@@ -25,14 +24,14 @@ photo_diode_t photo_diode_adc = {
 		.dma = DMA1,
 		.dma_stream_rx = LL_DMA_STREAM_1
 };
+
 typedef struct bsp_photodiode_timer_param_t
 {
 	uint32_t pre_time_ARR;
 	uint32_t sampling_time_ARR;
 	uint32_t post_time_ARR;
 	uint32_t sampling_period_ARR;
-
-}bsp_photodiode_timer_param_t;
+} bsp_photodiode_timer_param_t;
 
 
 ADG1414_Device_t photo_sw;

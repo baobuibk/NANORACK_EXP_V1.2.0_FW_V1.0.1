@@ -15,9 +15,12 @@
 #include "stddef.h"
 #include "stdlib.h"
 #include "ntc.h"
+#include "wdg.h"
+#include "configs.h"
 
 DBC_MODULE_NAME("adc_monitor")
 
+#define MONITOR_TASK_INTERVAL			10
 #define MONITOR_TASK_NUM_EVENTS			4
 
 monitor_task_t monitor_task_inst;
@@ -32,7 +35,7 @@ static void monitor_task_init(monitor_task_t * const me, monitor_evt_t const * c
 {
 	bsp_ntc_adc_init();
 	bsp_laser_adc_init();
-	SST_TimeEvt_arm(&me->monitor_task_timer, 10, 10); //trigger every 10 tick
+	SST_TimeEvt_arm(&me->monitor_task_timer, MONITOR_TASK_INTERVAL, MONITOR_TASK_INTERVAL); //trigger every 10 tick
 }
 
 
@@ -64,6 +67,7 @@ void adc_monitor_task_start(uint8_t priority)
 
 static state_t monitor_state_process_handler(monitor_task_t * const me, monitor_evt_t const * const e)
 {
+	wdg_feed(WDG_ADC_MONITOR_ID);
 	switch (e->super.sig)
 	{
 		case EVT_MONITOR_NTC_TRIGGER_TIME:

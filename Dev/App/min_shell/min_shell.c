@@ -9,11 +9,12 @@
 #include "min.h"
 #include "stddef.h"
 #include "app_signals.h"
-#include "configs.h"
 #include "DBC_assert.h"
 #include "board.h"
 #include "error_codes.h"
 #include "bsp_handshake.h"
+#include "wdg.h"
+#include "configs.h"
 
 DBC_MODULE_NAME("min_shell")
 
@@ -33,7 +34,7 @@ static min_shell_evt_t const exit_evt = {.super = {.sig = SIG_EXIT} };
 static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_shell_evt_t const * const e);
 static void min_shell_task_dispatch(min_shell_task_t * const me, min_shell_evt_t * const e) ;
 
-#define MIN_SHELL_UART_BUFFER_SIZE 256
+#define MIN_SHELL_UART_BUFFER_SIZE				256
 static MIN_Context_t min_ctx;
 static MIN_Context_t *registered_contexts[MAX_MIN_CONTEXTS] = {0};
 static uint8_t min_shell_received_data[MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE];
@@ -47,7 +48,7 @@ UART_stdio_t min_shell_stdio; // UART for MIN communication
 
 void MIN_Context_Init(MIN_Context_t *ctx, uint8_t port) {
     min_init_context(&ctx->min_ctx, port);
-    min_transport_reset(&ctx->min_ctx, true);
+
     ctx->last_poll_time = min_time_ms();
     ctx->timeout_triggered = false;
 #ifdef AUTO_REINIT_ON_TIMEOUT
@@ -56,6 +57,7 @@ void MIN_Context_Init(MIN_Context_t *ctx, uint8_t port) {
     if (port < MAX_MIN_CONTEXTS) {
         registered_contexts[port] = ctx;
     }
+    min_transport_reset(&ctx->min_ctx, true);
 }
 
 void MIN_ReInit(MIN_Context_t *ctx)
@@ -113,12 +115,14 @@ static void min_shell_task_init(min_shell_task_t * const me, min_shell_evt_t con
 {
     DBC_ASSERT(1u, me != NULL);
     me->min_context = &min_ctx; // Assign the context to the task
-    MIN_Context_Init(me->min_context, EXP_MIN_PORT);
     MIN_RegisterTimeoutCallback(&min_ctx, MIN_Timeout_Handler);
     SST_TimeEvt_arm(&me->min_poll_timer, MIN_SHELL_POLL_INTERVAL_MS, MIN_SHELL_POLL_INTERVAL_MS); // Re-arm the timer
 
+
     // Kích hoạt UART
     uart_stdio_active(&min_shell_stdio);
+    MIN_Context_Init(me->min_context, EXP_MIN_PORT);
+
 }
 
 static void min_shell_task_dispatch(min_shell_task_t * const me, min_shell_evt_t * const e) {
@@ -177,14 +181,15 @@ static state_t min_shell_state_process_handler(min_shell_task_t * const me, min_
     		return HANDLED_STATUS;
 
         case EVT_MIN_POLL:
+        	wdg_feed(WDG_MINSHELL_ID);
         	min_shell_received_length = MIN_SHELL_RECEIVED_DATA_BUFFER_SIZE;
 
         	if(uart_stdio_read(me->min_shell_uart, min_shell_received_data, &min_shell_received_length))
 			{
             	MIN_App_Poll(me->min_context, min_shell_received_data, min_shell_received_length);
 			}
-
-            MIN_App_Poll(me->min_context, NULL, 0);
+//        	else
+//        		MIN_App_Poll(me->min_context, NULL, 0);
             return HANDLED_STATUS;
 
         case EVT_MIN_BUSY:
@@ -231,7 +236,7 @@ uint16_t min_tx_space(uint8_t port)
   // Ignore 'port' because we have just one context. But in a bigger application
   // with multiple ports we could make an array indexed by port to select the serial
   // port we need to use.
-  return circular_char_buffer_get_free_space(min_shell_task_inst.min_shell_uart->rx_buffer);
+  return circular_char_buffer_get_free_space(min_shell_task_inst.min_shell_uart->tx_buffer);
 }
 
 // Send a character on the designated port.
@@ -263,6 +268,14 @@ void min_application_handler(uint8_t min_id, uint8_t const *min_payload, uint8_t
 		return;
 	}
 	MIN_Context_t *ctx = registered_contexts[port];
+    if (ctx == NULL) {
+        return;
+    }
+
+    if (response_handler != NULL) {
+            response_handler(min_id, min_payload, len_payload);
+    }
+
     const MIN_Command_t *command_table = MIN_GetCommandTable();
     int table_size = MIN_GetCommandTableSize();
     for (int i = 0; i < table_size; i++) {

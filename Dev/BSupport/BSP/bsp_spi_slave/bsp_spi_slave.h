@@ -23,7 +23,8 @@
 #endif
 
 
-#define SAMPLE_BUFFER_SIZE		(16* 1024)		//16KB
+#define SAMPLE_BUFFER_SIZE		(8 * 1024)
+#define BYTE_BUFFER_SIZE		(16* 1024)		//16KB
 
 typedef enum {
 	SPI_TRANSFER_PREPARE,
@@ -46,7 +47,7 @@ typedef struct {
 
 SPI_SlaveDevice_t* SPI_SlaveDevice_GetHandle(void);
 Std_ReturnType SPI_SlaveDevice_Init(uint16_t * p_tx_buffer);
-Std_ReturnType SPI_SlaveDevice_CollectData(void);
+Std_ReturnType SPI_SlaveDevice_CollectData(uint16_t * p_tx_buffer);
 Std_ReturnType SPI_SlaveDevice_GetDataInfo(DataProcessContext_t *context);
 Std_ReturnType SPI_SlaveDevice_ReinitDMA(void);
 Std_ReturnType SPI_SlaveDevice_Disable(void);

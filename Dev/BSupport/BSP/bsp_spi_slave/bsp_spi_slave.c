@@ -9,6 +9,7 @@
 #include "stm32f7xx_ll_spi.h"
 #include "stm32f7xx_ll_dma.h"
 #include "bsp_spi_ram.h"
+#include "main.h"
 
 
 static SPI_SlaveDevice_t spi_device_instance = {
@@ -41,12 +42,12 @@ SPI_SlaveDevice_t* SPI_SlaveDevice_GetHandle(void)
 
 Std_ReturnType SPI_SlaveDevice_Init(uint16_t * p_tx_buffer)
 {
-    if (spi_device_instance.is_initialized) {
-        return E_OK;
-    }
+	// Force reset SPI1
+	LL_APB2_GRP1_ForceReset(LL_APB2_GRP1_PERIPH_SPI1);
+	// Release reset SPI1
+	LL_APB2_GRP1_ReleaseReset(LL_APB2_GRP1_PERIPH_SPI1);
 
-//    LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_3, LL_DMA_MDATAALIGN_BYTE);
-//    LL_DMA_SetPeriphAddress(DMA2, LL_DMA_STREAM_3, LL_SPI_DMA_GetRegAddr(DMA2));
+	SPI1_ReInit();
 
     LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_3);
     LL_DMA_EnableIT_TE(DMA2, LL_DMA_STREAM_3);
@@ -56,8 +57,18 @@ Std_ReturnType SPI_SlaveDevice_Init(uint16_t * p_tx_buffer)
     spi_device_instance.transfer_state = SPI_TRANSFER_PREPARE;
 
     spi_device_instance.data_context.p_tx_buffer = p_tx_buffer;
+	return E_OK;
+}
 
-    bsp_spi_debug_print("%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n",
+Std_ReturnType SPI_SlaveDevice_CollectData(uint16_t * p_tx_buffer)
+{
+//    if (!spi_device_instance.is_initialized) {
+//        return E_ERROR;
+//    }
+
+	SPI_SlaveDevice_Init(p_tx_buffer);
+
+    bsp_spi_debug_print("%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n",
 			 *(p_tx_buffer + 0) 		& 0xFF,
     		(*(p_tx_buffer + 0) >> 8)	& 0xFF,
 			 *(p_tx_buffer + 1) 		& 0xFF,
@@ -65,20 +76,24 @@ Std_ReturnType SPI_SlaveDevice_Init(uint16_t * p_tx_buffer)
 			 *(p_tx_buffer + 2) 		& 0xFF,
 			(*(p_tx_buffer + 2) >> 8)	& 0xFF,
 			 *(p_tx_buffer + 3) 		& 0xFF,
-			(*(p_tx_buffer + 3) >> 8)	& 0xFF
-			);
-	return E_OK;
-}
+			(*(p_tx_buffer + 3) >> 8)	& 0xFF,
 
-Std_ReturnType SPI_SlaveDevice_CollectData(void)
-{
-    if (!spi_device_instance.is_initialized) {
-        return E_ERROR;
-    }
+			 *(p_tx_buffer + 8188) 		& 0xFF,
+			(*(p_tx_buffer + 8188) >> 8)& 0xFF,
+			 *(p_tx_buffer + 8189) 		& 0xFF,
+			(*(p_tx_buffer + 8189) >> 8)& 0xFF,
+			 *(p_tx_buffer + 8190) 		& 0xFF,
+			(*(p_tx_buffer + 8190) >> 8)& 0xFF,
+			 *(p_tx_buffer + 8191) 		& 0xFF,
+			(*(p_tx_buffer + 8191) >> 8)& 0xFF
+			);
 
 	uint16_t crc = 0x0000;
-	for (uint16_t i = 0; i < SAMPLE_BUFFER_SIZE; i++) {
-		crc = UpdateCRC16_XMODEM(crc, *(spi_device_instance.data_context.p_tx_buffer + i));
+	for (uint16_t i = 0; i < SAMPLE_BUFFER_SIZE; i++)
+	{
+		uint16_t sample_data = *(spi_device_instance.data_context.p_tx_buffer + i);
+		crc = UpdateCRC16_XMODEM(crc, (sample_data & 0xFF));
+		crc = UpdateCRC16_XMODEM(crc, (sample_data >> 8) & 0xFF);
 	}
 
 	spi_device_instance.data_context.crc = crc;
@@ -103,25 +118,25 @@ Std_ReturnType SPI_SlaveDevice_GetDataInfo(DataProcessContext_t *context)
 
 Std_ReturnType SPI_SlaveDevice_ReinitDMA()
 {
-    if (!spi_device_instance.is_initialized) {
-        return E_ERROR;
-    }
+//    if (!spi_device_instance.is_initialized) {
+//        return E_ERROR;
+//    }
 
-    LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
-    while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_3));
+//    LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
+//    while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_3));
+//
+//    LL_SPI_DisableDMAReq_TX(SPI1);
+//    LL_SPI_Disable(SPI1);
+//
+//    LL_DMA_ClearFlag_TC3(DMA2);
+//    LL_DMA_ClearFlag_TE3(DMA2);
 
-    LL_SPI_DisableDMAReq_TX(SPI1);
-    LL_SPI_Disable(SPI1);
-
-    LL_DMA_ClearFlag_TC3(DMA2);
-    LL_DMA_ClearFlag_TE3(DMA2);
-
-    LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)spi_device_instance.data_context.p_tx_buffer, LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
-    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, SAMPLE_BUFFER_SIZE);
+    LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)spi_device_instance.data_context.p_tx_buffer,
+    		LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
+    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, BYTE_BUFFER_SIZE);
 
     LL_SPI_EnableDMAReq_TX(SPI1);
     LL_SPI_Enable(SPI1);
-
     LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_3);
 
     spi_device_instance.transfer_state = SPI_TRANSFER_WAIT;
@@ -130,9 +145,9 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA()
 
 Std_ReturnType SPI_SlaveDevice_Disable(void)
 {
-    if (!spi_device_instance.is_initialized) {
-        return E_ERROR;
-    }
+//    if (!spi_device_instance.is_initialized) {
+//        return E_ERROR;
+//    }
 
     LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_3);
     LL_SPI_DisableDMAReq_TX(SPI1);

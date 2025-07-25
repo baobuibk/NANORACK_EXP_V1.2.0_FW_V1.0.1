@@ -10,6 +10,9 @@
 
 #include "app_signals.h"
 #include "bsp_handshake.h"
+#include "wdg.h"
+#include "configs.h"
+#include "bsp_spi_slave.h"
 
 //DBC_MODULE_NAME("spi_transmit")
 
@@ -68,17 +71,24 @@ static state_t spi_transmit_handler(spi_transmit_task_t * const me, spi_transmit
 	switch (e->super.sig)
 	{
 		case EVT_SPI_TRANSMIT_POLL_CHECK_FINISH:
+			wdg_feed(WDG_SPI_TRANSMIT_ID);
 			me->count ++;
-			if (bsp_handshake_spi_check_finish() || me->count > TIME_OUT_SPI_TRANS)
+			if (bsp_handshake_spi_check_finish() || (me->count > TIME_OUT_SPI_TRANS))
 			{
 				me->count = 0;
+				SST_TimeEvt_disarm(&me->spi_transmit_poll_check_finish_timer);
 				spi_transmit_task_finish(me);
 			}
 			return HANDLED_STATUS;
 
 		case EVT_SPI_TRANSMIT_FINISH:
 		case EVT_SPI_TRANSMIT_TIMEOUT:
-			SST_TimeEvt_disarm(&me->spi_transmit_poll_check_finish_timer);
+
+//			LL_DMA_ClearFlag_TC3(DMA2);
+//			SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_COMPLETE);
+//			SPI_SlaveDevice_Disable();
+
+			spi_trans_debug_print("........................spi trans finish______________________________\r\n");
 			bsp_handshake_spi_busy();
 			return HANDLED_STATUS;
 
@@ -89,12 +99,15 @@ static state_t spi_transmit_handler(spi_transmit_task_t * const me, spi_transmit
 
 void spi_transmit_task_data_ready(spi_transmit_task_t *const me)
 {
+	spi_trans_debug_print("........................spi data ready______________________________\r\n");
 	bsp_handshake_spi_ready();
 	SST_TimeEvt_arm(&me->spi_transmit_poll_check_finish_timer, FINISH_POLL_TIME, FINISH_POLL_TIME);
+	wdg_register(WDG_SPI_TRANSMIT_ID, WDG_SPI_TRANSMIT_TIMEOUT);
 }
 
 void spi_transmit_task_finish(spi_transmit_task_t *const me)
 {
 	spi_transmit_evt_t spi_finish_evt = {.super = {.sig = EVT_SPI_TRANSMIT_FINISH}, };
 	SST_Task_post(&me->super, (SST_Evt *)&spi_finish_evt);
+	wdg_unregister(WDG_SPI_TRANSMIT_ID);
 }
