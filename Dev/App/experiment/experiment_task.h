@@ -11,6 +11,14 @@
 #include "sst.h"
 #include "fsm.h"
 
+#define EXP_DEBUG_PRINTING
+
+#ifdef EXP_DEBUG_PRINTING
+    #define exp_debug_print(...) DBG(0,__VA_ARGS__)
+#else
+	#define exp_debug_print(...)
+#endif
+
 #define EXPERIMENT_COMMAND_PAYLOAD_LENGTH 16
 typedef struct experiment_task_t experiment_task_t;
 typedef struct experiment_evt_t experiment_evt_t;

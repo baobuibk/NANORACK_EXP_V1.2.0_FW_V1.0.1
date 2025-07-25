@@ -17,7 +17,8 @@
 #include "photodiode_cool.h"
 #include "system_log.h"
 #include "system_reset.h"
-#include "../spi_transmit/spi_transmit.h"
+#include "spi_transmit.h"
+#include "wdg_task.h"
 
 //DBC_MODULE_NAME("app_main")
 
@@ -30,9 +31,9 @@ void app_init(void)
 	tec_ovr_control_task_singleton_ctor();
 	min_shell_task_ctor_singleton();
 	system_log_task_ctor_singleton();
-	system_reset_task_ctor_singleton();
 
 	spi_transmit_task_singleton_ctor();
+	wdg_task_ctor_singleton();
 }
 
 void app_start(void)
@@ -46,9 +47,7 @@ void app_start(void)
 	min_shell_task_start(7);
 
 	spi_transmit_task_start(8);
-
-	system_reset_task_start(10);
-	return;
+	wdg_task_start(10);
 }
 
 void app_run(void)

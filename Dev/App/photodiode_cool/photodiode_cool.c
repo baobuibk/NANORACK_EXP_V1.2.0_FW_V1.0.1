@@ -18,8 +18,8 @@ DBC_MODULE_NAME("tec_ovr_control")
 
 tec_ovr_control_task_t tec_ovr_control_task_inst;
 
-#define TEC_OVR_CONTROL_TASK_TIME_LOOP 10000 //loop to control TEC every X ms
-#define TEC_OVR_CONTROL_TASK_NUM_EVENTS 2
+#define TEC_OVR_DEFAULT_INTERVAL 			5000 //loop to control TEC every 10s
+#define TEC_OVR_CONTROL_TASK_NUM_EVENTS 	2
 
 static tec_ovr_control_evt_t tec_ovr_control_current_event = {0};
 static tec_ovr_control_evt_t tec_ovr_control_task_event_buffer[TEC_OVR_CONTROL_TASK_NUM_EVENTS] = {0};
@@ -31,7 +31,7 @@ circular_buffer_t tec_ovr_control_task_event_queue = {0};
 extern temperature_control_task_t temperature_control_task_inst ;
 static temperature_control_task_t *p_temperature_control_task = &temperature_control_task_inst;
 
-static uint16_t override_interval = TEC_OVR_CONTROL_TASK_TIME_LOOP;
+static uint16_t override_interval = TEC_OVR_DEFAULT_INTERVAL;
 
 static state_t tec_ovr_control_handler(tec_ovr_control_task_t * const me, tec_ovr_control_evt_t const * const e);
 
@@ -112,7 +112,10 @@ static state_t tec_ovr_control_handler(tec_ovr_control_task_t * const me, tec_ov
 
 uint32_t tec_ovr_start(void)
 {
+	if (temperature_profile_tec_ovr_enable(p_temperature_control_task))
+		return ERROR_FAIL;
 	SST_TimeEvt_arm(&tec_ovr_control_task_inst.tec_ovr_control_task_timeout_timer, override_interval, override_interval);
+	tec_ovr_control_task_inst.tec_ovr_state = TEC_OVR_COOL;
 	return ERROR_OK;
 }
 
@@ -120,6 +123,7 @@ uint32_t tec_ovr_stop(void)
 {
 	SST_TimeEvt_disarm(&tec_ovr_control_task_inst.tec_ovr_control_task_timeout_timer);
 	temperature_profile_tec_ovr_disable(p_temperature_control_task);
+	tec_ovr_control_task_inst.tec_ovr_state = TEC_OVR_OFF;
 	return ERROR_OK;
 }
 

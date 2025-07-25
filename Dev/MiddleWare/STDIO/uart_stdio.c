@@ -156,6 +156,7 @@ void uart_stdio_rx_callback(UART_stdio_t* me) {
         uint8_t received_data = LL_USART_ReceiveData8(me->uart_x);
         circular_char_buffer_push(me->rx_buffer, received_data);
     }
+    LL_USART_ClearFlag_ORE(me->uart_x);
 }
 
 // Callback xử lý ngắt phát

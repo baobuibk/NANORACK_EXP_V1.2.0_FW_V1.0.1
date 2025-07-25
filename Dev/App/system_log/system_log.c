@@ -10,6 +10,7 @@
 #include "error_codes.h"
 #include "dbc_assert.h"
 #include "date_time.h"
+#include "configs.h"
 
 #include "adc_monitor.h"
 
@@ -66,6 +67,7 @@ static state_t system_log_normal_state_handler(system_log_task_t * const me, sys
 	switch (e->super.sig)
 	{
 	case EVT_SYSTEM_LOG_POLL:
+		wdg_feed(WDG_SYSTEM_LOG_ID);
 		system_log_house_keeping(me);
 	}
 	return HANDLED_STATUS;

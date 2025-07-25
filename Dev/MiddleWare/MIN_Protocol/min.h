@@ -61,15 +61,12 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+
 #include "uart_dbg.h"
+
 #ifdef ASSERTION_CHECKING
 #include <assert.h>
 #endif
-
-
-
-//#define MIN_DEBUG_PRINTING
-
 
 #ifndef NO_TRANSPORT_PROTOCOL
 #define TRANSPORT_PROTOCOL
@@ -212,11 +209,23 @@ void min_init_context_validate(struct min_context *self, uint8_t port, void *p_r
 void min_init_context(struct min_context *self, uint8_t port);
 #endif
 
+//#ifdef MIN_DEBUG_PRINTING
+//// Debug print
+//void min_debug_print(const char *msg, ...);
+//#else
+//#define min_debug_print(...)
+//#endif
+
+#define MIN_DEBUG_PRINTING
 #ifdef MIN_DEBUG_PRINTING
-    #define min_debug_print(...) DBG(0,__VA_ARGS__)
+    #define min_debug_print(...) do { \
+        DBG(0, __VA_ARGS__); \
+        uart_stdio_printf(&uart_stdio, "\r\n"); \
+    } while (0)
 #else
-	#define min_debug_print(...)
+    #define min_debug_print(...)
 #endif
+
 
 #ifdef __cplusplus
 }

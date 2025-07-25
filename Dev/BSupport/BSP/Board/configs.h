@@ -48,4 +48,35 @@
 #define SHELL_UART_BUFFER_SIZE 1024
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define for watchdog
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define WDG_NUM_WDGS				10
+#define WDG_INIT_TIMEOUT_MS		20000
+
+//
+#define WDG_CAUSE_RESET_NORMAL	0
+#define WDG_CAUSE_RESET_OTA		1
+#define WDG_CAUSE_RESET_WDG		2
+
+#define WDG_ADC_MONITOR_ID		1		// OK
+//#define WDG_EXPERIMENT_ID		2
+#define WDG_MINSHELL_ID			3		// OK
+//#define WDG_PHOTO_COOL_ID		4
+//#define WDG_SHELL_ID			5
+#define WDG_SPI_TRANSMIT_ID		6		// OK
+#define WDG_SYSTEM_LOG_ID		7		// OK
+#define WDG_TEMP_CTRL_ID		8		// OK
+
+#define WDG_ADC_MONITOR_TIMEOUT			300			//adc_monitor interval: 10
+//#define WDG_EXPERIMENT_TIMEOUT		300
+#define WDG_MINSHELL_TIMEOUT			25000		//min_shell interval: 20000
+//#define WDG_PHOTO_COOL_TIMEOUT		7000
+//#define WDG_SHELL_TIMEOUT				300
+#define WDG_SPI_TRANSMIT_TIMEOUT		300			//spi_transmit: 5
+#define WDG_SYSTEM_LOG_TIMEOUT			3000		//log interval: 1000
+#define WDG_TEMP_CTRL_TIMEOUT			500			//temp_ctrl interval: 100
+
+
 #endif /* CONFIGS_APP_CONFIGS_H_ */

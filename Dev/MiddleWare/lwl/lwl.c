@@ -77,7 +77,7 @@ struct lwl_msg {
 // For writing to flash, this structure needs to be a multiple of 8 bytes.
 struct lwl_data_buffer {
     uint32_t put_idx;
-    uint8_t buf[LWL_BUF_SIZE];
+    uint8_t *p_buf;
 };
 
 typedef struct lwl_t{
@@ -87,7 +87,20 @@ typedef struct lwl_t{
 	struct lwl_data_buffer lwl_data_buf[2];
 }lwl_t;
 
-static struct lwl_t lwl;
+__attribute__((aligned(4))) static uint8_t lwl_data_buf_0[LWL_BUF_SIZE];
+__attribute__((aligned(4))) static uint8_t lwl_data_buf_1[LWL_BUF_SIZE];
+
+static lwl_t lwl = {
+    .lwl_working_buf_index = 0,
+    .lwl_full_buf_index = 1,
+    .lwl_buf_over_threshold = false,
+    .lwl_data_buf = {
+        { .put_idx = 0, .p_buf = (uint8_t *)lwl_data_buf_0 },
+        { .put_idx = 0, .p_buf = (uint8_t *)lwl_data_buf_1 }
+    }
+};
+
+//static struct lwl_t lwl;
 
 // Log message table (ID is the index)
 static const struct lwl_msg lwl_msg_table[] = {
@@ -165,15 +178,15 @@ void LWL(uint8_t id, ...) {
     lwl_data_buf->put_idx = (put_idx + length + 1) % LWL_BUF_SIZE; // +1 for START_BYTE
 
     // Write start byte
-    lwl_data_buf->buf[put_idx] = LWL_START_BYTE;
+    *(lwl_data_buf->p_buf + put_idx) = LWL_START_BYTE;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
 
     // Write length
-    lwl_data_buf->buf[put_idx] = length;
+    *(lwl_data_buf->p_buf + put_idx) = length;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
 
     // Write ID
-    lwl_data_buf->buf[put_idx] = id;
+    *(lwl_data_buf->p_buf + put_idx) = id;
     uint8_t crc_data[1 + msg->num_arg_bytes]; // Buffer for CRC calculation
     crc_data[0] = id;
     put_idx = (put_idx + 1) % LWL_BUF_SIZE;
@@ -181,14 +194,14 @@ void LWL(uint8_t id, ...) {
     // Write arguments and collect for CRC
     for (uint8_t i = 0; i < msg->num_arg_bytes; i++) {
         uint32_t arg = va_arg(ap, unsigned);
-        lwl_data_buf->buf[put_idx] = (uint8_t)(arg & 0xFF);
-        crc_data[i + 1] = lwl_data_buf->buf[put_idx];
+        *(lwl_data_buf->p_buf + put_idx) = (uint8_t)(arg & 0xFF);
+        crc_data[i + 1] = *(lwl_data_buf->p_buf + put_idx);
         put_idx = (put_idx + 1) % LWL_BUF_SIZE;
     }
 
     // Calculate and write CRC
     uint8_t crc = calculate_crc8(crc_data, 1 + msg->num_arg_bytes);
-    lwl_data_buf->buf[put_idx] = crc;
+    *(lwl_data_buf->p_buf + put_idx) = crc;
 
     if (lwl_data_buf->put_idx > LWL_BUF_THRESHOLD) 		//buffer nearly full
     {
@@ -249,15 +262,13 @@ void lwl_reinit_buffer(struct lwl_data_buffer * lwl_buffer)
 
 uint16_t * lwl_get_full_buffer_addr(void)
 {
-	return (uint16_t *)lwl.lwl_data_buf[lwl.lwl_full_buf_index].buf;
+	return (uint16_t *)lwl.lwl_data_buf[lwl.lwl_full_buf_index].p_buf;
 }
 
 uint32_t lwl_log_send_to_spi(void)
 {
 	// Cấu hình địa chỉ buffer
-	SPI_SlaveDevice_Init((uint16_t *)lwl_get_full_buffer_addr());
-	// Khởi động DMA SPI TX
-	SPI_SlaveDevice_CollectData();
+	SPI_SlaveDevice_CollectData((uint16_t *)lwl_get_full_buffer_addr());
 	// Bật tín hiệu DataReady
 	spi_transmit_task_data_ready(p_spi_transmit_task);
 	return ERROR_OK;
