@@ -25,10 +25,10 @@
 #define LWL_UART						USART1
 #endif
 
-#define BUFFER_HALF_SIZE	(8*1024)
-#define BUFFER_HALF_SIZE_BYTE (2 * BUFFER_HALF_SIZE)
+#define BUFFER_HALF_SIZE				(8*1024)
+#define BUFFER_HALF_SIZE_BYTE 			(2 * BUFFER_HALF_SIZE)
 //this is the block size of data aquisition in 16 bit
-#define BUFFER_FULL_SIZE	(2 * BUFFER_HALF_SIZE)
+#define BUFFER_FULL_SIZE				(2 * BUFFER_HALF_SIZE)
 
 typedef enum{SPI_MODE_0, SPI_MODE_1, SPI_MODE_2, SPI_MODE_3} spi_mode_t;
 

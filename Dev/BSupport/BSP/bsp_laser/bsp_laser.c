@@ -8,7 +8,10 @@
 #include "app_signals.h"
 #include "adc_monitor.h"
 
-#define LASER_SPI SPI4
+#define LASER_SPI				SPI4
+#define LASER_DMA				DMA2
+#define LASER_INT_DMA_STREAM	LL_DMA_STREAM_2
+#define LASER_EXT_DMA_STREAM	LL_DMA_STREAM_1
 
 static uint16_t ld_int_adc_value = 0;
 static uint16_t ld_ext_adc_value = 0;
@@ -23,7 +26,6 @@ ADG1414_Device_t laser_ext;
 
 extern monitor_task_t monitor_task_inst ;
 static monitor_evt_t const ld_adc_evt = {.super = {.sig = EVT_MONITOR_LD_ADC_COMPLETED} };
-
 
 
 static uint16_t current_calculate(uint16_t adc_val)	// return mA
@@ -132,33 +134,33 @@ uint16_t bsp_laser_get_int_current(void)
 void bsp_laser_adc_init(void)
 {
 	//Setting for laser ext adc
-    LL_DMA_SetPeriphIncMode(DMA2, LL_DMA_STREAM_1, LL_DMA_PERIPH_NOINCREMENT);
-    LL_DMA_SetMemoryIncMode(DMA2, LL_DMA_STREAM_1, LL_DMA_MEMORY_INCREMENT);
-    LL_DMA_SetPeriphSize(DMA2, LL_DMA_STREAM_1, LL_DMA_PDATAALIGN_HALFWORD);
-    LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_1, LL_DMA_MDATAALIGN_HALFWORD);
-    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_1, 1); // 1 channel for ext_laser
-    LL_DMA_SetPeriphAddress(DMA2, LL_DMA_STREAM_1, (uint32_t)&ADC3->DR);
-    LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, (uint32_t)&ld_ext_adc_value);
-    LL_DMA_SetMode(DMA2, LL_DMA_STREAM_1, LL_DMA_MODE_CIRCULAR);
+    LL_DMA_SetPeriphIncMode(LASER_DMA, LASER_EXT_DMA_STREAM, LL_DMA_PERIPH_NOINCREMENT);
+    LL_DMA_SetMemoryIncMode(LASER_DMA, LASER_EXT_DMA_STREAM, LL_DMA_MEMORY_INCREMENT);
+    LL_DMA_SetPeriphSize(LASER_DMA, LASER_EXT_DMA_STREAM, LL_DMA_PDATAALIGN_HALFWORD);
+    LL_DMA_SetMemorySize(LASER_DMA, LASER_EXT_DMA_STREAM, LL_DMA_MDATAALIGN_HALFWORD);
+    LL_DMA_SetDataLength(LASER_DMA, LASER_EXT_DMA_STREAM, 1); // 1 channel for ext_laser
+    LL_DMA_SetPeriphAddress(LASER_DMA, LASER_EXT_DMA_STREAM, (uint32_t)&ADC3->DR);
+    LL_DMA_SetMemoryAddress(LASER_DMA, LASER_EXT_DMA_STREAM, (uint32_t)&ld_ext_adc_value);
+    LL_DMA_SetMode(LASER_DMA, LASER_EXT_DMA_STREAM, LL_DMA_MODE_CIRCULAR);
 
     //Setting for laser int adc
-    LL_DMA_SetPeriphIncMode(DMA2, LL_DMA_STREAM_2, LL_DMA_PERIPH_NOINCREMENT);
-    LL_DMA_SetMemoryIncMode(DMA2, LL_DMA_STREAM_2, LL_DMA_MEMORY_INCREMENT);
-    LL_DMA_SetPeriphSize(DMA2, LL_DMA_STREAM_2, LL_DMA_PDATAALIGN_HALFWORD);
-    LL_DMA_SetMemorySize(DMA2, LL_DMA_STREAM_2, LL_DMA_MDATAALIGN_HALFWORD);
-    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_2, 1); // 1 channel for int_laser
-    LL_DMA_SetPeriphAddress(DMA2, LL_DMA_STREAM_2, (uint32_t)&ADC2->DR);
-    LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_2, (uint32_t)&ld_int_adc_value);
-    LL_DMA_SetMode(DMA2, LL_DMA_STREAM_2, LL_DMA_MODE_CIRCULAR);
+    LL_DMA_SetPeriphIncMode(LASER_DMA, LASER_INT_DMA_STREAM, LL_DMA_PERIPH_NOINCREMENT);
+    LL_DMA_SetMemoryIncMode(LASER_DMA, LASER_INT_DMA_STREAM, LL_DMA_MEMORY_INCREMENT);
+    LL_DMA_SetPeriphSize(LASER_DMA, LASER_INT_DMA_STREAM, LL_DMA_PDATAALIGN_HALFWORD);
+    LL_DMA_SetMemorySize(LASER_DMA, LASER_INT_DMA_STREAM, LL_DMA_MDATAALIGN_HALFWORD);
+    LL_DMA_SetDataLength(LASER_DMA, LASER_INT_DMA_STREAM, 1); // 1 channel for int_laser
+    LL_DMA_SetPeriphAddress(LASER_DMA, LASER_INT_DMA_STREAM, (uint32_t)&ADC2->DR);
+    LL_DMA_SetMemoryAddress(LASER_DMA, LASER_INT_DMA_STREAM, (uint32_t)&ld_int_adc_value);
+    LL_DMA_SetMode(LASER_DMA, LASER_INT_DMA_STREAM, LL_DMA_MODE_CIRCULAR);
 
 
     LL_ADC_Enable(ADC3);
-    LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
-    LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_1);
+    LL_DMA_EnableStream(LASER_DMA, LASER_EXT_DMA_STREAM);
+    LL_DMA_EnableIT_TC(LASER_DMA, LASER_EXT_DMA_STREAM);
 
     LL_ADC_Enable(ADC2);
-	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_2);
-	//LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_2);
+	LL_DMA_EnableStream(LASER_DMA, LASER_INT_DMA_STREAM);
+	//LL_DMA_EnableIT_TC(LASER_DMA, LASER_INT_DMA_STREAM);
 
 }
 
@@ -172,11 +174,11 @@ void bsp_laser_int_trigger_adc(void)
 	LL_ADC_REG_StartConversionSWStart(ADC2);
 }
 
-void DMA2_Stream1_IRQHandler(void)
+void LASER_INT_DMA_STREAM1_IRQHandler(void)
 {
-	if (LL_DMA_IsActiveFlag_TC1(DMA2))
+	if (LL_DMA_IsActiveFlag_TC1(LASER_DMA))
 	{
-		LL_DMA_ClearFlag_TC1(DMA2);
+		LL_DMA_ClearFlag_TC1(LASER_DMA);
 	}
 
 	if (sample_count == 0)
@@ -197,11 +199,11 @@ void DMA2_Stream1_IRQHandler(void)
 }
 
 
-void DMA2_Stream2_IRQHandler(void)
+void bsp_laser_dma_adc_current_irq(void)
 {
-	if (LL_DMA_IsActiveFlag_TC2(DMA2))
+	if (LL_DMA_IsActiveFlag_TC2(LASER_DMA))
 	{
-		LL_DMA_ClearFlag_TC2(DMA2);
+		LL_DMA_ClearFlag_TC2(LASER_DMA);
 	}
 
 //	else

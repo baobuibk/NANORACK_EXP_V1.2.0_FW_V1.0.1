@@ -13,6 +13,8 @@
 #include "bsp_spi_ram.h"
 
 #define PHOTO_DMA			DMA1
+#define PHOTO_DMA_STREAM	LL_DMA_STREAM_1
+
 #define PHOTO_SPI			SPI2
 #define PHOTO_TIMER			TIM2
 
@@ -21,8 +23,8 @@ uint16_t * const upper_data_buffer = photo_data_buffer + BUFFER_HALF_SIZE;
 
 photo_diode_t photo_diode_adc = {
 		.spi = PHOTO_SPI,
-		.dma = DMA1,
-		.dma_stream_rx = LL_DMA_STREAM_1
+		.dma = PHOTO_DMA,
+		.dma_stream_rx = PHOTO_DMA_STREAM
 };
 
 typedef struct bsp_photodiode_timer_param_t
@@ -266,25 +268,24 @@ void bsp_photodiode_sample_start()
 }
 
 
-
-
 // Hàm xử lí DMA ADC
-void DMA1_Stream1_IRQHandler(void)
+void bsp_photodiode_dma_sampling_irq(void)
 {
 	TIM1->CR1 &= ~TIM_CR1_CEN;		// Stop timer trigger
-	GPIOD->BSRR = GPIO_BSRR_BS_9; 	// CS_HIGH
+//	GPIOD->BSRR = GPIO_BSRR_BS_9; 	// CS_HIGH
+	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;
 
-	if (DMA1->LISR & DMA_LISR_HTIF1)	// Check HT flag
+	if (PHOTO_DMA->LISR & DMA_LISR_HTIF1)	// Check HT flag
 	{
-		DMA1->LIFCR = DMA_LIFCR_CHTIF1;	// Clear HT flag
+		PHOTO_DMA->LIFCR = DMA_LIFCR_CHTIF1;	// Clear HT flag
 		bsp_spi_ram_write_dma(photo_diode_adc.ram_current_address, BUFFER_HALF_SIZE_BYTE, (uint8_t *)photo_data_buffer);
 		photo_diode_adc.ram_current_address += BUFFER_HALF_SIZE_BYTE;
 		TIM1->CR1 |= TIM_CR1_CEN;		// Continue start timer trigger
 	}
 
-	else if (DMA1->LISR & DMA_LISR_TCIF1)	// Check TC flag
+	else if (PHOTO_DMA->LISR & DMA_LISR_TCIF1)	// Check TC flag
 	{
-		DMA1->LIFCR = DMA_LIFCR_CTCIF1;	// Clear TC flag
+		PHOTO_DMA->LIFCR = DMA_LIFCR_CTCIF1;	// Clear TC flag
 		bsp_spi_ram_write_dma(photo_diode_adc.ram_current_address, BUFFER_HALF_SIZE_BYTE, (uint8_t *)upper_data_buffer);
 		photo_diode_adc.ram_current_address += BUFFER_HALF_SIZE_BYTE;
 		photo_diode_adc.block_count --;
@@ -298,9 +299,9 @@ void DMA1_Stream1_IRQHandler(void)
 			TIM1->DIER &= ~TIM_DIER_UIE;
 			TIM1->SR = ~TIM_SR_UIF;
 			NVIC_ClearPendingIRQ(TIM1_UP_TIM10_IRQn);
-			LL_DMA_DisableStream(DMA1, LL_DMA_STREAM_1);
-			LL_DMA_DisableIT_TC(DMA1, LL_DMA_STREAM_1);
-			LL_DMA_DisableIT_HT(DMA1, LL_DMA_STREAM_1);
+			LL_DMA_DisableStream(PHOTO_DMA, PHOTO_DMA_STREAM);
+			LL_DMA_DisableIT_TC(PHOTO_DMA, PHOTO_DMA_STREAM);
+			LL_DMA_DisableIT_HT(PHOTO_DMA, PHOTO_DMA_STREAM);
 			LL_SPI_DisableDMAReq_RX(photo_diode_adc.spi);
 			SST_Task_post((SST_Task *)&experiment_task_inst.super, (SST_Evt *)&finish_post_phase_evt);
 		}
@@ -312,11 +313,21 @@ void DMA1_Stream1_IRQHandler(void)
 void TIM1_UP_TIM10_IRQHandler(void)
 {
 	TIM1->SR = ~TIM_SR_UIF;			// Clear timer flag
-	GPIOD->BSRR = GPIO_BSRR_BR_10; 	// CV LOW
-	GPIOD->BSRR = GPIO_BSRR_BS_9;  	// CS HIGH
-	GPIOD->BSRR = GPIO_BSRR_BS_10; 	// CV HIGH
-	GPIOD->BSRR = GPIO_BSRR_BR_9; 	// CS LOW
-	SPI2->DR = 0xAAAA;
+
+//	GPIOD->BSRR = GPIO_BSRR_BR_10; 	// CV LOW
+	PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin << 16;
+
+//	GPIOD->BSRR = GPIO_BSRR_BS_9;  	// CS HIGH
+	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin;
+
+//	GPIOD->BSRR = GPIO_BSRR_BS_10; 	// CV HIGH
+	PHOTO_ADC_CONV_GPIO_Port->BSRR = PHOTO_ADC_CONV_Pin;
+
+//	GPIOD->BSRR = GPIO_BSRR_BR_9; 	// CS LOW
+	PHOTO_ADC_CS_GPIO_Port->BSRR = PHOTO_ADC_CS_Pin << 16;
+
+//	SPI2->DR = 0xAAAA;
+	PHOTO_SPI->DR = 0xAAAA;
 }
 
 void TIM2_IRQHandler(void)

@@ -37,4 +37,6 @@ void bsp_laser_adc_init(void);
 void bsp_laser_ext_trigger_adc(void);
 void bsp_laser_int_trigger_adc(void);
 
+void bsp_laser_dma_adc_current_irq(void);
+
 #endif /* BSUPPORT_BSP_BSP_LASER_BSP_LASER_H_ */

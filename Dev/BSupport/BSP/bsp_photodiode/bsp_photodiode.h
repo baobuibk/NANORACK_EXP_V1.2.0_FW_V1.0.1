@@ -10,6 +10,7 @@
 
 #include "board.h"
 #include "adg1414.h"
+#include "main.h"
 
 
 typedef struct bsp_photodiode_time_t
@@ -46,6 +47,8 @@ void bsp_photo_switch_on(uint32_t channel_idx);
 void bsp_photo_switch_off_all(void);
 
 void bsp_photodiode_sample_start(void);
+
+void bsp_photodiode_dma_sampling_irq(void);
 
 
 extern ADS8327_Device_t photo_adc;

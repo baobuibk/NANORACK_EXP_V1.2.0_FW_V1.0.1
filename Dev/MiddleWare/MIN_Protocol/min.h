@@ -216,7 +216,7 @@ void min_init_context(struct min_context *self, uint8_t port);
 //#define min_debug_print(...)
 //#endif
 
-#define MIN_DEBUG_PRINTING
+//#define MIN_DEBUG_PRINTING
 #ifdef MIN_DEBUG_PRINTING
     #define min_debug_print(...) do { \
         DBG(0, __VA_ARGS__); \
