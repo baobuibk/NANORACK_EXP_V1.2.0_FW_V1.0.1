@@ -36,6 +36,22 @@ static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte) {
     return crc;
 }
 
+static uint32_t CRC_HW_Calculation(uint32_t *data_buffer, uint32_t length)
+{
+    if (length == 0) return 0;
+    uint32_t* p_data = data_buffer;
+
+    CRC->CR = CRC_CR_RESET;
+
+    for (uint32_t i = 0; i < length; i ++)
+    {
+    	CRC->DR = *p_data;
+    	p_data ++ ;
+    }
+
+    return CRC->DR;
+}
+
 SPI_SlaveDevice_t* SPI_SlaveDevice_GetHandle(void)
 {
     return &spi_device_instance;
@@ -89,13 +105,15 @@ Std_ReturnType SPI_SlaveDevice_CollectData(uint16_t * p_tx_buffer)
 			(*(p_tx_buffer + 8191) >> 8)& 0xFF
 			);
 
-	uint16_t crc = 0x0000;
-	for (uint16_t i = 0; i < EXPERIMENT_BUFFER_SAMPLE_SIZE; i++)
-	{
-		uint16_t sample_data = *(spi_device_instance.data_context.p_tx_buffer + i);
-		crc = UpdateCRC16_XMODEM(crc, (sample_data & 0xFF));
-		crc = UpdateCRC16_XMODEM(crc, (sample_data >> 8) & 0xFF);
-	}
+//	uint16_t crc = 0x0000;
+//	for (uint16_t i = 0; i < EXPERIMENT_BUFFER_SAMPLE_SIZE; i++)
+//	{
+//		uint16_t sample_data = *(spi_device_instance.data_context.p_tx_buffer + i);
+//		crc = UpdateCRC16_XMODEM(crc, (sample_data & 0xFF));
+//		crc = UpdateCRC16_XMODEM(crc, (sample_data >> 8) & 0xFF);
+//	}
+    uint16_t crc = 0;
+    crc = CRC_HW_Calculation((uint32_t *)spi_device_instance.data_context.p_tx_buffer, EXPERIMENT_BUFFER_SAMPLE32_SIZE);
 
 	spi_device_instance.data_context.crc = crc;
 	spi_device_instance.data_context.is_valid = true;
