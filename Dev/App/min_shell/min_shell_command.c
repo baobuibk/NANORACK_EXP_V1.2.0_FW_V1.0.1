@@ -457,13 +457,15 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
 
 static void MIN_Handler_GET_CHUNK_CRC_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)
 {
-    uint8_t buffer[2];
-    uint16_t crc = SPI_SlaveDevide_GetDataCRC();
-    buffer[0] = (crc >> 8) & 0xFF;
-    buffer[1] = crc & 0xFF;
-    MIN_Send(ctx, GET_CHUNK_CRC_ACK, buffer, 2);
+    uint8_t buffer[4];
+    uint32_t crc = SPI_SlaveDevide_GetDataCRC();
+    buffer[0] = (crc >> 24) & 0xFF;
+    buffer[1] = (crc >> 16) & 0xFF;
+    buffer[2] = (crc >> 8) & 0xFF;
+    buffer[3] = crc & 0xFF;
+    MIN_Send(ctx, GET_CHUNK_CRC_ACK, buffer, 4);
 
-    min_shell_debug_print("Chunk index: %d - CRC: 0x%04X\r\n", payload[0], crc);
+    min_shell_debug_print("Chunk index: %d - CRC: 0x%08X\r\n", payload[0], crc);
 }
 
 static void MIN_Handler_GET_LASER_CURRENT_DATA_CMD(MIN_Context_t *ctx, const uint8_t *payload, uint8_t len)

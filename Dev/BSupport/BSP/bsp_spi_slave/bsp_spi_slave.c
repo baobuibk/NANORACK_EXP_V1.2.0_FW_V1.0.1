@@ -36,10 +36,10 @@ static SPI_SlaveDevice_t spi_device_instance = {
 //    return crc;
 //}
 
-static uint32_t CRC_HW_Calculation(uint32_t *data_buffer, uint32_t length)
+static uint32_t CRC_HW_Calculation(uint8_t *data_buffer, uint32_t length)
 {
     if (length == 0) return 0;
-    uint32_t* p_data = data_buffer;
+    uint8_t* p_data = data_buffer;
 
     CRC->CR = CRC_CR_RESET;
 
@@ -85,25 +85,25 @@ Std_ReturnType SPI_SlaveDevice_CollectData(uint16_t * p_tx_buffer)
 
 	SPI_SlaveDevice_Init(p_tx_buffer);
 
-    bsp_spi_debug_print("%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n",
-			 *(p_tx_buffer + 0) 		& 0xFF,
-    		(*(p_tx_buffer + 0) >> 8)	& 0xFF,
-			 *(p_tx_buffer + 1) 		& 0xFF,
-    		(*(p_tx_buffer + 1) >> 8)	& 0xFF,
-			 *(p_tx_buffer + 2) 		& 0xFF,
-			(*(p_tx_buffer + 2) >> 8)	& 0xFF,
-			 *(p_tx_buffer + 3) 		& 0xFF,
-			(*(p_tx_buffer + 3) >> 8)	& 0xFF,
-
-			 *(p_tx_buffer + 8188) 		& 0xFF,
-			(*(p_tx_buffer + 8188) >> 8)& 0xFF,
-			 *(p_tx_buffer + 8189) 		& 0xFF,
-			(*(p_tx_buffer + 8189) >> 8)& 0xFF,
-			 *(p_tx_buffer + 8190) 		& 0xFF,
-			(*(p_tx_buffer + 8190) >> 8)& 0xFF,
-			 *(p_tx_buffer + 8191) 		& 0xFF,
-			(*(p_tx_buffer + 8191) >> 8)& 0xFF
-			);
+//    bsp_spi_debug_print("%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n%02X  %02X  %02X  %02X  %02X  %02X  %02X  %02X\r\n",
+//			 *(p_tx_buffer + 0) 		& 0xFF,
+//    		(*(p_tx_buffer + 0) >> 8)	& 0xFF,
+//			 *(p_tx_buffer + 1) 		& 0xFF,
+//    		(*(p_tx_buffer + 1) >> 8)	& 0xFF,
+//			 *(p_tx_buffer + 2) 		& 0xFF,
+//			(*(p_tx_buffer + 2) >> 8)	& 0xFF,
+//			 *(p_tx_buffer + 3) 		& 0xFF,
+//			(*(p_tx_buffer + 3) >> 8)	& 0xFF,
+//
+//			 *(p_tx_buffer + 8188) 		& 0xFF,
+//			(*(p_tx_buffer + 8188) >> 8)& 0xFF,
+//			 *(p_tx_buffer + 8189) 		& 0xFF,
+//			(*(p_tx_buffer + 8189) >> 8)& 0xFF,
+//			 *(p_tx_buffer + 8190) 		& 0xFF,
+//			(*(p_tx_buffer + 8190) >> 8)& 0xFF,
+//			 *(p_tx_buffer + 8191) 		& 0xFF,
+//			(*(p_tx_buffer + 8191) >> 8)& 0xFF
+//			);
 
 //	uint16_t crc = 0x0000;
 //	for (uint16_t i = 0; i < EXPERIMENT_BUFFER_SAMPLE_SIZE; i++)
@@ -112,8 +112,8 @@ Std_ReturnType SPI_SlaveDevice_CollectData(uint16_t * p_tx_buffer)
 //		crc = UpdateCRC16_XMODEM(crc, (sample_data & 0xFF));
 //		crc = UpdateCRC16_XMODEM(crc, (sample_data >> 8) & 0xFF);
 //	}
-    uint16_t crc = 0;
-    crc = CRC_HW_Calculation((uint32_t *)spi_device_instance.data_context.p_tx_buffer, EXPERIMENT_BUFFER_SAMPLE32_SIZE);
+    uint32_t crc = 0;
+    crc = CRC_HW_Calculation((uint8_t *)spi_device_instance.data_context.p_tx_buffer, EXPERIMENT_BUFFER_BYTE_SIZE);
 
 	spi_device_instance.data_context.crc = crc;
 	spi_device_instance.data_context.is_valid = true;
@@ -189,7 +189,7 @@ void SPI_SlaveDevice_SetTransferState(SPI_TransferState_t state)
     spi_device_instance.transfer_state = state;
 }
 
-uint16_t SPI_SlaveDevide_GetDataCRC(void) {
+uint32_t SPI_SlaveDevide_GetDataCRC(void) {
 	return spi_device_instance.data_context.crc;
 }
 

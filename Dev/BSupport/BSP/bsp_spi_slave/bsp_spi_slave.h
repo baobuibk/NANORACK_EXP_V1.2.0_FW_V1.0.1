@@ -31,7 +31,7 @@ typedef enum {
 
 typedef struct {
 	uint16_t * p_tx_buffer;
-	uint16_t crc; // CRC16-XMODEM of the data
+	uint32_t crc; // CRC16-XMODEM of the data
 	_Bool is_valid; // Flag indicating if context is valid
 } DataProcessContext_t;
 
@@ -49,6 +49,6 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA(void);
 Std_ReturnType SPI_SlaveDevice_Disable(void);
 SPI_TransferState_t SPI_SlaveDevice_GetTransferState(void);
 void SPI_SlaveDevice_SetTransferState(SPI_TransferState_t state);
-uint16_t SPI_SlaveDevide_GetDataCRC(void);
+uint32_t SPI_SlaveDevide_GetDataCRC(void);
 
 #endif /* BSUPPORT_BSP_BSP_SPI_SLAVE_BSP_SPI_SLAVE_H_ */

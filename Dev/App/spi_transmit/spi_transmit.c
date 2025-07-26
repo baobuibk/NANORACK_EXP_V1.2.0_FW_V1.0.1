@@ -29,7 +29,7 @@ static void spi_transmit_task_init(spi_transmit_task_t * const me, spi_transmit_
 static void spi_transmit_task_dispatch(spi_transmit_task_t * const me, spi_transmit_evt_t * const e);
 static state_t spi_transmit_handler(spi_transmit_task_t * const me, spi_transmit_evt_t * const e);
 
-static void spi_transmit_task_finish(spi_transmit_task_t *const me);
+//static void spi_transmit_task_finish(spi_transmit_task_t *const me);
 
 void spi_transmit_task_ctor(spi_transmit_task_t * const me, spi_transmit_task_init_t * const init)
 {
