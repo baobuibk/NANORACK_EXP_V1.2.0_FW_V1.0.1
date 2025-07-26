@@ -23,18 +23,18 @@ static SPI_SlaveDevice_t spi_device_instance = {
     .is_initialized = false
 };
 
-static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte) {
-    const uint16_t polynomial = 0x1021; // CRC16 XMODEM
-    crc ^= (uint16_t)byte << 8;
-    for (uint8_t bit = 0; bit < 8; bit++) {
-        if (crc & 0x8000) {
-            crc = (crc << 1) ^ polynomial;
-        } else {
-            crc <<= 1;
-        }
-    }
-    return crc;
-}
+//static uint16_t UpdateCRC16_XMODEM(uint16_t crc, uint8_t byte) {
+//    const uint16_t polynomial = 0x1021; // CRC16 XMODEM
+//    crc ^= (uint16_t)byte << 8;
+//    for (uint8_t bit = 0; bit < 8; bit++) {
+//        if (crc & 0x8000) {
+//            crc = (crc << 1) ^ polynomial;
+//        } else {
+//            crc <<= 1;
+//        }
+//    }
+//    return crc;
+//}
 
 static uint32_t CRC_HW_Calculation(uint32_t *data_buffer, uint32_t length)
 {

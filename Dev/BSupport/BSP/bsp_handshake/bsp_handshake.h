@@ -26,8 +26,8 @@
 #define bsp_handshake_min_ready()	(LL_GPIO_ResetOutputPin(MinBusy_GPIO_Port, MinBusy_Pin))
 #define bsp_handshake_min_busy()	(LL_GPIO_SetOutputPin(MinBusy_GPIO_Port, MinBusy_Pin))
 
-#define bsp_handshake_spi_ready()	(LL_GPIO_SetOutputPin(DReady_GPIO_Port, DReady_Pin))
-#define bsp_handshake_spi_busy()	(LL_GPIO_ResetOutputPin(DReady_GPIO_Port, DReady_Pin))
+#define bsp_handshake_spi_ready()	(LL_GPIO_ResetOutputPin(DReady_GPIO_Port, DReady_Pin))
+#define bsp_handshake_spi_busy()	(LL_GPIO_SetOutputPin(DReady_GPIO_Port, DReady_Pin))
 
 #define bsp_handshake_spi_check_finish()  (LL_GPIO_IsInputPinSet(ReadDone_GPIO_Port, ReadDone_Pin))
 

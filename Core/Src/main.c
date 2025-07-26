@@ -1654,9 +1654,6 @@ static void MX_GPIO_Init(void)
   LL_GPIO_ResetOutputPin(MIN_HandShake_GPIO_Port, MIN_HandShake_Pin);
 
   /**/
-  LL_GPIO_ResetOutputPin(IRQ_0_GPIO_Port, IRQ_0_Pin);
-
-  /**/
   LL_GPIO_ResetOutputPin(LED_G_GPIO_Port, LED_G_Pin);
 
   /**/
@@ -1700,6 +1697,9 @@ static void MX_GPIO_Init(void)
 
   /**/
   LL_GPIO_SetOutputPin(PHOTO_ADC_CONV_GPIO_Port, PHOTO_ADC_CONV_Pin);
+
+  /**/
+  LL_GPIO_SetOutputPin(IRQ_0_GPIO_Port, IRQ_0_Pin);
 
   /**/
   LL_GPIO_SetOutputPin(ADG_CS_GPIO_Port, ADG_CS_Pin);
@@ -1874,7 +1874,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(IRQ_0_GPIO_Port, &GPIO_InitStruct);
 
   /**/
