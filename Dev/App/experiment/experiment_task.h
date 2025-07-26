@@ -11,6 +11,23 @@
 #include "sst.h"
 #include "fsm.h"
 
+
+// =================================================================
+// BEGIN: Total define for experiment, min_shell_command, spi_slave
+// =================================================================
+
+#define EXPERIMENT_CHUNK_SAMPLE_SIZE		16		//kSample
+#define EXPERIMENT_BUFFER_SAMPLE_SIZE		(EXPERIMENT_CHUNK_SAMPLE_SIZE * 1024)
+#define EXPERIMENT_BUFFER_BYTE_SIZE			(EXPERIMENT_BUFFER_SAMPLE_SIZE * 2)
+
+#define EXPERIMENT_LASER_CURRENT_SIZE		(EXPERIMENT_CHUNK_SAMPLE_SIZE * 1024)
+#define EXPERIMENT_LASER_CURRENT_POLL_TIME	1
+
+// =================================================================
+// END: Total define for experiment, min_shell_command, spi_slave
+// =================================================================
+
+
 #define EXP_DEBUG_PRINTING
 
 #ifdef EXP_DEBUG_PRINTING

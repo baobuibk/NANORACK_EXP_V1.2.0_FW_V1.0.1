@@ -12,7 +12,7 @@
 #include "error_codes.h"
 #include "dbc_assert.h"
 #include "main.h"
-#include "bsp_system.h"
+#include "wdg.h"
 
 //DBC_MODULE_NAME("system_reset")
 

@@ -296,5 +296,6 @@ void UART7_IRQHandler(void)
 {
 	uart_stdio_rx_callback(min_shell_task_inst.min_shell_uart);
 	uart_stdio_tx_callback(min_shell_task_inst.min_shell_uart);
+	UART7->ICR = 0xFFFFFFFF;
 }
 

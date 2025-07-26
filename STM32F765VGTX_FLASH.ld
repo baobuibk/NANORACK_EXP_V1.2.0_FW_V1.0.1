@@ -46,6 +46,7 @@ MEMORY
 {
   RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 512K
   FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 256K
+  BKPRAM (xrw)  : ORIGIN = 0x40024000, LENGTH = 4K
 }
 
 /* Sections */
@@ -175,6 +176,11 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
+  .bkpram (NOLOAD) :
+  {
+    *(.bkpram .bkpram.*)
+    . = ALIGN(4);
+  } > BKPRAM
   /* Remove information from the compiler libraries */
   /DISCARD/ :
   {

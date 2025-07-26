@@ -28,6 +28,8 @@ struct wdg_no_init_vars {
     uint32_t reset_wdg_id;
 };
 
+static void EnableBackupRAM(void);
+static void DisableBackupRAM(void);
 void validate_no_init_vars(void);
 
 struct wdg_no_init_vars no_init_vars __attribute__((section (".bkpram")));
@@ -178,51 +180,64 @@ void wdg_update()
 	}
 }
 
-void validate_no_init_vars(void)
+
+static void EnableBackupRAM(void)
 {
     HAL_PWR_EnableBkUpAccess();
-
-    /* Bật đồng hồ cho Backup SRAM */
     __HAL_RCC_BKPSRAM_CLK_ENABLE();
-    if (no_init_vars.magic != WDG_NO_INIT_VARS_MAGIC )
+    HAL_PWREx_EnableBkUpReg();
+    while (!__HAL_PWR_GET_FLAG(PWR_FLAG_BRR));
+}
+
+static void DisableBackupRAM(void)
+{
+    HAL_PWREx_DisableBkUpReg();
+    __HAL_RCC_BKPSRAM_CLK_DISABLE();
+    HAL_PWR_DisableBkUpAccess();
+}
+
+void update_no_init_vars(uint32_t reset_cause, uint32_t WDG_ID)
+{
+	EnableBackupRAM();
+    memset(&no_init_vars, 0, sizeof(no_init_vars));
+    no_init_vars.magic = WDG_NO_INIT_VARS_MAGIC;
+    no_init_vars.reset_cause = reset_cause;
+    no_init_vars.reset_wdg_id = WDG_ID;
+    DisableBackupRAM();
+}
+
+void validate_no_init_vars(void)
+{
+	EnableBackupRAM();
+    if (no_init_vars.magic != WDG_NO_INIT_VARS_MAGIC)
     {
         memset(&no_init_vars, 0, sizeof(no_init_vars));
         no_init_vars.magic = WDG_NO_INIT_VARS_MAGIC;
         no_init_vars.reset_cause = WDG_CAUSE_RESET_NORMAL;
         no_init_vars.reset_wdg_id = 0xFF;
-        __HAL_RCC_BKPSRAM_CLK_DISABLE();
-        HAL_PWR_DisableBkUpAccess();
-        return;
-
     }
 
-//    if (no_init_vars.reset_cause == CONFIG_RESET_WDG)
+//    if (no_init_vars.reset_cause == RESET_CAUSE_BOOTLOADER)
 //    {
-//    		// put log to notify the reset cause
 //
 //    }
-//    if (no_init_vars.reset_cause == WDG_CAUSE_RESET_NORMAL)
-//    {
-//    		// put log to notify the reset cause
 //
-//    }
+//    else if (no_init_vars.reset_cause == RESET_CAUSE_NORMAL)
+//	{
+//
+//	}
 
-    __HAL_RCC_BKPSRAM_CLK_DISABLE();
-    HAL_PWR_DisableBkUpAccess();
+    DisableBackupRAM();
     return;
-
 }
-void update_no_init_vars(uint32_t reset_cause, uint32_t WDG_ID)
+
+uint8_t System_On_Bootloader_Reset(void)
 {
-    HAL_PWR_EnableBkUpAccess();
+	update_no_init_vars(WDG_CAUSE_RESET_OTA, 0);
 
-    /* Bật đồng hồ cho Backup SRAM */
-    __HAL_RCC_BKPSRAM_CLK_ENABLE();
-    memset(&no_init_vars, 0, sizeof(no_init_vars));
-    no_init_vars.magic = WDG_NO_INIT_VARS_MAGIC;
-    no_init_vars.reset_cause = reset_cause;
-    no_init_vars.reset_wdg_id = WDG_ID;
-    __HAL_RCC_BKPSRAM_CLK_DISABLE();
-    HAL_PWR_DisableBkUpAccess();
+    __disable_irq();
+    __HAL_RCC_CLEAR_RESET_FLAGS();
+    HAL_DeInit();
+    NVIC_SystemReset();
+    return 0;
 }
-

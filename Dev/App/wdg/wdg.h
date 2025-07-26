@@ -27,5 +27,5 @@ void 	wdg_init_successful(void);
 int32_t wdg_start_hdw_wdg(uint32_t timeout_ms);
 void 	wdg_feed_hdw(void);
 void update_no_init_vars(uint32_t reset_cause, uint32_t WDG_ID);
-
+uint8_t System_On_Bootloader_Reset(void);
 #endif /* APP_WDG_WDG_H_ */
