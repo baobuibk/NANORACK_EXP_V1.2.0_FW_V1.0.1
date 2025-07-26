@@ -11,6 +11,7 @@
 #include "dbc_assert.h"
 #include "date_time.h"
 #include "configs.h"
+#include "wdg.h"
 
 #include "adc_monitor.h"
 

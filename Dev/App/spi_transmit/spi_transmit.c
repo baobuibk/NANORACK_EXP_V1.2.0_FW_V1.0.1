@@ -73,24 +73,36 @@ static state_t spi_transmit_handler(spi_transmit_task_t * const me, spi_transmit
 		case EVT_SPI_TRANSMIT_POLL_CHECK_FINISH:
 			wdg_feed(WDG_SPI_TRANSMIT_ID);
 			me->count ++;
-			if (bsp_handshake_spi_check_finish() || (me->count > TIME_OUT_SPI_TRANS))
+//			if (bsp_handshake_spi_check_finish() || (me->count > TIME_OUT_SPI_TRANS))
+			if (bsp_handshake_spi_check_finish())
 			{
+				spi_trans_debug_print("........................spi trans finish______________________________\r\n");
 				me->count = 0;
+				bsp_handshake_spi_busy();
+				wdg_unregister(WDG_SPI_TRANSMIT_ID);
 				SST_TimeEvt_disarm(&me->spi_transmit_poll_check_finish_timer);
-				spi_transmit_task_finish(me);
+//				spi_transmit_task_finish(me);
 			}
-			return HANDLED_STATUS;
+			else if ((me->count > TIME_OUT_SPI_TRANS))
+			{
+				spi_trans_debug_print("........................spi trans timeout______________________________\r\n");
+				me->count = 0;
+				bsp_handshake_spi_busy();
+				wdg_unregister(WDG_SPI_TRANSMIT_ID);
+				SST_TimeEvt_disarm(&me->spi_transmit_poll_check_finish_timer);
+			}
 
-		case EVT_SPI_TRANSMIT_FINISH:
-		case EVT_SPI_TRANSMIT_TIMEOUT:
+			return HANDLED_STATUS;
+//		case EVT_SPI_TRANSMIT_FINISH:
+//		case EVT_SPI_TRANSMIT_TIMEOUT:
 
 //			LL_DMA_ClearFlag_TC3(DMA2);
 //			SPI_SlaveDevice_SetTransferState(SPI_TRANSFER_COMPLETE);
 //			SPI_SlaveDevice_Disable();
 
-			spi_trans_debug_print("........................spi trans finish______________________________\r\n");
-			bsp_handshake_spi_busy();
-			return HANDLED_STATUS;
+//			spi_trans_debug_print("........................spi trans finish______________________________\r\n");
+//			bsp_handshake_spi_busy();
+//			return HANDLED_STATUS;
 
 		default:
 			return IGNORED_STATUS;
@@ -105,9 +117,9 @@ void spi_transmit_task_data_ready(spi_transmit_task_t *const me)
 	wdg_register(WDG_SPI_TRANSMIT_ID, WDG_SPI_TRANSMIT_TIMEOUT);
 }
 
-void spi_transmit_task_finish(spi_transmit_task_t *const me)
-{
-	spi_transmit_evt_t spi_finish_evt = {.super = {.sig = EVT_SPI_TRANSMIT_FINISH}, };
-	SST_Task_post(&me->super, (SST_Evt *)&spi_finish_evt);
-	wdg_unregister(WDG_SPI_TRANSMIT_ID);
-}
+//void spi_transmit_task_finish(spi_transmit_task_t *const me)
+//{
+//	spi_transmit_evt_t spi_finish_evt = {.super = {.sig = EVT_SPI_TRANSMIT_FINISH}, };
+//	SST_Task_post(&me->super, (SST_Evt *)&spi_finish_evt);
+//	wdg_unregister(WDG_SPI_TRANSMIT_ID);
+//}

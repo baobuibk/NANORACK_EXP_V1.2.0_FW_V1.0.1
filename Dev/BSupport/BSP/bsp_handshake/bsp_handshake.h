@@ -31,7 +31,7 @@
 
 #define bsp_handshake_spi_check_finish()  (LL_GPIO_IsInputPinSet(ReadDone_GPIO_Port, ReadDone_Pin))
 
-#define bsp_handshake_spi_buffer_full_notify()	(LL_GPIO_SetOutputPin(Log_OverFlow_GPIO_Port, Log_OverFlow_Pin))
-#define bsp_handshake_spi_clear_notification()	(LL_GPIO_ResetOutputPin(Log_OverFlow_GPIO_Port, Log_OverFlow_Pin))
+#define bsp_handshake_spi_clear_notification()	(LL_GPIO_SetOutputPin(Log_OverFlow_GPIO_Port, Log_OverFlow_Pin))
+#define bsp_handshake_spi_buffer_full_notify()	(LL_GPIO_ResetOutputPin(Log_OverFlow_GPIO_Port, Log_OverFlow_Pin))
 
 #endif /* APP_MIN_SHELL_HAND_SHAKE_HAND_SHAKE_H_ */

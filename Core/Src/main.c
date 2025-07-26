@@ -102,8 +102,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-
-	HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -1617,9 +1616,6 @@ static void MX_GPIO_Init(void)
   LL_GPIO_ResetOutputPin(WD_DONE_GPIO_Port, WD_DONE_Pin);
 
   /**/
-  LL_GPIO_ResetOutputPin(Log_OverFlow_GPIO_Port, Log_OverFlow_Pin);
-
-  /**/
   LL_GPIO_ResetOutputPin(MIN_HandShake_GPIO_Port, MIN_HandShake_Pin);
 
   /**/
@@ -1654,6 +1650,9 @@ static void MX_GPIO_Init(void)
 
   /**/
   LL_GPIO_SetOutputPin(LASER_EXT_SW_CS_GPIO_Port, LASER_EXT_SW_CS_Pin);
+
+  /**/
+  LL_GPIO_SetOutputPin(Log_OverFlow_GPIO_Port, Log_OverFlow_Pin);
 
   /**/
   LL_GPIO_SetOutputPin(LASER_DAC_LATCH_GPIO_Port, LASER_DAC_LATCH_Pin);
@@ -1786,7 +1785,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(Log_OverFlow_GPIO_Port, &GPIO_InitStruct);
 
   /**/
