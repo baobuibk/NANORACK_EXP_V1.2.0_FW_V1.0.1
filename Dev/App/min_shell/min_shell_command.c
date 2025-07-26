@@ -28,6 +28,7 @@
 // Header Define
 // =================================================================
 
+
 extern min_shell_task_t min_shell_task_inst;
 static min_shell_task_t *p_min_shell_task = &min_shell_task_inst;
 
@@ -415,8 +416,8 @@ static void MIN_Handler_GET_INFO_SAMPLE_CMD(MIN_Context_t *ctx, const uint8_t *p
     }
     else
     {
-        uint16_t total_chunks = (profile.num_sample / 8);
-        if (profile.num_sample % 8)
+        uint16_t total_chunks = (profile.num_sample / EXPERIMENT_CHUNK_SAMPLE_SIZE);
+        if (profile.num_sample % EXPERIMENT_CHUNK_SAMPLE_SIZE)
         	total_chunks += 1;
         min_shell_debug_print("Total sample chunks: %d\r\n", total_chunks);
         buffer[0] = (uint8_t)(total_chunks >> 8) 	& 0xFF;
@@ -431,8 +432,8 @@ static void MIN_Handler_GET_CHUNK_CMD(MIN_Context_t *ctx, const uint8_t *payload
     uint8_t chunk_id = payload[0];
     experiment_profile_t profile;
     experiment_task_get_profile(p_experiment_task, &profile);
-    uint16_t total_chunks = (profile.num_sample / 8);
-    if (profile.num_sample % 8)
+    uint16_t total_chunks = (profile.num_sample / EXPERIMENT_CHUNK_SAMPLE_SIZE);
+    if (profile.num_sample % EXPERIMENT_CHUNK_SAMPLE_SIZE)
     	total_chunks += 1;
     if (total_chunks == 0)
     {

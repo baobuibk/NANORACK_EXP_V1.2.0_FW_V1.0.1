@@ -22,10 +22,6 @@
 	#define bsp_spi_debug_print(...)
 #endif
 
-
-#define SAMPLE_BUFFER_SIZE		(8 * 1024)
-#define BYTE_BUFFER_SIZE		(16* 1024)		//16KB
-
 typedef enum {
 	SPI_TRANSFER_PREPARE,
 	SPI_TRANSFER_WAIT,

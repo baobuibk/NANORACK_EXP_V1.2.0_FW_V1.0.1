@@ -10,6 +10,7 @@
 #include "stm32f7xx_ll_dma.h"
 #include "bsp_spi_ram.h"
 #include "main.h"
+#include "experiment_task.h"
 
 
 static SPI_SlaveDevice_t spi_device_instance = {
@@ -89,7 +90,7 @@ Std_ReturnType SPI_SlaveDevice_CollectData(uint16_t * p_tx_buffer)
 			);
 
 	uint16_t crc = 0x0000;
-	for (uint16_t i = 0; i < SAMPLE_BUFFER_SIZE; i++)
+	for (uint16_t i = 0; i < EXPERIMENT_BUFFER_SAMPLE_SIZE; i++)
 	{
 		uint16_t sample_data = *(spi_device_instance.data_context.p_tx_buffer + i);
 		crc = UpdateCRC16_XMODEM(crc, (sample_data & 0xFF));
@@ -133,7 +134,7 @@ Std_ReturnType SPI_SlaveDevice_ReinitDMA()
 
     LL_DMA_ConfigAddresses(DMA2, LL_DMA_STREAM_3, (uint32_t)spi_device_instance.data_context.p_tx_buffer,
     		LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
-    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, BYTE_BUFFER_SIZE);
+    LL_DMA_SetDataLength(DMA2, LL_DMA_STREAM_3, EXPERIMENT_BUFFER_BYTE_SIZE);
 
     LL_SPI_EnableDMAReq_TX(SPI1);
     LL_SPI_Enable(SPI1);

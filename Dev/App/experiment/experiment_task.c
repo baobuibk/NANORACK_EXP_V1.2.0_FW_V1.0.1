@@ -22,12 +22,8 @@
 
 DBC_MODULE_NAME("experiment_task")
 
-#define EXPERIMENT_TASK_NUM_EVENTS  		2
+#define EXPERIMENT_TASK_NUM_EVENTS  		10
 #define EXPERIMENT_TASK_AQUI_TIMEOUT		20000
-#define EXPERIMENT_BUFFER_SAMPLE_SIZE		(8*1024)
-#define EXPERIMENT_BUFFER_BYTE_SIZE			(EXPERIMENT_BUFFER_SAMPLE_SIZE * 2)
-#define EXPERIMENT_LASER_CURRENT_SIZE		(8*1024)
-#define EXPERIMENT_LASER_CURRENT_POLL_TIME	1
 
 extern shell_task_t shell_task_inst;
 static shell_task_t *p_shell_task = &shell_task_inst;
@@ -65,7 +61,7 @@ static state_t experiment_task_state_send_to_spi_handler(experiment_task_t * con
 
 static void experiment_task_init(experiment_task_t * const me,experiment_evt_t const * const e)
 {
-	//DBG(DBG_LEVEL_INFO,"experiment_task init\r\n");
+	//exp_debug_print("experiment_task init\r\n");
 	bsp_laser_init();
 	bsp_spi_ram_init();
 	bsp_photodiode_init();
@@ -116,7 +112,7 @@ static state_t experiment_task_state_manual_handler(experiment_task_t * const me
 	{
 		case SIG_ENTRY:
 		{
-			//DBG(DBG_LEVEL_INFO,"entry experiment_task_state_manual_handler\r\n");
+			//exp_debug_print("entry experiment_task_state_manual_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
 			return HANDLED_STATUS;
 		}
@@ -152,15 +148,12 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 	{
 		case SIG_ENTRY:
 		{
-			DBG(DBG_LEVEL_INFO,"Start Sampling...\r\n");
-//			DBG(DBG_LEVEL_INFO,"entry experiment_task_state_data_aqui_handler\r\n");
+			exp_debug_print("Start Sampling...\r\n");
 			SST_TimeEvt_arm(&me->timeout_timer, EXPERIMENT_TASK_AQUI_TIMEOUT, 0);
 //	      	Switch the photodiode on
 			experiment_task_photodiode_switchon(me, me->profile.pos);
-//			DBG(DBG_LEVEL_INFO,"switch on photo %d\r\n", me->profile.pos);
 //			Switch the SPI to ADC supported mode
 			experiment_task_photo_ADC_prepare_SPI(me);
-//			DBG(DBG_LEVEL_INFO,"switch on photo %d and change SPI mode to SPI ADC Mode\r\n", me->profile.pos);
 //			Prepare the timer for sampling
 			bsp_photodiode_time_t init_photo_time;
 			init_photo_time.pre_time = me->profile.pre_time ;
@@ -180,14 +173,14 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case SIG_EXIT:
 		{
-//			DBG(DBG_LEVEL_INFO,"exit experiment_task_state_data_aqui_handler\r\n");
+			exp_debug_print("exit experiment_task_state_data_aqui_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer);
 			SST_TimeEvt_disarm(&me->laser_current_trigger);
 			return HANDLED_STATUS;
 		}
 		case EVT_EXPERIMENT_FINISH_PRE_SAMPLING:
 		{
-			DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
+			exp_debug_print("EXPERIMENT_FINISH_PRE_SAMPLING\r\n");
 			if (me->sub_state == S_PRE_SAMPLING)
 			{
 				me->sub_state = S_DATA_SAMPLING;
@@ -198,7 +191,7 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case EVT_EXPERIMENT_FINISH_SAMPLING:
 		{
-			DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_SAMPLING\r\n");
+			exp_debug_print("EXPERIMENT_FINISH_SAMPLING\r\n");
 			if (me->sub_state == S_DATA_SAMPLING)
 			{
 				me->sub_state = S_POST_SAMPLING;
@@ -208,13 +201,13 @@ static state_t experiment_task_state_data_aqui_handler(experiment_task_t * const
 		}
 		case EVT_EXPERIMENT_FINISH_POST_SAMPLING:
 		{
-			DBG(DBG_LEVEL_INFO,"EXPERIMENT_FINISH_POST_SAMPLING\r\n");
+			exp_debug_print("EXPERIMENT_FINISH_POST_SAMPLING\r\n");
 			if (me->sub_state == S_POST_SAMPLING)
 			{
 				me->sub_state = NO_SUBSTATE;
 			}
 			else me->sub_state = S_AQUI_ERROR;
-			DBG(DBG_LEVEL_INFO,"Sampling Done!\r\n");
+			exp_debug_print("Sampling Done!\r\n");
 
 			// Cho phép giao tiếp Min với OBC
 			min_shell_busy_clear(p_min_shell_task);
@@ -250,11 +243,10 @@ static state_t experiment_task_state_send_to_shell_handler(experiment_task_t * c
 	{
 		case SIG_ENTRY:
 		{
-			//DBG(DBG_LEVEL_INFO,"entry experiment_task_state_send_to_shell_handler\r\n");
+			//exp_debug_print("entry experiment_task_state_send_to_shell_handler\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
 		    remain_data_profile.num_data = me->data_profile.num_data;
 		    remain_data_profile.start_address = me->data_profile.start_address;
-//		    SST_Task_post((SST_Task *)&shell_task_inst.super, (SST_Evt *)&uart_send_buffer_bin_evt);
 		    shell_uart_send_buffer_bin_evt(p_shell_task);
 			return HANDLED_STATUS;
 		}
@@ -301,7 +293,7 @@ static state_t experiment_task_state_send_to_spi_handler(experiment_task_t * con
 	{
 		case SIG_ENTRY:
 		{
-			DBG(DBG_LEVEL_INFO,"entry SPI_TRANS\r\n");
+			exp_debug_print("entry SPI_TRANS\r\n");
 			SST_TimeEvt_disarm(&me->timeout_timer); //disable the timeout
 			bsp_spi_ram_read_dma(me->data_profile.start_address * 2, EXPERIMENT_BUFFER_SAMPLE_SIZE * 2, (uint8_t *)experiment_data_buffer);
 			return HANDLED_STATUS;
@@ -309,7 +301,7 @@ static state_t experiment_task_state_send_to_spi_handler(experiment_task_t * con
 
 		case EVT_EXPERIMENT_DONE_READ_RAM:
 		{
-			DBG(DBG_LEVEL_INFO,"entry DONE_READ_RAM\r\n");
+			exp_debug_print("entry DONE_READ_RAM\r\n");
 			// Cấu hình địa chỉ buffer
 			SPI_SlaveDevice_CollectData((uint16_t *)experiment_data_buffer);
 			// Bật tín hiệu DataReady

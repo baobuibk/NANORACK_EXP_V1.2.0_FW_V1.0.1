@@ -8,7 +8,7 @@
 #include "bsp_handshake.h"
 #include "bsp_spi_slave.h"
 #include "spi_transmit.h"
-
+#include "experiment_task.h"
 
 /////////////
 // EXTERN
@@ -27,9 +27,8 @@ static spi_transmit_task_t *p_spi_transmit_task = &spi_transmit_task_inst;
     #define 	LWL_BUF_SIZE 		(CONFIG_LWL_BUF_SIZE)
  	 #define 	LWL_BUF_THRESHOLD 	(CONFIG_LWL_BUF_THRESHOLD)
 #else
-    #define LWL_BUF_SIZE 			(16*1024)
+    #define LWL_BUF_SIZE 			EXPERIMENT_BUFFER_BYTE_SIZE
 	#define LWL_BUF_THRESHOLD 		(LWL_BUF_SIZE - 60)
-//	#define LWL_BUF_THRESHOLD 		50
 #endif
 
 
